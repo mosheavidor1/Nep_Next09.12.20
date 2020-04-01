@@ -1,0 +1,21 @@
+1. Download jar file
+2. Download src folder from: https://git.trustwave.com/portaQA/NetayaSWG/tree/master/Automation
+3. Put src folder next to jar file location
+4. Use the following command to run the test:
+    java -jar Automation.jar Nep\DownloadAndInstall.xml <cluster to test: qa,inc, etc...>
+5. After the run completed open folder test-output next to jar file location and view results
+
+First Time setup for machine under test:
+1. Download Utils folder and copy it to C:\Selenium
+2. Download Selenium Chrome driver from: https://chromedriver.chromium.org/downloads
+3. Copy win32 chromedriver.exe to folder C:\Selenium
+4. Disable UAC according the following instructions of the following link:
+    https://www.howtogeek.com/howto/windows-vista/disable-user-account-control-uac-the-easy-way-on-windows-vista/
+
+To Change test parameters:
+1. Open src\test\java\DataFiles\DataFile.xlsx
+2. Open tab DownloadFromPortal
+3. Change parameter and save file
+
+
+

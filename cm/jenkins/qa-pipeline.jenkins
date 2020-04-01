@@ -1,0 +1,128 @@
+import groovy.util.XmlSlurper
+import groovy.util.XmlParser
+
+EMAIL_LIST="mzaytsev@trustwave.com"
+
+SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-tools.git'
+
+MODULE_NAME = "installerlnx"
+MODULE_VERSION = "${env.MODULE_VERSION}"
+MODULE_EXTENSION_LNX = 'lnx'
+MODULE_EXTENSION_SH = 'sh'
+
+NEXUS_GROUP_ID="com.trustwave.nep.nepa-tools.internal"
+NEXUS_ARTIFACT_VERSION = "${env.NEP_BRANCH == "next" ? "${MODULE_VERSION}.${BUILD_NUMBER}-${env.NEP_BRANCH}"  :  "${MODULE_VERSION}.${BUILD_NUMBER}"}"
+NEXUS_URL ="http://nexus01.trustwave.com/content/repositories/releases/"
+
+PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
+PROPERTIES_FILE_PATH_TMP="/var/jenkins_home/workspace/saved-params-next"
+	
+node('prs-build') {
+
+	MODULE_SRC_LNX = "${env.WORKSPACE}/internal-tools/${MODULE_NAME}"
+	NEXUS_SETTING_FILE_PATH_LNX ="${env.WORKSPACE}/cm/nexus-upload/nexus-settings.xml"
+	
+	try {	
+		stage('Get sources from BitBucket') {			
+			sh ('set')
+			git branch: "${env.NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
+		}
+
+		stage('Update BUILD_NUMBER') {
+			currentBuild.displayName = NEXUS_ARTIFACT_VERSION
+		}
+		
+		stage('Build') {
+			echo "Running: ${MODULE_NAME} Build:${NEXUS_ARTIFACT_VERSION} on ${env.JENKINS_URL}"
+
+			sh """
+				cd "${MODULE_SRC_LNX}"
+
+				gcc -static -s "${MODULE_NAME}.c" -o "${MODULE_NAME}"
+				
+				ls "${MODULE_NAME}" || exit 1
+
+				mvn deploy:deploy-file		\
+					 -s "${NEXUS_SETTING_FILE_PATH_LNX}"		\
+					 -DgroupId="${NEXUS_GROUP_ID}" \
+					 -DartifactId="${MODULE_NAME}" 	\
+					 -Dversion="${NEXUS_ARTIFACT_VERSION}"	\
+					 -DgeneratePom=false	\
+					 -Dpackaging="${MODULE_EXTENSION_LNX}"	\
+					 -DrepositoryId=maven-releases	\
+					 -Durl="${NEXUS_URL}"	\
+					 -Dfile="${MODULE_SRC_LNX}/${MODULE_NAME}"
+
+				mvn deploy:deploy-file		\
+					 -s "${NEXUS_SETTING_FILE_PATH_LNX}"		\
+					 -DgroupId="${NEXUS_GROUP_ID}" \
+					 -DartifactId="${MODULE_NAME}" 	\
+					 -Dversion="${NEXUS_ARTIFACT_VERSION}"	\
+					 -DgeneratePom=false	\
+					 -Dpackaging="${MODULE_EXTENSION_SH}"	\
+					 -DrepositoryId=maven-releases	\
+					 -Durl="${NEXUS_URL}"	\
+					 -Dfile="${MODULE_SRC_LNX}/${MODULE_NAME}.${MODULE_EXTENSION_SH}"				 
+			"""
+
+			println "################################################################"
+			println "Group ID		: ${NEXUS_GROUP_ID}"
+			println "Artifact ID		: ${MODULE_NAME}"
+			println "Artifact Version	: ${NEXUS_ARTIFACT_VERSION}"
+			println "################################################################"
+		}
+
+		stage('Send SUCCESS email'){
+			sendEmail("Successful")
+		}
+
+		stage ('Update NEPA version param at props file on Master') {
+				build job: 'update-param-on-master', 
+					parameters:  [
+						string(name: 'PROPERTY_NAME', value: "${MODULE_NAME}_version"),
+						string(name: 'PROPERTY_VALUE', value: "${MODULE_VERSION}.${BUILD_NUMBER}"),
+						string(name: 'PROPERTIES_FILE_PATH', value: "${PROPERTIES_FILE_PATH}")
+					]	
+				build job: 'update-param-on-master', 
+					parameters:  [
+						string(name: 'PROPERTY_NAME', value: "${MODULE_NAME}_version"),
+						string(name: 'PROPERTY_VALUE', value: "${MODULE_VERSION}.${BUILD_NUMBER}"),
+						string(name: 'PROPERTIES_FILE_PATH', value: "${PROPERTIES_FILE_PATH_TMP}")
+					]
+		}
+	}
+	catch (err) {
+		currentBuild.result = "FAILURE"
+			sendEmail("Failed")
+        throw err
+    }
+}
+
+@NonCPS
+def getChangeString() {
+	MAX_MSG_LEN = 100
+	def changeString = ""
+
+	echo "Gathering SCM changes"
+	def changeLogSets = currentBuild.changeSets
+	for (int i = 0; i < changeLogSets.size(); i++) {
+		def entries = changeLogSets[i].items
+		for (int j = 0; j < entries.length; j++) {
+			def entry = entries[j]
+			truncated_msg = entry.msg.take(MAX_MSG_LEN)
+			changeString += " - ${truncated_msg} [${entry.author}]\n"
+		}
+	}
+
+	if (!changeString) {
+		changeString = " - No new changes"
+	}
+	return changeString
+}
+
+def sendEmail(status) {
+	mail (
+		to: "${EMAIL_LIST}", 
+		subject: "Build $NEXUS_ARTIFACT_VERSION - " + status + " ($JOB_NAME)" + " - ${env.NEP_BRANCH}", 
+		body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n")
+}

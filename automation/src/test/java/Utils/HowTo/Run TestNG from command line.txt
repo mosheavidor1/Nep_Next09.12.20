@@ -1,0 +1,1 @@
+java -cp Automation.jar Tests.runtest <Suite to run> <cluster name>

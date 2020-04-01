@@ -1,0 +1,74 @@
+  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>Trustwave</groupId>
+  <artifactId>Automation</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+    <build>
+    <!--  sourceDirectory>src</sourceDirectory -->
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <packaging>jar</packaging>
+
+  <name>Automation</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+
+  <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.12.1</version>
+</dependency>
+  
+  <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+<dependency> 
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.0.0</version>
+    <scope>test</scope>
+</dependency>
+  
+
+  <!-- https://mvnrepository.com/artifact/io.appium/java-client -->
+<dependency>
+    <groupId>io.appium</groupId>
+    <artifactId>java-client</artifactId>
+    <version>7.3.0</version>
+</dependency>
+
+
+  <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-ooxml</artifactId>
+    <version>4.1.1</version>
+</dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.github.stephenc.monte/monte-screen-recorder -->
+      <dependency>
+          <groupId>com.github.stephenc.monte</groupId>
+          <artifactId>monte-screen-recorder</artifactId>
+          <version>0.7.7.0</version>
+      </dependency>
+
+
+
+  </dependencies>
+</project>

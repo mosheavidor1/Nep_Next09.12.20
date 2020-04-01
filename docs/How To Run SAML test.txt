@@ -1,0 +1,9 @@
+1. Download jar file
+2. Download src folder and put is next to jar file location
+3. Use the following commands
+    java -jar Automation.jar SamlSuite.xml <cluster to test: qa,inc, 192.168.142.153, etc...>
+4. After the run open folder test-output next to jar file location to view results
+
+
+
+
