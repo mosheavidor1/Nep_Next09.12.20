@@ -1,0 +1,19 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Download and install">
+
+    <test name = "Download files from portal">
+        <classes>
+            <class name = "Tests.NEP.DownloadFromPortal" />
+        </classes>
+    </test>
+
+    <test name = "Install End Point">
+        <classes>
+            <class name = "Tests.NEP.InstallEndPoint" />
+        </classes>
+    </test>
+
+
+</suite>

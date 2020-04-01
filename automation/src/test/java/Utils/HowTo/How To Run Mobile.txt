@@ -1,0 +1,14 @@
+1.	Create new folder named Appium at a location of your choice
+2.	Download Android Platform Tools and extract to Appium Folder. https://developer.android.com/studio/releases/platform-tools
+3.	Copy adb.exe to /Appium/platform-tools
+4.	Download android sdk tools and extract it Appium folder. https://developer.android.com/studio (At the bottom of the page)
+5.	Add System variable ANDROID_HOME -> Appium folder location
+6.	Add System variable JAVA_HOME -> location of java installation folder
+7.	Add to system path %JAVA_HOME%\bin and ANDROID_HOME%
+8.	Install Appium Desktop on the Machine
+9.	From Appium Desktop Create Host 127.0.0.1 Port 4723 and start server
+10.	From command line execute java -cp MobileTest.jar Utils.JavaMain.JavaMain
+
+Note: 
+1. Apk file current location is at: /Apps/app-debug.apk
+2. Apk file location and all other test parameters can be changed at: /src/test/java/DataFiles
