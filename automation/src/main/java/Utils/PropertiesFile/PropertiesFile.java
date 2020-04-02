@@ -13,7 +13,7 @@ public  class PropertiesFile {
 	    private static Properties properties;
 	    private static InputStream inputStream = null;
 	    private static PropertiesFile file=null;
-	    private static String filePath = "src/test/java/utils/PropertiesFile/config.properties";
+	    private static String filePath = "src/main/java/Utils/PropertiesFile/config.properties";
 	    public static final String [] environmentsNamesArray = {"qa","inc","stg"};
 	    
 

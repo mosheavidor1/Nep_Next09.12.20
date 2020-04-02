@@ -10,7 +10,7 @@ import org.testng.collections.Lists;
 
 
 public class runtest {
-	public static final String suitesFolder = "src/test/java/TestSuites/";
+	public static final String suitesFolder = "src/main/java/TestSuites/";
 	public static String runAtDirectory ="";
 
 	public static void main(String[] args) throws Exception {
