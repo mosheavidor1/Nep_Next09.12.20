@@ -1,25 +1,26 @@
 import groovy.util.XmlSlurper
 import groovy.util.XmlParser
 
+//input parameter: codesigner_version
+//input parameter: installerlnx_version
+	
 EMAIL_LIST="mzaytsev@trustwave.com"
 
-SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-tools.git'
+SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 
-MODULE_NAME = "installerlnx"
+MODULE_NAME = "nep-automation"
 MODULE_VERSION = "${env.MODULE_VERSION}"
-MODULE_EXTENSION_LNX = 'lnx'
-MODULE_EXTENSION_SH = 'sh'
+VERSION_QUALIFIER = "-SNAPSHOT"
 
-NEXUS_GROUP_ID="com.trustwave.nep.nepa-tools.internal"
+NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}"
 NEXUS_ARTIFACT_VERSION = "${env.NEP_BRANCH == "next" ? "${MODULE_VERSION}.${BUILD_NUMBER}-${env.NEP_BRANCH}"  :  "${MODULE_VERSION}.${BUILD_NUMBER}"}"
-NEXUS_URL ="http://nexus01.trustwave.com/content/repositories/releases/"
 
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 PROPERTIES_FILE_PATH_TMP="/var/jenkins_home/workspace/saved-params-next"
 	
-node('prs-build') {
+node('nep-build-centos7') {
 
-	MODULE_SRC_LNX = "${env.WORKSPACE}/internal-tools/${MODULE_NAME}"
+	MODULE_SRC_LNX = "${env.WORKSPACE}/${MODULE_NAME}"
 	NEXUS_SETTING_FILE_PATH_LNX ="${env.WORKSPACE}/cm/nexus-upload/nexus-settings.xml"
 	
 	try {	
@@ -37,32 +38,12 @@ node('prs-build') {
 
 			sh """
 				cd "${MODULE_SRC_LNX}"
-
-				gcc -static -s "${MODULE_NAME}.c" -o "${MODULE_NAME}"
 				
-				ls "${MODULE_NAME}" || exit 1
+				mvn versions:set-property -Dproperty=is_version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
+				mvn -DskipTests clean install
+				
+				ls "target/${MODULE_NAME}-${NEXUS_ARTIFACT_VERSION}" || exit 1
 
-				mvn deploy:deploy-file		\
-					 -s "${NEXUS_SETTING_FILE_PATH_LNX}"		\
-					 -DgroupId="${NEXUS_GROUP_ID}" \
-					 -DartifactId="${MODULE_NAME}" 	\
-					 -Dversion="${NEXUS_ARTIFACT_VERSION}"	\
-					 -DgeneratePom=false	\
-					 -Dpackaging="${MODULE_EXTENSION_LNX}"	\
-					 -DrepositoryId=maven-releases	\
-					 -Durl="${NEXUS_URL}"	\
-					 -Dfile="${MODULE_SRC_LNX}/${MODULE_NAME}"
-
-				mvn deploy:deploy-file		\
-					 -s "${NEXUS_SETTING_FILE_PATH_LNX}"		\
-					 -DgroupId="${NEXUS_GROUP_ID}" \
-					 -DartifactId="${MODULE_NAME}" 	\
-					 -Dversion="${NEXUS_ARTIFACT_VERSION}"	\
-					 -DgeneratePom=false	\
-					 -Dpackaging="${MODULE_EXTENSION_SH}"	\
-					 -DrepositoryId=maven-releases	\
-					 -Durl="${NEXUS_URL}"	\
-					 -Dfile="${MODULE_SRC_LNX}/${MODULE_NAME}.${MODULE_EXTENSION_SH}"				 
 			"""
 
 			println "################################################################"
@@ -76,7 +57,7 @@ node('prs-build') {
 			sendEmail("Successful")
 		}
 
-		stage ('Update NEPA version param at props file on Master') {
+		stage ("Update ${MODULE_NAME} version param at props file on Master") {
 				build job: 'update-param-on-master', 
 					parameters:  [
 						string(name: 'PROPERTY_NAME', value: "${MODULE_NAME}_version"),
