@@ -1,0 +1,39 @@
+version: '3.2'
+services:
+  redis:
+    image: redis:latest
+    container_name: redis1
+    volumes:
+    - "/root/ds_fs/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf:Z"
+    - "/root/ds_fs/redis/logs:/var/log/redis:Z"
+    - "/root/ds_fs/redis/db:/var/lib/redis:Z"
+    entrypoint:
+    - redis-server
+    - /usr/local/etc/redis/redis.conf
+    - --requirepass
+    - breach12345
+    ports:
+    - "6379:6379"
+  ds:
+    image: git.trustwave.com:4567/ops-containers/spring-boot:latest
+    container_name: ds1
+    ports:
+    - "8080:8080"
+    - "8010:8010"
+    - "9010:9010"
+    - "9107:9107"
+    - "8778:8778"
+    volumes:
+    - "/root/ds_fs/app/portal/base.properties:/app/portal/base.properties:Z"
+    - "/root/ds_fs/app/application.properties:/app/application.properties:Z"
+    - "/root/ds_fs/app/logs/ds.log:/var/log/ds.log:Z"
+    - "/root/ds_fs/app/nepa-dserver.war:/app/nepa-dserver.war:Z"
+    - "/root/ds_fs/www:/var/agent_binaries/latest/windows10/x64:Z"
+    environment:
+    - CONF_FILE_FULL_NAME=/app/application.properties
+    - PROPERTY_KEY=l4twtestpw
+    command: ["-jar", "/app/nepa-dserver.war"]
+
+    depends_on:
+    - redis
+
