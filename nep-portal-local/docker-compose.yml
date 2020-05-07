@@ -24,16 +24,16 @@ services:
     - "9107:9107"
     - "8778:8778"
     volumes:
-    - "/root/ds_fs/app/portal/base.properties:/app/portal/base.properties:Z"
-    - "/root/ds_fs/app/application.properties:/app/application.properties:Z"
-    - "/root/ds_fs/app/logs/ds.log:/var/log/ds.log:Z"
-    - "/root/ds_fs/app/nepa-dserver.war:/app/nepa-dserver.war:Z"
-    - "/root/ds_fs/www:/var/agent_binaries/latest/windows10/x64:Z"
+    - "${DS_FOLDER_PREFIX}/etc/nepa-dserver/base.properties:/etc/nepa-dserver/base.properties:Z"
+    - "${DS_FOLDER_PREFIX}/etc/nepa-dserver/application.properties:/etc/nepa-dserver/application.properties:Z"
+    - "${DS_FOLDER_PREFIX}/etc/nepa-dserver/management.properties:/etc/nepa-dserver/management.properties:Z"    
+    - "${DS_FOLDER_PREFIX}/var/log/nepa-dserver/:/var/log/nepa-dserver/:Z"
+    - "${DS_FOLDER_PREFIX}/var/lib/nepa-dserver/nepa-dserver-${DS_VERSION}.war:/var/lib/nepa-dserver/nepa-dserver.jar:Z"
+    - "${DS_FOLDER_PREFIX}/var/lib/nepa-dserver/agent_binaries/latest/windows10/x64/current:/var/lib/nepa-dserver/agent_binaries/latest/windows10/x64/current:Z"
     environment:
-    - CONF_FILE_FULL_NAME=/app/application.properties
+    - CONF_FILE_FULL_NAME=/etc/nepa-dserver/application.properties
     - PROPERTY_KEY=l4twtestpw
-    command: ["-jar", "/app/nepa-dserver.war"]
+    command: ["-jar", "/var/lib/nepa-dserver/nepa-dserver.jar"]
 
     depends_on:
     - redis
-
