@@ -5,7 +5,7 @@
 
 <test name = "SAML">
    <classes>
-      <class name = "Tests.SAMLTest" />
+      <class name = "Tests.SWG.SAMLTest" />
    </classes>
 </test>
 

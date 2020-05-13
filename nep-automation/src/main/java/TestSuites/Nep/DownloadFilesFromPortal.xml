@@ -5,7 +5,7 @@
 
     <test name = "Download files from portal">
         <classes>
-            <class name = "Tests.NEP.DownloadFromPortal" />
+            <class name = "Tests.NEP.DownloadFromPortalTest" />
         </classes>
     </test>
 

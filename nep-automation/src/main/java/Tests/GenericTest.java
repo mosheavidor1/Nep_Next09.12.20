@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import Actions.WikiActions;
 import Applications.SeleniumBrowser;
+import Utils.Main.RunTest;
 import Utils.Capture.VideoCapture;
 import Utils.TestNG.InvokedMethodListener;
 import org.apache.commons.io.FileUtils;
@@ -41,7 +42,7 @@ public class GenericTest {
 		String[] arr = fullTestName.split("\\.");
 		String sheetName = arr[arr.length - 1];
 		String fileName = PropertiesFile.readProperty("Excel.fileLocation");
-		fileName = runtest.runAtDirectory + fileName;
+		fileName = RunTest.runAtDirectory + fileName;
 		boolean excelFileStatus = Excel.setExcelFileAndSheet(fileName, sheetName);
 		Object[] getTestData = null;
 		if (excelFileStatus)
@@ -74,8 +75,6 @@ public class GenericTest {
 		video.stopRecording();
 
 		if (SeleniumBrowser.InstanceExist()) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss");
-			Date date = new Date();
 
 			File scrFile = ((TakesScreenshot) SeleniumBrowser.GetDriver()).getScreenshotAs(OutputType.FILE);
 

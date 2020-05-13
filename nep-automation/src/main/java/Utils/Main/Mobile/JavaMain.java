@@ -1,4 +1,4 @@
-package Utils.JavaMain;
+package Utils.Main.Mobile;
 
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;

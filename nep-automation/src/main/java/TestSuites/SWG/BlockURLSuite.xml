@@ -5,7 +5,7 @@
 
 <test name = "BlockURL1">
    <classes>
-      <class name = "Tests.BlockURLTest" />
+      <class name = "Tests.SWG.BlockURLTest" />
    </classes>
 </test>
 

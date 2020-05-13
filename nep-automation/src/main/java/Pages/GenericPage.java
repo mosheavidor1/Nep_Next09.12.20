@@ -30,7 +30,15 @@ public class GenericPage {
         wait.until(ExpectedConditions.elementToBeClickable(byElement));
 
     }
-    
+
+    public void WaitUntilObjectClickable(By byElement, int timeOutInSeconds)
+    {
+        WebDriverWait wait = new WebDriverWait(driver,  timeOutInSeconds);
+        wait.until(ExpectedConditions.elementToBeClickable(byElement));
+
+    }
+
+
     public void WaitUntilObjectDisappear(By byElement) {
 		List<WebElement>list1=	this.driver.findElements(byElement);
 		if(list1.size()>0) {
@@ -52,7 +60,7 @@ public class GenericPage {
 
     public void WaitUntilPageLoad()
     {
-        WebDriverWait wait = new WebDriverWait(driver, 60);
+        WebDriverWait wait = new WebDriverWait(driver, 120);
 
         JavascriptExecutor js = (JavascriptExecutor)driver;
         
@@ -62,7 +70,7 @@ public class GenericPage {
     public void WaitUntilTitleAppearAndPageLoad(String title)
     {
 
-        WebDriverWait wait = new WebDriverWait(driver, 60);
+        WebDriverWait wait = new WebDriverWait(driver, 120);
         wait.until(ExpectedConditions.titleContains(title));
 
         WaitUntilPageLoad();

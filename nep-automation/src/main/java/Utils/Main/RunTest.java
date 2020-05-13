@@ -1,4 +1,4 @@
-package Tests;
+package Utils.Main;
 
 import java.io.File;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.testng.TestNG;
 import org.testng.collections.Lists;
 
 
-public class runtest {
+public class RunTest {
 	public static final String suitesFolder = "src/main/java/TestSuites/";
 	public static String runAtDirectory ="";
 
@@ -19,7 +19,7 @@ public class runtest {
 		String clusterToTest="";
 		
 		//if Running from jar file get the jar file path
-		String jarDir = new File(runtest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+		String jarDir = new File(RunTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 		if(jarDir.contains(".jar")) {
 			int end = jarDir.lastIndexOf("\\");
 			runAtDirectory = jarDir.substring(0,end+1);

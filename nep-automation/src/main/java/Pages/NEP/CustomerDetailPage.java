@@ -8,7 +8,7 @@ import org.openqa.selenium.support.How;
 
 public class CustomerDetailPage extends GenericPage {
 
-    public static final By spinnerBy =By.xpath("//*/span/twa-spinner");
+    public static final By spinnerBy =By.xpath("//span/twa-spinner");
 
     private static final String editServicesXpath = "//span[contains(text(),'edit services')]";
     public static final By editServicesLinkBy = By.xpath(editServicesXpath);

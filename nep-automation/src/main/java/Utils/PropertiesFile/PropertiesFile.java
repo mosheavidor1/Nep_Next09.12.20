@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Properties;
 
-import Tests.runtest;
+import Utils.Main.RunTest;
 
 public  class PropertiesFile {
 	//reads test properties from config.properties file
@@ -13,12 +13,12 @@ public  class PropertiesFile {
 	    private static Properties properties;
 	    private static InputStream inputStream = null;
 	    private static PropertiesFile file=null;
-	    private static String filePath = "src/main/java/Utils/PropertiesFile/config.properties";
+	    private static String filePath = "src/main/java/utils/PropertiesFile/config.properties";
 	    public static final String [] environmentsNamesArray = {"qa","inc","stg"};
 	    
 
 	    private PropertiesFile() throws IOException {
-	    	filePath = runtest.runAtDirectory +filePath;
+	    	filePath = RunTest.runAtDirectory +filePath;
 	        properties = new Properties();
 	        loadProperties();
 	    }

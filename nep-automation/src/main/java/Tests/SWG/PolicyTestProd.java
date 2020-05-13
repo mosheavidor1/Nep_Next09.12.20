@@ -1,6 +1,7 @@
-package Tests;
+package Tests.SWG;
 
 import Actions.CloudActions;
+import Tests.GenericTest;
 import Utils.PropertiesFile.PropertiesFile;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;

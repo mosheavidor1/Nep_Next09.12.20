@@ -1,12 +1,11 @@
-package Tests;
+package Tests.SWG;
 
 import Actions.CloudActions;
+import Tests.GenericTest;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.*;
 
-import java.io.IOException;
-
-public class SAMLTest extends GenericTest{
+public class SAMLTest extends GenericTest {
 
 	private CloudActions action;
 

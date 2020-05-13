@@ -5,7 +5,7 @@
 
    <test name = "PolicyTest1">
       <classes>
-         <class name = "Tests.PolicyTest" />
+         <class name = "Tests.SWG.PolicyTest" />
       </classes>
    </test>
 

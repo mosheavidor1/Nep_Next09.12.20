@@ -1,6 +1,7 @@
-package Tests;
+package Tests.SWG;
 
 import Actions.CloudActions;
+import Tests.GenericTest;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -10,7 +11,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 
-public class BlockEicarEnterprise extends GenericTest{
+public class BlockEicarEnterprise extends GenericTest {
 
     private CloudActions action;
 

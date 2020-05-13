@@ -7,7 +7,7 @@
 7.	Add to system path %JAVA_HOME%\bin and ANDROID_HOME%
 8.	Install Appium Desktop on the Machine
 9.	From Appium Desktop Create Host 127.0.0.1 Port 4723 and start server
-10.	From command line execute java -cp MobileTest.jar Utils.JavaMain.JavaMain
+10.	From command line execute java -cp MobileTest.jar Utils.Main.Mobile.JavaMain
 
 Note: 
 1. Apk file current location is at: /Apps/app-debug.apk

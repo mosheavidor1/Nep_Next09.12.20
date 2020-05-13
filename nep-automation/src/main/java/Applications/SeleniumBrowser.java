@@ -19,7 +19,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 
 public class SeleniumBrowser implements Application {
 
-	public static final int implicitWait = 30;
+	public static final int implicitWait = 120;
 	private static SeleniumBrowser browser = null;
 	private static WebDriver driver = null;
 	
@@ -142,13 +142,19 @@ public class SeleniumBrowser implements Application {
                 break;
 
         }
-        
 
-        driver.manage().timeouts().implicitlyWait(implicitWait, TimeUnit.SECONDS);
+
+		driver.manage().timeouts().implicitlyWait(implicitWait, TimeUnit.SECONDS);
         driver.manage().window().maximize();
 
 	}
 
+	public static void ChangeImplicitWait(int seconds){
+		if (seconds ==0)
+			seconds=implicitWait;
+		driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
+
+	}
 
 	public static boolean InstanceExist ()	{
 		if (driver != null)

@@ -3,21 +3,21 @@ package Tests.NEP;
 import Actions.NepActions;
 import Tests.GenericTest;
 import Utils.PropertiesFile.PropertiesFile;
-import org.testng.annotations.Factory;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
-public class DownloadFromPortal extends GenericTest {
+public class DownloadFromPortalTest extends GenericTest {
     private NepActions action;
 
     @Factory(dataProvider = "getData")
-    public DownloadFromPortal(Object dataToSet) {
+    public DownloadFromPortalTest(Object dataToSet) {
         super(dataToSet);
         action = new NepActions();
 
     }
 
-    @Test(alwaysRun = true)
+    @Test(groups = { "download" } )
     public void DownloadTest () throws Exception {
+
         action.CreateAndCleanDownloadFolder();
 
         action.LaunchApplication(data.get("Browser"));
@@ -30,16 +30,14 @@ public class DownloadFromPortal extends GenericTest {
         action.DeleteAllDownloads();
 
 
-        action.GotoPortalManagmentPage(PropertiesFile.getCurrentClusterLink());
-
-        action.SetCustomerMTD(data.get("Customer"));
-
+        action.GotoCentComSearch(PropertiesFile.getCurrentClusterLink());
+        action.PublishNewDownloads(data.get("Customer"),Integer.parseInt(data.get("Wait for publish to be completed")));
 
 
         action.GotoPortalFileCabinetPage(PropertiesFile.getCurrentClusterLink());
         action.SelectCustomer(data.get("Customer"));
 
-        action.DownloadFilesFromTrustWaveEndPointFolder(data.get("Wait files ready to download timeout"));
+        action.DownloadFilesFromTrustWaveEndPointFolder(data.get("Wait files ready to download timeout"),data.get("Wait because File is still being processed (virus scanned and stored)"));
 
         action.VerifyFilesExist(Integer.parseInt(data.get("Wait files to be downloaded timeout in seconds")));
 
@@ -48,7 +46,12 @@ public class DownloadFromPortal extends GenericTest {
 
     }
 
+    @AfterMethod
+    public void Close() throws Exception {
+        afterMethod();
+        action.CloseApplication();
 
+    }
 
 
 

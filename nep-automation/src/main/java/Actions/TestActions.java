@@ -3,8 +3,9 @@ package Actions;
 import Applications.Application;
 import Applications.SeleniumBrowser;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public abstract class TestActions {
 	
@@ -56,6 +57,24 @@ public abstract class TestActions {
         java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
+
+
+    public static void WriteToWindowsEventLog () throws InterruptedException, IOException {
+
+            Process process = Runtime.getRuntime().exec("EventCreate /t INFORMATION /id 123 /l APPLICATION /so Java /d \"Rosetta Code Example\"");
+            process.waitFor(10, TimeUnit.SECONDS);
+            int exitValue = process.exitValue();
+            System.out.printf("Process exited with value %d\n", exitValue);
+            if (exitValue != 0) {
+                InputStream errorStream = process.getErrorStream();
+                String result = new BufferedReader(new InputStreamReader(errorStream))
+                        .lines()
+                        .collect(Collectors.joining("\n"));
+                System.err.println(result);
+            }
+
+    }
+
 
 
 }
