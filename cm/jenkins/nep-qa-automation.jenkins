@@ -37,7 +37,7 @@ node('nep-build-centos7') {
 			sh """
 				cd "${MODULE_SRC_PATH}"
 				
-				mvn versions:set-property -Dproperty=module.version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
+				mvn -s "${NEXUS_SETTINGS_PATH}" versions:set-property -Dproperty=module.version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
 				mvn -s "${NEXUS_SETTINGS_PATH}" -DskipTests clean install deploy
 				
 				ls "target/${MODULE_NAME}-${NEXUS_ARTIFACT_VERSION}.jar" || exit 1
