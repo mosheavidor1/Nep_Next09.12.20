@@ -9,19 +9,17 @@ EMAIL_LIST="mzaytsev@trustwave.com"
 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 
 MODULE_NAME = "nep-qa-automation"
+MODULE_SRC_PATH = "${WORKSPACE}/${MODULE_NAME}"
 MODULE_VERSION = "${env.NEP_BRANCH == "next" ? "${MODULE_VERSION_NEXT}.${BUILD_NUMBER}"  :  "${MODULE_VERSION_MASTER}.${BUILD_NUMBER}"}"
 VERSION_QUALIFIER = "-SNAPSHOT"
 
 NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}"
 NEXUS_ARTIFACT_VERSION = "${MODULE_VERSION}"
-NEXUS_SETTINGS_PATH = "${env.WORKSPACE}/cm/configs/nexus-settings.xml"
+NEXUS_SETTINGS_PATH = "${WORKSPACE}/cm/configs/nexus-settings.xml"
 MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nepa-qa/${MODULE_NAME}"
 	
 node('nep-build-centos7') {
 
-	MODULE_SRC_LNX = "${env.WORKSPACE}/${MODULE_NAME}"
-	NEXUS_SETTING_FILE_PATH_LNX ="${env.WORKSPACE}/cm/nexus-upload/nexus-settings.xml"
-	
 	try {	
 		stage('Get sources from BitBucket') {			
 			sh ('set')
@@ -36,7 +34,7 @@ node('nep-build-centos7') {
 			echo "Running: ${MODULE_NAME} Build:${NEXUS_ARTIFACT_VERSION} on ${env.JENKINS_URL}"
 
 			sh """
-				cd "${MODULE_SRC_LNX}"
+				cd "${MODULE_SRC_PATH}"
 				
 				mvn versions:set-property -Dproperty=module.version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
 				mvn -s "${NEXUS_SETTINGS_PATH}" -DskipTests clean install deploy
