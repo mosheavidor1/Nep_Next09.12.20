@@ -14,6 +14,7 @@ VERSION_QUALIFIER = "-SNAPSHOT"
 
 NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}"
 NEXUS_ARTIFACT_VERSION = "${MODULE_VERSION}"
+NEXUS_SETTINGS_PATH = "${env.WORKSPACE}/cm/configs/nexus-settings.xml"
 MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nepa-qa/${MODULE_NAME}"
 	
 node('nep-build-centos7') {
@@ -38,7 +39,7 @@ node('nep-build-centos7') {
 				cd "${MODULE_SRC_LNX}"
 				
 				mvn versions:set-property -Dproperty=module.version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
-				mvn -DskipTests clean install deploy
+				mvn -s "${NEXUS_SETTINGS_PATH}" -DskipTests clean install deploy
 				
 				ls "target/${MODULE_NAME}-${NEXUS_ARTIFACT_VERSION}.jar" || exit 1
 
