@@ -22,7 +22,7 @@
                <archive>
                   <manifest>
                      <addClasspath>true</addClasspath>
-                     <mainClass>Tests.runtest</mainClass>
+                     <mainClass>Utils.Main.RunTest</mainClass>
                   </manifest>
                </archive>
             </configuration>
@@ -52,29 +52,25 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
    <dependencies>
-      <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-core</artifactId>
-         <version>2.12.1</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.testng/testng -->
-      <dependency>
-         <groupId>org.testng</groupId>
-         <artifactId>testng</artifactId>
-         <version>7.0.0</version>
-         <scope>compile</scope>
-      </dependency>
       <!-- https://mvnrepository.com/artifact/io.appium/java-client  -->
       <dependency>
          <groupId>io.appium</groupId>
          <artifactId>java-client</artifactId>
          <version>7.3.0</version>
       </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+      <dependency>
+         <groupId>org.testng</groupId>
+         <artifactId>testng</artifactId>
+         <version>7.1.0</version>
+         <scope>compile</scope>
+      </dependency>
       <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
       <dependency>
          <groupId>org.apache.poi</groupId>
          <artifactId>poi-ooxml</artifactId>
-         <version>4.1.1</version>
+         <version>4.1.2</version>
       </dependency>
       <!-- https://mvnrepository.com/artifact/com.github.stephenc.monte/monte-screen-recorder -->
       <dependency>
@@ -82,5 +78,13 @@
          <artifactId>monte-screen-recorder</artifactId>
          <version>0.7.7.0</version>
       </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-core</artifactId>
+         <version>2.13.2</version>
+      </dependency>
+
    </dependencies>
 </project>
