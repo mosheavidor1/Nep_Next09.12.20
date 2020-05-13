@@ -8,7 +8,7 @@ EMAIL_LIST="mzaytsev@trustwave.com"
 
 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 
-MODULE_NAME = "nep-automation"
+MODULE_NAME = "nep-qa-automation"
 MODULE_VERSION = "${env.NEP_BRANCH == "next" ? "${MODULE_VERSION_NEXT}.${BUILD_NUMBER}"  :  "${MODULE_VERSION_MASTER}.${BUILD_NUMBER}"}"
 VERSION_QUALIFIER = "-SNAPSHOT"
 
