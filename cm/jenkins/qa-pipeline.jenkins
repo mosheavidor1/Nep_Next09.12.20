@@ -9,11 +9,11 @@ EMAIL_LIST="mzaytsev@trustwave.com"
 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 
 MODULE_NAME = "nep-automation"
-MODULE_VERSION = "${env.MODULE_VERSION}"
+MODULE_VERSION = "${env.NEP_BRANCH == "next" ? "${MODULE_VERSION_NEXT}.${BUILD_NUMBER}"  :  "${MODULE_VERSION_MASTER}.${BUILD_NUMBER}"}"
 VERSION_QUALIFIER = "-SNAPSHOT"
 
 NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}"
-NEXUS_ARTIFACT_VERSION = "${env.NEP_BRANCH == "next" ? "${MODULE_VERSION}.${BUILD_NUMBER}-${env.NEP_BRANCH}"  :  "${MODULE_VERSION}.${BUILD_NUMBER}"}"
+NEXUS_ARTIFACT_VERSION = "${MODULE_VERSION}"
 
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 PROPERTIES_FILE_PATH_TMP="/var/jenkins_home/workspace/saved-params-next"
@@ -39,10 +39,11 @@ node('nep-build-centos7') {
 			sh """
 				cd "${MODULE_SRC_LNX}"
 				
-				mvn versions:set-property -Dproperty=is_version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
-				mvn -DskipTests clean install
+				mvn versions:set-property -Dproperty=module.version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
+				mvn -DskipTests clean install deploy
 				
-				ls "target/${MODULE_NAME}-${NEXUS_ARTIFACT_VERSION}" || exit 1
+				ls "target/${MODULE_NAME}-${NEXUS_ARTIFACT_VERSION}.jar" || exit 1
+
 
 			"""
 

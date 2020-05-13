@@ -2,8 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>trustwave</groupId>
     <artifactId>Automation</artifactId>
-    <version>0.1</version>
+    <version>${module.version}</version>
     <properties>
+    	<module.version>0.0.0</module.version>
+		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -12,7 +14,11 @@
 
     <build>
         <plugins>
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${versions-maven-plugin.version}</version>
+            </plugin>
             <plugin>
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -47,8 +53,6 @@
         </plugins>
     </build>
     <dependencies>
-
-
         <!-- https://mvnrepository.com/artifact/io.appium/java-client  -->
         <dependency>
             <groupId>io.appium</groupId>
@@ -83,9 +87,43 @@
             <artifactId>monte-screen-recorder</artifactId>
             <version>0.7.7.0</version>
         </dependency>
-
-
     </dependencies>
-
+	<repositories>
+		<repository>
+			<id>releases</id>
+			<url>http://nexus01.trustwave.com/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<url>http://nexus01.trustwave.com/content/groups/public-snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+   <distributionManagement>
+      <repository>
+         <id>maven-releases</id>
+         <name>tw repo</name>
+         <url>http://nexus01.trustwave.com/content/repositories/releases/</url>
+      </repository>
+      <snapshotRepository>
+         <id>maven-snapshots</id>
+         <url>http://nexus01.trustwave.com/content/repositories/snapshots/</url>
+      </snapshotRepository>
+   </distributionManagement>
 
 </project>
