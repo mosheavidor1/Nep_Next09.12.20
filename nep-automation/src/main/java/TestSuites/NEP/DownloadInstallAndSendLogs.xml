@@ -1,0 +1,25 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Download and install" configfailurepolicy="skip">
+
+    <test name = "Download installer, install End Point and verify logs are sent" >
+
+        <groups>
+            <dependencies>
+                <group  name= "install" depends-on="download" ></group>
+                <group  name= "verify" depends-on="install" ></group>
+                <group name= "logs" depends-on= "verify" ></group>
+            </dependencies>
+        </groups>
+
+        <classes>
+            <class name = "Tests.NEP.DownloadFromPortalTest" />
+            <class name = "Tests.NEP.InstallEndPointTest" />
+            <class name = "Tests.NEP.VerifyEndPointOkAtPortalTest" />
+            <class name = "Tests.NEP.ClientLogToPortalTest" />
+        </classes>
+    </test>
+
+
+</suite>
