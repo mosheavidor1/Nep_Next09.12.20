@@ -21,7 +21,7 @@ public class UpperMenu extends GenericPage{
 
 
 	//private static final String customerSelectorXpath = "//*[@id=\"stg-support\"]/div/div[1]/twa-org-selector/div/div[3]/div[1]/span";
-	private static final String customerSelectorXpath = "//twa-portal-stage/div/div/twa-org-selector/div/div[3]/div[1]";
+	private static final String customerSelectorXpath = "//twa-portal-stage[not(@hidden)]//twa-org-selector/div/div[3]/div[1]";
 	public static final By customerSelectorBy = By.xpath(customerSelectorXpath);
 	@FindBy(how= How.XPATH,using=customerSelectorXpath)
 	public WebElement customerSelector_element;
@@ -37,8 +37,10 @@ public class UpperMenu extends GenericPage{
 	@FindBy(how = How.CSS, using = customerNameCSS)
 	public WebElement customerName;
 
+	public static final By spinnerBy =By.xpath("//span/twa-spinner");
 
-		 public UpperMenu () {
+
+	public UpperMenu () {
 			 Managment = new Button(Managment_element);
 			 pendingChanes = new Button(pendingChanes_element);
 		 }

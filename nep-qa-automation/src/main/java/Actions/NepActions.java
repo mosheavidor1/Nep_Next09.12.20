@@ -191,9 +191,15 @@ public class NepActions extends CloudActions{
 
 
 
-    public void SelectCustomer(String customerName){
+    public void SelectCustomer(String customerName) throws InterruptedException {
 
         UpperMenu up = new UpperMenu();
+
+        up.WaitUntilObjectDisappear(up.spinnerBy);
+        up.WaitUntilPageLoad();
+        up.WaitUntilObjectDisappear(up.spinnerBy);
+        up.WaitUntilPageLoad();
+
         up.WaitUntilObjectClickable(up.customerSelectorBy);
         up.customerSelector_element.click();
 
