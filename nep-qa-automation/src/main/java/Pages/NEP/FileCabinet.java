@@ -66,7 +66,7 @@ public class FileCabinet extends GenericPage {
     @FindBy(how= How.XPATH,using=removeButtonConfirmXpath)
     public WebElement removeButtonConfirm_element;
 
-    private static final String refreshButtonXpath = "//*/div/twa-file-cabinet-files/twa-page/div/div[2]/div[2]/twa-datalist/twa-action-bar/div/div[2]/twa-button/material-button";
+    private static final String refreshButtonXpath = "//twa-file-cabinet-view//twa-datalist//twa-button[@icon='tw-refresh']//material-button";
     public static final By refreshButtonBy = By.xpath(refreshButtonXpath);
     @FindBy(how= How.XPATH,using=refreshButtonXpath)
     public WebElement refreshButton_element;
