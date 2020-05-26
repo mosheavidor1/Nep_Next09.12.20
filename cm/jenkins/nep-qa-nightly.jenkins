@@ -12,10 +12,11 @@ node('nep-qa-nightly-25.187') {
 
 	try {
 
+/*
 		stage('Update BUILD_NUMBER') {
 			currentBuild.displayName = DISPLAY_VERSION
 		}
-		
+*/		
 		stage ('Clean Workspace') {
 			deleteDir()
 		}
