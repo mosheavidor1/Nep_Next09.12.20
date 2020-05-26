@@ -10,7 +10,7 @@ import org.testng.collections.Lists;
 
 
 public class RunTest {
-	public static final String suitesFolder = "src/main/java/TestSuites/";
+	public static final String suitesFolder = "nep-qa-automation/src/main/java/TestSuites/NEP/";
 	public static String runAtDirectory ="";
 
 	public static void main(String[] args) throws Exception {
@@ -29,7 +29,7 @@ public class RunTest {
 		if (args.length > 0)
 			currentSuite = args[0];
 		else
-			currentSuite = "BlockURLSuite.xml";
+			currentSuite = "DownloadInstallAndSendLogs.xml";
 
 		//get cluster to test name
 		if (args.length > 1){
