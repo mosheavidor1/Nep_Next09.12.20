@@ -573,7 +573,7 @@ public class NepActions extends CloudActions{
 
 
     public void WriteEvent (LogEntry entry) throws IOException {
-        //Example "EventCreate /t INFORMATION /id 1234 /l APPLICATION /so AutomationTest /d \"Hello!! this is the test info\""
+        //Example "EventCreate /t INFORMATION /id 123 /l APPLICATION /so AutomationTest /d \"Hello!! this is the test info\""
         if (entry.addedTimeToDescription)
             entry.AddTimeToDescription(java.time.LocalDateTime.now().toString());
         entry.eventDescription = "\"" + entry.eventDescription + "\"";
