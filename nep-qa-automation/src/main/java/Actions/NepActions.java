@@ -21,7 +21,7 @@ import java.util.Arrays;
 public class NepActions extends CloudActions{
     private static final String PortalManagmentURL = "/#/operations?menuKey=cua-search&stackKey=search-home";
     private static final String FileCabinetURL = "/#/support?menuKey=file-cabinet&stackKey=file-cabinet-files";
-    private static final String centComSearchURL = "/#/operations?menuKey=centcom-devices&stackKey=entity-search";
+    private static final String centComSearchURL = "/#/operations?menuKey=centcom-devices&stackKey=entity-search&types=EntityType.AGENT";
     private static final String eventExplorerURL = "/#/dataexplorer?menuKey=log-management-search&stackKey=log-event-search";
 
 
