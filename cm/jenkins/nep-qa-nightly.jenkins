@@ -6,7 +6,6 @@ DISPLAY_VERSION = "${env.NEP_BRANCH == "next" ? "${BUILD_NUMBER}-${env.NEP_BRANC
 	
 node('nep-qa-nightly-25.187') {
 
-	MODULE_SRC_WND="${WORKSPACE}\\nep-qa-automation"
 	MODULE_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
 	MODULE_ARTIFACT_DST="${WORKSPACE}\\nep-qa-automation.jar"
 
@@ -52,7 +51,7 @@ node('nep-qa-nightly-25.187') {
 		stage('Send Email and Backup results') {
 			sendEmail("Success")
 			
-			bat("xcopy ${MODULE_SRC_WND}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K")
+			bat("xcopy ${WORKSPACE}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K")
 		}
 	}
 	catch (err) {
