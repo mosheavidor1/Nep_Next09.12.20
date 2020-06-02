@@ -5,6 +5,7 @@ import Pages.Portal.UpperMenu;
 import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+import Utils.TestFiles;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -14,8 +15,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 public class NepActions extends CloudActions{
@@ -29,6 +32,9 @@ public class NepActions extends CloudActions{
     private static final String clientKeyPem = "\\client_key.pem";
     private static final String clientPem = "\\client.pem";
     private static final String windowsInstallationFile = "TrustwaveEndpoint.exe";
+    private static final String archiveFolderName = "archive";
+    private static final String uninstallFolderName = "uninstall";
+
 
     private static final String dbJsonPath = "C:\\ProgramData\\Trustwave\\NEPAgent\\db.json";
     private static final String configJsonPath = "C:\\ProgramData\\Trustwave\\NEPAgent\\config.json";
@@ -99,7 +105,7 @@ public class NepActions extends CloudActions{
         }
 
         if(!found)
-            org.testng.Assert.fail("Relevant log entry do not appea after timeout: " + timeoutForLogEntryToAppearInSeconds+ " seconds. See screenshot or video links below.\nExpected stamp: " + entry.stampAdded );
+            org.testng.Assert.fail("Relevant log entry do not appear at portal after timeout: " + timeoutForLogEntryToAppearInSeconds+ " seconds. See screenshot or video links below.\nExpected stamp: " + entry.stampAdded );
 
         eventPage.openRowButton_element.click();
 
@@ -319,19 +325,26 @@ public class NepActions extends CloudActions{
 
 
     public void CreateAndCleanDownloadFolder() throws IOException {
-        File nepFolder = new File(PropertiesFile.readProperty("DownloadFolder"));
-        //Creating the directory
-        if (! nepFolder.exists() || ! nepFolder.isDirectory() ) {
-            boolean bool = nepFolder.mkdir();
-            if ( ! bool)
-                org.testng.Assert.fail("Could not create download directory: " + nepFolder );
+        String downloadLocation = PropertiesFile.readProperty("DownloadFolder");
+        String oldLocation = downloadLocation + "\\" + archiveFolderName;
+        String installerLocation = downloadLocation +  "\\" + windowsInstallationFile;
+        String uninstallFolder = downloadLocation + "\\" + uninstallFolderName;
+        String installerAtFolderUninstall = uninstallFolder + "\\" +windowsInstallationFile;
 
-        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-YY--HH-mm-ss");
 
-        try {
-            FileUtils.cleanDirectory(nepFolder);
-        } catch (Exception e) {
-            org.testng.Assert.fail("Could delete all old files from the following directory: " + nepFolder + "\n" + e.toString() );
+        String oldInstallerLocation = oldLocation +  "\\" + windowsInstallationFile.substring(0,windowsInstallationFile.indexOf("."))+java.time.LocalDateTime.now().format(formatter)+  windowsInstallationFile.substring(windowsInstallationFile.indexOf("."));
+
+        TestFiles.CreateFolder(downloadLocation);
+        TestFiles.CreateFolder(oldLocation);
+        TestFiles.CreateFolder(uninstallFolder);
+
+        if(TestFiles.Exists(installerLocation)) {
+            TestFiles.Copy(installerLocation, oldInstallerLocation);
+            if(! TestFiles.Exists(installerAtFolderUninstall))
+                TestFiles.Copy(installerLocation,installerAtFolderUninstall);
+
+            TestFiles.Delete(installerLocation);
         }
 
     }
@@ -339,7 +352,7 @@ public class NepActions extends CloudActions{
     public void VerifyFilesExist (int timeoutSeconds) throws IOException, InterruptedException {
         File nepFolder = new File(PropertiesFile.readProperty("DownloadFolder"));
         //String [] expected = {"client.pem" , "client_key.pem" , "TrustwaveEndpoint.exe"};
-        String [] expected = {windowsInstallationFile};
+        String [] expected = {archiveFolderName,windowsInstallationFile,uninstallFolderName};
 
         boolean foundFiles =false;
         String [] filesArr = nepFolder.list();
@@ -418,8 +431,14 @@ public class NepActions extends CloudActions{
     public void UnInstallEndPoint(int timeout) throws IOException, InterruptedException {
 
 
-        String installerLocation = PropertiesFile.readProperty("DownloadFolder");
-        installerLocation += "\\" + windowsInstallationFile;
+        String downloadFolder = PropertiesFile.readProperty("DownloadFolder");
+        String installerLocation = downloadFolder + "\\" + uninstallFolderName + "\\" + windowsInstallationFile;
+        boolean toDeleteInstaller=true;
+
+        if(!TestFiles.Exists(installerLocation)) {
+            installerLocation = downloadFolder + "\\" + windowsInstallationFile;
+            toDeleteInstaller=false;
+        }
         String command =  installerLocation + " /q /uninstall" ;
 
         //wmic is not working because EP bootstrap has missing data
@@ -444,11 +463,11 @@ public class NepActions extends CloudActions{
 
 
         final String installationFolder = "C:\\Program Files\\Trustwave\\NEPAgent";
-        File file = new File(installationFolder);
+        File installationFolderFile = new File(installationFolder);
         found = true;
 
         while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            if (!file.exists()) {
+            if (!installationFolderFile.exists()) {
                 found=false;
                 break;
             }
@@ -478,6 +497,9 @@ public class NepActions extends CloudActions{
 
         if(found)
             org.testng.Assert.fail("Uninstall failed. Trustwave installation process is still active after timeout (sec): " +  Integer.toString(timeout) + "   Installation process: " + windowsInstallationFile);
+
+        if(toDeleteInstaller)
+            TestFiles.Delete(installerLocation);
 
     }
 
