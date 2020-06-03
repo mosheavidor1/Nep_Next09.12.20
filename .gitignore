@@ -50,3 +50,4 @@ target/
 /UpgradeLog2.htm
 /nepscp/out/production/nepscp/META-INF/MANIFEST.MF
 /nepscp/out/artifacts/nepscp_jar/nepscp.jar
+*.jar
