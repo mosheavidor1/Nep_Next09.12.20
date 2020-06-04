@@ -1,24 +1,41 @@
 package Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import org.apache.commons.io.FileUtils;
 
 public class TestFiles {
 
 
 
-        public static void Delete(String path) {
+        public static void DeleteFile(String path) {
         try {
             File file = new File(path);
             if (file.exists()){
                 boolean result = file.delete();
                 if(result == false || file.exists())
-                    org.testng.Assert.fail("Could delete file:" + path);
+                    org.testng.Assert.fail("Could delete file: " + path);
             }
 
         }
         catch (Exception e){
-            org.testng.Assert.fail("Could delete file:" + path + "\n" + e.toString());
+            org.testng.Assert.fail("Could delete file: " + path + "\n" + e.toString());
+        }
+
+    }
+
+    public static void DeleteDirectory(String path){
+        try {
+            File dir = new File(path);
+            FileUtils.forceDelete(dir);
+            if(dir.exists())
+                org.testng.Assert.fail("Could delete directory: " + path);
+
+        }
+
+        catch (IOException e) {
+            org.testng.Assert.fail("Could delete directory: " + path + "\n" + e.toString());
         }
 
     }
@@ -34,7 +51,7 @@ public class TestFiles {
             }
         }
         catch (Exception e){
-            org.testng.Assert.fail("Could not create directory:" + folder + "\n" + e.toString());
+            org.testng.Assert.fail("Could not create directory: " + folder + "\n" + e.toString());
         }
 
     }

@@ -164,6 +164,63 @@ public class NepActions extends CloudActions{
 
     }
 
+
+    public void ChangeConfigurationAndPublish(String customerName, int waitForPublishInSec) throws IOException, InterruptedException {
+
+
+
+        SelectCustomerAtConfigurationPage(customerName);
+
+        CentComSearchPage centSearch = new CentComSearchPage();
+        centSearch.openConfigurationButton_element.click();
+
+        //Put here code for changing configuration
+
+        PublishConfiguration(waitForPublishInSec);
+
+    }
+
+    public void SelectCustomerAtConfigurationPage(String customerName){
+        CentComSearchPage centSearch = new CentComSearchPage();
+        centSearch.customersText_element.sendKeys(customerName);
+        centSearch.searchButton_element.click();
+
+        centSearch.GetCustomerRow(customerName).click();
+
+    }
+
+
+    public void PublishConfiguration(int waitForPublishInSec) throws InterruptedException  {
+
+        CentComConfigurationPage conf = new CentComConfigurationPage();
+        conf.WaitUntilObjectDisappear(conf.spinnerBy);
+        conf.WaitUntilObjectClickable(conf.publishBy);
+        conf.publishButton_element.click();
+        conf.continueButton_element.click();
+
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime current = start;
+        Duration durationTimeout = Duration.ofSeconds(waitForPublishInSec);
+        boolean found =false;
+
+        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
+            Thread.sleep(5000);
+            current = LocalDateTime.now();
+            conf.refreshButton_element.click();
+            if( conf.IsElementExist(conf.percent100By) ){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found)
+            org.testng.Assert.fail("Publish configuration not completed successfully. Could not find publish completed \"100%\" indication after timeout of: " + waitForPublishInSec + "(sec) See screenshot/video links below");
+
+
+    }
+
+
+
     public void CheckEndPointOkInCentCom(String customerName) throws IOException, InterruptedException {
         CentComSearchPage centSearch = new CentComSearchPage();
         centSearch.customersText_element.sendKeys(customerName);
@@ -344,7 +401,7 @@ public class NepActions extends CloudActions{
             if(! TestFiles.Exists(installerAtFolderUninstall))
                 TestFiles.Copy(installerLocation,installerAtFolderUninstall);
 
-            TestFiles.Delete(installerLocation);
+            TestFiles.DeleteFile(installerLocation);
         }
 
     }
@@ -477,9 +534,12 @@ public class NepActions extends CloudActions{
 
         }
 
-        if(found)
-            org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint installation folder not deleted  after timeout(sec): " + Integer.toString(timeout) + "   Installation folder: " + installationFolder);
+        if(found) {
+            TestFiles.DeleteDirectory(installationFolder);
+            durationTimeout = durationTimeout.plusMinutes(1);
+        }
 
+        //org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint installation folder not deleted  after timeout(sec): " + Integer.toString(timeout) + "   Installation folder: " + installationFolder);
 
         found = true;
         while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
@@ -499,7 +559,7 @@ public class NepActions extends CloudActions{
             org.testng.Assert.fail("Uninstall failed. Trustwave installation process is still active after timeout (sec): " +  Integer.toString(timeout) + "   Installation process: " + windowsInstallationFile);
 
         if(toDeleteInstaller)
-            TestFiles.Delete(installerLocation);
+            TestFiles.DeleteFile(installerLocation);
 
     }
 
