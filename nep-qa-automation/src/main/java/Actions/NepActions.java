@@ -628,7 +628,7 @@ public class NepActions extends CloudActions{
 
         if( ! text.contains(configJsonReportInterval)) {
             StartEPService(ServiceStartStopTimeout);
-            org.testng.Assert.fail("Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonReportInterval);
+            org.testng.Assert.fail("Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonPath);
         }
 
         int start= text.indexOf(configJsonReportInterval)+ configJsonReportInterval.length();
