@@ -107,7 +107,7 @@ public class NepActions extends CloudActions{
             eventPage.searchBox_element.clear();
 
             eventPage.refreshButton_element.click();
-            eventPage.searchBox_element.sendKeys(entry.stampAdded+"122");
+            eventPage.searchBox_element.sendKeys(entry.stampAdded+"\n");
 
             Thread.sleep(checkInterval);
             current = LocalDateTime.now();

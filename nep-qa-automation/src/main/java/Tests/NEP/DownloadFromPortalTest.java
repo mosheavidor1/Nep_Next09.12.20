@@ -31,7 +31,7 @@ public class DownloadFromPortalTest extends GenericTest {
         action.DeleteAllDownloads();
 
 
-        action.GotoCentComSearch(PropertiesFile.NepGetCurrentClusterLink());
+        action.GotoCentComSearch(general.get("Fusion Password"));
         action.PublishNewDownloads(data.get("Customer"),Integer.parseInt(data.get("Wait for publish to be completed")));
 
 
