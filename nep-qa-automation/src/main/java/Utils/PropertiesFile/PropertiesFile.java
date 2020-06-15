@@ -14,7 +14,7 @@ public  class PropertiesFile {
 	    private static InputStream inputStream = null;
 	    private static PropertiesFile file=null;
 	    private static String filePath = "nep-qa-automation/src/main/java/utils/PropertiesFile/config.properties";
-	    public static final String [] environmentsNamesArray = {"qa","inc","stg"};
+	    public static final String [] environmentsNamesArray = {"qa","inc","stg","ams","apj","emea"};
 	    
 
 	    private PropertiesFile() throws IOException {
