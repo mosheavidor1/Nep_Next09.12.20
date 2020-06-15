@@ -19,12 +19,12 @@ public class VerifyEndPointOkAtPortalTest extends GenericTest {
     public void VerifyEndPointStatusAtPortalTest () throws Exception {
 
 
-        action.LaunchApplication(data.get("Browser"));
-        action.SetApplicationUrl(PropertiesFile.getCurrentClusterLink());
+        action.LaunchApplication(general.get("Browser"));
+        action.SetApplicationUrl(general.get("Fusion Link"));
 
-        action.Login(PropertiesFile.getUserName(), PropertiesFile.getPassword());
+        action.Login(general.get("Fusion User Name"), general.get("Fusion Password"));
 
-        action.GotoCentComSearch(PropertiesFile.getCurrentClusterLink());
+        action.GotoCentComSearch(general.get("Fusion Link"));
         action.CheckEndPointOkInCentCom(data.get("Customer"));
 
     }

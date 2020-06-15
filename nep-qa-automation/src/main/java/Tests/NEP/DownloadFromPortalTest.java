@@ -20,21 +20,22 @@ public class DownloadFromPortalTest extends GenericTest {
 
         action.CreateAndCleanDownloadFolder();
 
-        action.LaunchApplication(data.get("Browser"));
-        action.SetApplicationUrl(PropertiesFile.getCurrentClusterLink());
+        action.LaunchApplication(general.get("Browser"));
+        action.SetApplicationUrl(general.get("Fusion Link"));
 
-        action.Login(PropertiesFile.getUserName(), PropertiesFile.getPassword());
 
-        action.GotoPortalFileCabinetPage(PropertiesFile.getCurrentClusterLink());
+        action.Login(general.get("Fusion User Name"), general.get("Fusion Password"));
+
+        action.GotoPortalFileCabinetPage(general.get("Fusion Link"));
         action.SelectCustomer(data.get("Customer"));
         action.DeleteAllDownloads();
 
 
-        action.GotoCentComSearch(PropertiesFile.getCurrentClusterLink());
+        action.GotoCentComSearch(PropertiesFile.NepGetCurrentClusterLink());
         action.PublishNewDownloads(data.get("Customer"),Integer.parseInt(data.get("Wait for publish to be completed")));
 
 
-        action.GotoPortalFileCabinetPage(PropertiesFile.getCurrentClusterLink());
+        action.GotoPortalFileCabinetPage(general.get("Fusion Link"));
         action.SelectCustomer(data.get("Customer"));
 
         action.DownloadFilesFromTrustWaveEndPointFolder(data.get("Wait files ready to download timeout"),data.get("Wait because File is still being processed (virus scanned and stored)"));

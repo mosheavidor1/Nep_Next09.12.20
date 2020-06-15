@@ -12,54 +12,49 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Excel  {
 
-     private static String fileNameAndPath;
-     private static XSSFSheet ExcelWSheet;
-     private static XSSFWorkbook ExcelWBook;
-	public static final String parameterPerEnvironmentIdentifier = "Parameters Per Environment";
-	public static final String productionIdentifier = "Production";
+     private String fileNameAndPath;
+	 private XSSFSheet ExcelWSheet;
+     private XSSFWorkbook ExcelWBook;
+	 public static final String parameterPerEnvironmentIdentifier = "Parameters Per Environment";
+	 public static final String productionIdentifier = "Production";
+	 public static final String defaultIdentifier = "Default";
 
- 	 
- 	 public static boolean setExcelFileAndSheet(String PathAndName,String SheetName) throws Exception  {
+ 	 public boolean setExcelFileAndSheet(String PathAndName,String SheetName) throws Exception  {
    			// Open the Excel file
 			FileInputStream ExcelFile = new FileInputStream(PathAndName);
 			// Access the required test data sheet
 			ExcelWBook = new XSSFWorkbook(ExcelFile);
-			if (ExcelWBook != null)
+			if (ExcelWBook != null) {
 				ExcelWSheet = ExcelWBook.getSheet(SheetName);
+			}
 			
 			if (ExcelWSheet == null || ExcelWBook == null)
 				return false;
 			return true;
 
 	}
-	
-	public static void setExcelFileName(String nameAndPath)  {
-		fileNameAndPath = nameAndPath;
-}
-
-	public static void setExcelSheetName(String sheetName) throws Exception  {
-		setExcelFileAndSheet(fileNameAndPath,sheetName);
-}
-
     
-    private static int getRowsNumber() {
+    private int getRowsNumber() {
 		return ExcelWSheet.getLastRowNum() +1;
     }
     
 	//This method is to read the test data from the Excel cell, in this we are passing parameters as Row num and Col num
-    public static String [] getAllCellsOfRow(int RowNum) throws Exception{
+    public String [] getAllCellsOfRow(int RowNum) throws Exception{
 	  	
     	int numOfColumn = ExcelWSheet.getRow(RowNum).getLastCellNum();
     	String [] data = new String [numOfColumn];
 
 	  	for(int j=0; j<numOfColumn;j++) {
 	  		XSSFCell currentCell = ExcelWSheet.getRow(RowNum).getCell(j);
-	  		data[j] =currentCell.getStringCellValue();
+	  		if(currentCell != null)
+	  			data[j] =currentCell.getStringCellValue();
+	  		else
+	  			data[j] = "";
 	  		}
 	  	return data;
     }
 
-    public static Object [] getTestData() throws Exception {
+    public Object [] getTestData() throws Exception {
     	int numOfRows = getRowsNumber();
     	if (numOfRows < 2)
     		return null;
@@ -70,14 +65,27 @@ public class Excel  {
     		keysMap.put(columnsNames[i], "" );
     	}
 
-    	boolean isProduction = PropertiesFile.isProduction();
+		boolean isProduction = PropertiesFile.isProduction();
     	boolean isEnvironments = PropertiesFile.isEnvironments();
-    	for (int i=1; i<numOfRows; i++) {
+		String clusterToTest = PropertiesFile.readProperty("ClusterToTest");
+
+		String [] secondRowData = getAllCellsOfRow(1);
+		String [] defaultData = null;
+		int startDataRow=1;
+
+		if(secondRowData[0].compareToIgnoreCase(defaultIdentifier) ==0 ) {
+			defaultData = secondRowData;
+			startDataRow =2;
+		}
+		boolean parametersArePerEnvironment=false;
+		if (columnsNames[0].trim().equalsIgnoreCase(parameterPerEnvironmentIdentifier))
+			parametersArePerEnvironment=true;
+
+		for (int i=startDataRow; i<numOfRows; i++) {
     		HashMap<String, String> currentMap = new HashMap<String,String>();
     		currentMap.putAll(keysMap);
     		String [] rowData = getAllCellsOfRow(i);
-			if (rowData.length > 0 && columnsNames[0].trim().equalsIgnoreCase(parameterPerEnvironmentIdentifier)) {
-				String clusterToTest = PropertiesFile.readProperty("ClusterToTest");
+			if (rowData.length > 0 && parametersArePerEnvironment) {
 				String currentLineParaSetIdentifier = rowData[0].trim();
 				// if it is Environments lines that has "Parameters Per Environment" equals to the environment name will be added
 				if( isEnvironments  && ! currentLineParaSetIdentifier.equalsIgnoreCase(clusterToTest.trim())   )
@@ -89,14 +97,34 @@ public class Excel  {
 				if( !(isEnvironments || isProduction ) && ( currentLineParaSetIdentifier.equalsIgnoreCase(productionIdentifier)  || PropertiesFile.isEnvironment(currentLineParaSetIdentifier)  ))
 					continue;
 
-
 			}
 
     		for (int j=0; j< rowData.length; j++) {
-    			currentMap.put(columnsNames[j], rowData[j]);
+    			String current;
+    			if (defaultData != null && defaultData.length-1>=j && rowData[j].trim().isEmpty())
+    				current = defaultData[j];
+    			else
+    				current = rowData[j];
+
+    			currentMap.put(columnsNames[j], current);
     		}
+
+    		if(defaultData != null && defaultData.length > rowData.length){
+    			for(int j = rowData.length; j < defaultData.length ; j++){
+					currentMap.put(columnsNames[j], defaultData[j]);
+				}
+			}
     		testData.add(currentMap);
     	}
+
+		if (parametersArePerEnvironment && testData.isEmpty() && defaultData != null) {
+			HashMap<String, String> currentMap = new HashMap<String,String>();
+			currentMap.putAll(keysMap);
+			for (int j=0; j< defaultData.length; j++) {
+				currentMap.put(columnsNames[j], defaultData[j]);
+			}
+			testData.add(currentMap);
+		}
     	return testData.toArray();
     	
     }

@@ -17,6 +17,8 @@ public class CentComSearchDetailsPage extends GenericPage {
     @FindBy(how= How.XPATH,using="//div[normalize-space(text())='Endpoints']")
     public WebElement endPointTab_element;
 
+    @FindBy(how= How.XPATH,using="//span[contains(text(),'Open Configuration')]")
+    public WebElement openConfiguration_element;
 
     @FindBy(how= How.XPATH,using="//twa-table-search-input//twa-search-input//input[@placeholder='All Columns']")
     public WebElement endPointSearchBox_element;

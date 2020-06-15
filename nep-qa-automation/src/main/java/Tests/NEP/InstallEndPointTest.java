@@ -17,7 +17,8 @@ public class InstallEndPointTest extends GenericTest {
 
     @Test(groups = { "install" } )
     public void InstallTest () throws Exception {
-        action.VerifyFilesExist(1);
+
+        action.VerifyFilesExist(5);
         action.UnInstallEndPoint(Integer.parseInt(data.get("Uninstall timeout")));
         action.InstallEndPoint(Integer.parseInt(data.get("Installation timeout")));
 

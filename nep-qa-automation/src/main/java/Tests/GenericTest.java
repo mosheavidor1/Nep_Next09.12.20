@@ -23,9 +23,11 @@ import Utils.PropertiesFile.PropertiesFile;
 public class GenericTest {
 
 	protected HashMap<String, String> data;
+	protected static HashMap<String, String> general=null;
 	protected VideoCapture video;
 	private String screenShot;
 	protected WikiActions wikiAction;
+	public static final String generalSettingsIdentifier = "General Settings";
 
 	@SuppressWarnings("unchecked")
 	public GenericTest(Object dataToSet) {
@@ -43,13 +45,30 @@ public class GenericTest {
 		String sheetName = arr[arr.length - 1];
 		String fileName = PropertiesFile.readProperty("Excel.fileLocation");
 		fileName = RunTest.runAtDirectory + fileName;
-		boolean excelFileStatus = Excel.setExcelFileAndSheet(fileName, sheetName);
+		Excel testData = new Excel();
+		boolean excelFileStatus = testData.setExcelFileAndSheet(fileName, sheetName);
 		Object[] getTestData = null;
 		if (excelFileStatus)
-			getTestData = Excel.getTestData();
+			getTestData = testData.getTestData();
 
 		if (getTestData == null)
 			JLog.logger.error("Could not find Excel sheet for this test.");
+
+		//if it is the first time general settings were not been read. read it now.
+		if (general == null ) {
+
+			Excel generalSettings = new Excel();
+
+			excelFileStatus = generalSettings.setExcelFileAndSheet(fileName, generalSettingsIdentifier);
+			Object[] getGenericSettings = null;
+			if (excelFileStatus)
+				getGenericSettings = generalSettings.getTestData();
+
+			if (getGenericSettings == null)
+				JLog.logger.error("Could not find General Settings Excel sheet");
+			else
+				general = (HashMap<String, String>) getGenericSettings[0];
+		}
 
 		return getTestData;
 

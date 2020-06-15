@@ -20,12 +20,12 @@ public class ChangeEPConfigurationTest extends GenericTest {
     @Test(groups = { "download" } )
     public void DownloadTest () throws Exception {
 
-        action.LaunchApplication(data.get("Browser"));
-        action.SetApplicationUrl(PropertiesFile.getCurrentClusterLink());
+        action.LaunchApplication(general.get("Browser"));
+        action.SetApplicationUrl(general.get("Fusion Link"));
 
-        action.Login(PropertiesFile.getUserName(), PropertiesFile.getPassword());
+        action.Login(general.get("Fusion User Name"), general.get("Fusion Password"));
 
-        action.GotoCentComSearch(PropertiesFile.getCurrentClusterLink());
+        action.GotoCentComSearch(general.get("Fusion Link"));
         action.ChangeConfigurationAndPublish(data.get("Customer"),Integer.parseInt(data.get("Wait for publish to be completed")));
 
         //put here code for checking json file

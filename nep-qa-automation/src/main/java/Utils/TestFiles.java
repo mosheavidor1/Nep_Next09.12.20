@@ -28,9 +28,11 @@ public class TestFiles {
     public static void DeleteDirectory(String path){
         try {
             File dir = new File(path);
-            FileUtils.forceDelete(dir);
-            if(dir.exists())
-                org.testng.Assert.fail("Could delete directory: " + path);
+            if (dir.exists()) {
+                FileUtils.forceDelete(dir);
+                if (dir.exists())
+                    org.testng.Assert.fail("Could delete directory: " + path);
+            }
 
         }
 
@@ -71,6 +73,8 @@ public class TestFiles {
         }
 
     }
+
+
     public static boolean Exists(String path) {
         File file = new File(path);
         if (file.exists())

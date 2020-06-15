@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -67,11 +68,36 @@ public class NepActions extends CloudActions{
     }
 
     //verify log entry message appears at the portal
-    public void VerifyMessageExistsInPortal(LogEntry entry, int timeoutForLogEntryToAppearInSeconds) throws InterruptedException {
+    public void VerifyMessageExistsInPortal(LogEntry entry, int timeoutForLogEntryToAppearInSeconds) throws InterruptedException, UnknownHostException {
         EventExplorerPage eventPage = new EventExplorerPage();
         final String filteredItemsText= "Filtered Items";
 
         boolean found = false;
+
+        eventPage.timeRangeBox.click();
+        eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
+        eventPage.WaitUntilPageLoad();
+        eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
+        eventPage.last24Hours.click();
+        eventPage.applyTimeButton.click();
+
+        eventPage.addQuery.click();
+
+        eventPage.WaitUntilObjectClickable(eventPage.detectorHostQueryBy);
+        eventPage.WaitUntilPageLoad();
+        eventPage.WaitUntilObjectClickable(eventPage.detectorHostQueryBy);
+
+        eventPage.detectorHostQuery_element.click();
+        eventPage.detectorHostAll.click();
+
+        String fullMachineName = InetAddress.getLocalHost().getCanonicalHostName();
+        eventPage.specifyAnOption.sendKeys( fullMachineName+"\n");
+
+        eventPage.selectQueryOption.click();
+        eventPage.searchButton.click();
+
+        eventPage.WaitUntilObjectDisappear(eventPage.spinnerBy);
+
 
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime current = start;
@@ -81,7 +107,7 @@ public class NepActions extends CloudActions{
             eventPage.searchBox_element.clear();
 
             eventPage.refreshButton_element.click();
-            eventPage.searchBox_element.sendKeys(entry.stampAdded);
+            eventPage.searchBox_element.sendKeys(entry.stampAdded+"122");
 
             Thread.sleep(checkInterval);
             current = LocalDateTime.now();
@@ -101,6 +127,15 @@ public class NepActions extends CloudActions{
             }
             if (filteredItems>1)
                 org.testng.Assert.fail("Found too many results for the unique time stamp: " + entry.stampAdded + " See screenshot/video links below");
+
+            eventPage.timeRangeBox.click();
+            eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
+            eventPage.WaitUntilPageLoad();
+            eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
+            eventPage.last24Hours.click();
+            eventPage.applyTimeButton.click();
+            eventPage.WaitUntilObjectDisappear(eventPage.spinnerBy);
+
 
         }
 
@@ -122,55 +157,25 @@ public class NepActions extends CloudActions{
     }
 
     public void PublishNewDownloads(String customerName, int waitForPublishInSec) throws IOException, InterruptedException {
+
+        SelectCustomerAtConfigurationPage(customerName);
+
         CentComSearchPage centSearch = new CentComSearchPage();
-        centSearch.customersText_element.sendKeys(customerName);
-        centSearch.searchButton_element.click();
-        //centSearch.row_element.click();
-        centSearch.GetCustomerRow(customerName).click();
         centSearch.detailsButton_element.click();
 
         CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
         detailsPage.resetInstaller_element.click();
         detailsPage.continueButton_element.click();
+        detailsPage.openConfiguration_element.click();
 
-        this.GotoCentComSearch(PropertiesFile.getCurrentClusterLink());
-
-        centSearch.openConfigurationButton_element.click();
-
-        CentComConfigurationPage conf = new CentComConfigurationPage();
-        conf.WaitUntilObjectDisappear(conf.spinnerBy);
-        conf.WaitUntilObjectClickable(conf.publishBy);
-        conf.publishButton_element.click();
-        conf.continueButton_element.click();
-
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(waitForPublishInSec);
-        boolean found =false;
-
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            Thread.sleep(5000);
-            current = LocalDateTime.now();
-            conf.refreshButton_element.click();
-            if( conf.IsElementExist(conf.percent100By) ){
-                found = true;
-                break;
-            }
-        }
-
-        if(!found)
-            org.testng.Assert.fail("Publish configuration not completed successfully. Could not find publish completed \"100%\" indication after timeout of: " + waitForPublishInSec + "(sec) See screenshot/video links below");
-
+        PublishConfiguration(waitForPublishInSec);
 
     }
 
 
     public void ChangeConfigurationAndPublish(String customerName, int waitForPublishInSec) throws IOException, InterruptedException {
 
-
-
         SelectCustomerAtConfigurationPage(customerName);
-
         CentComSearchPage centSearch = new CentComSearchPage();
         centSearch.openConfigurationButton_element.click();
 
@@ -184,9 +189,7 @@ public class NepActions extends CloudActions{
         CentComSearchPage centSearch = new CentComSearchPage();
         centSearch.customersText_element.sendKeys(customerName);
         centSearch.searchButton_element.click();
-
         centSearch.GetCustomerRow(customerName).click();
-
     }
 
 
@@ -197,7 +200,6 @@ public class NepActions extends CloudActions{
         conf.WaitUntilObjectClickable(conf.publishBy);
         conf.publishButton_element.click();
         conf.continueButton_element.click();
-
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime current = start;
         Duration durationTimeout = Duration.ofSeconds(waitForPublishInSec);
@@ -215,7 +217,6 @@ public class NepActions extends CloudActions{
 
         if(!found)
             org.testng.Assert.fail("Publish configuration not completed successfully. Could not find publish completed \"100%\" indication after timeout of: " + waitForPublishInSec + "(sec) See screenshot/video links below");
-
 
     }
 
