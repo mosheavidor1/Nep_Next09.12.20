@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
-public class NepActions extends CloudActions{
+public class NepActions extends CloudActions {
     private static final String PortalManagmentURL = "/#/operations?menuKey=cua-search&stackKey=search-home";
     private static final String FileCabinetURL = "/#/support?menuKey=file-cabinet&stackKey=file-cabinet-files";
     private static final String centComSearchURL = "/#/operations?menuKey=centcom-devices&stackKey=entity-search&types=EntityType.AGENT";
@@ -56,7 +56,6 @@ public class NepActions extends CloudActions{
     }
 
 
-
     public void GotoPortalManagmentPage(String UrlPrefix) {
 
         this.SetApplicationUrl(UrlPrefix + PortalManagmentURL);
@@ -68,65 +67,12 @@ public class NepActions extends CloudActions{
     }
 
     //verify log entry message appears at the portal
-    public void VerifyMessageExistsInPortal(LogEntry entry, int timeoutForLogEntryToAppearInSeconds) throws InterruptedException, UnknownHostException {
-        EventExplorerPage eventPage = new EventExplorerPage();
-        final String filteredItemsText= "Filtered Items";
+    public void VerifyMessageExistsInPortal(LogEntry entry, int timeoutForLogEntryToAppearInSeconds) {
+        try {
+            EventExplorerPage eventPage = new EventExplorerPage();
+            final String filteredItemsText = "Filtered Items";
 
-        boolean found = false;
-
-        eventPage.timeRangeBox.click();
-        eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
-        eventPage.WaitUntilPageLoad();
-        eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
-        eventPage.last24Hours.click();
-        eventPage.applyTimeButton.click();
-
-        eventPage.addQuery.click();
-
-        eventPage.WaitUntilObjectClickable(eventPage.detectorHostQueryBy);
-        eventPage.WaitUntilPageLoad();
-        eventPage.WaitUntilObjectClickable(eventPage.detectorHostQueryBy);
-
-        eventPage.detectorHostQuery_element.click();
-        eventPage.detectorHostAll.click();
-
-        String fullMachineName = InetAddress.getLocalHost().getCanonicalHostName();
-        eventPage.specifyAnOption.sendKeys( fullMachineName+"\n");
-
-        eventPage.selectQueryOption.click();
-        eventPage.searchButton.click();
-
-        eventPage.WaitUntilObjectDisappear(eventPage.spinnerBy);
-
-
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(timeoutForLogEntryToAppearInSeconds);
-
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            eventPage.searchBox_element.clear();
-
-            eventPage.refreshButton_element.click();
-            eventPage.searchBox_element.sendKeys(entry.stampAdded+"\n");
-
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-
-            String filteredString = eventPage.filteredItems_element.getText();
-
-            if( ! filteredString.contains(filteredItemsText))
-                continue;
-            filteredString = filteredString.substring(filteredString.indexOf(filteredItemsText)+filteredItemsText.length()).trim();
-
-            int filteredItems =0;
-            filteredItems = Integer.parseInt(filteredString.trim());
-
-            if (filteredItems == 1) {
-                found = true;
-                break;
-            }
-            if (filteredItems>1)
-                org.testng.Assert.fail("Found too many results for the unique time stamp: " + entry.stampAdded + " See screenshot/video links below");
+            boolean found = false;
 
             eventPage.timeRangeBox.click();
             eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
@@ -134,587 +80,737 @@ public class NepActions extends CloudActions{
             eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
             eventPage.last24Hours.click();
             eventPage.applyTimeButton.click();
+
+            eventPage.addQuery.click();
+
+            eventPage.WaitUntilObjectClickable(eventPage.detectorHostQueryBy);
+            eventPage.WaitUntilPageLoad();
+            eventPage.WaitUntilObjectClickable(eventPage.detectorHostQueryBy);
+
+            eventPage.detectorHostQuery_element.click();
+            eventPage.detectorHostAll.click();
+
+            String fullMachineName = InetAddress.getLocalHost().getCanonicalHostName();
+            eventPage.specifyAnOption.sendKeys(fullMachineName + "\n");
+
+            eventPage.selectQueryOption.click();
+            eventPage.searchButton.click();
+
             eventPage.WaitUntilObjectDisappear(eventPage.spinnerBy);
 
 
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeoutForLogEntryToAppearInSeconds);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                eventPage.searchBox_element.clear();
+
+                eventPage.refreshButton_element.click();
+                eventPage.searchBox_element.sendKeys(entry.stampAdded + "\n");
+
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+
+                String filteredString = eventPage.filteredItems_element.getText();
+
+                if (!filteredString.contains(filteredItemsText))
+                    continue;
+                filteredString = filteredString.substring(filteredString.indexOf(filteredItemsText) + filteredItemsText.length()).trim();
+
+                int filteredItems = 0;
+                filteredItems = Integer.parseInt(filteredString.trim());
+
+                if (filteredItems == 1) {
+                    found = true;
+                    break;
+                }
+                if (filteredItems > 1)
+                    org.testng.Assert.fail("Found too many results for the unique time stamp: " + entry.stampAdded + " See screenshot/video links below");
+
+                eventPage.timeRangeBox.click();
+                eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
+                eventPage.WaitUntilPageLoad();
+                eventPage.WaitUntilObjectClickable(EventExplorerPage.last24HoursBy);
+                eventPage.last24Hours.click();
+                eventPage.applyTimeButton.click();
+                eventPage.WaitUntilObjectDisappear(eventPage.spinnerBy);
+
+
+            }
+
+            if (!found)
+                org.testng.Assert.fail("Relevant log entry do not appear at portal after timeout: " + timeoutForLogEntryToAppearInSeconds + " seconds. See screenshot or video links below.\nExpected stamp: " + entry.stampAdded);
+
+            eventPage.openRowButton_element.click();
+
+            String logEntryFoundAtPortal = eventPage.entryMessage_element.getText();
+            if (!logEntryFoundAtPortal.contains(entry.stampAdded))
+                org.testng.Assert.fail("Event entry description found at the portal do not contain expected stamp: " + entry.stampAdded);
+            final String eventIdLocator = "EventID:";
+            int startOfEventID = logEntryFoundAtPortal.indexOf(eventIdLocator) + eventIdLocator.length();
+            int end = logEntryFoundAtPortal.indexOf("|", startOfEventID);
+            String foundID = logEntryFoundAtPortal.substring(startOfEventID, end);
+            if (foundID.compareToIgnoreCase(entry.eventID) != 0)
+                org.testng.Assert.fail("Event written to log: " + entry.eventID + " Is not matched to the event ID found at portal: " + foundID);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not verify log entry appear at portal. " + "\n" + e.toString());
         }
 
-        if(!found)
-            org.testng.Assert.fail("Relevant log entry do not appear at portal after timeout: " + timeoutForLogEntryToAppearInSeconds+ " seconds. See screenshot or video links below.\nExpected stamp: " + entry.stampAdded );
-
-        eventPage.openRowButton_element.click();
-
-        String logEntryFoundAtPortal = eventPage.entryMessage_element.getText();
-        if(!logEntryFoundAtPortal.contains(entry.stampAdded))
-            org.testng.Assert.fail("Event entry description found at the portal do not contain expected stamp: " + entry.stampAdded);
-        final String  eventIdLocator = "EventID:";
-        int startOfEventID = logEntryFoundAtPortal.indexOf(eventIdLocator)+eventIdLocator.length();
-        int end = logEntryFoundAtPortal.indexOf("|",startOfEventID);
-        String foundID = logEntryFoundAtPortal.substring(startOfEventID,end );
-        if(foundID.compareToIgnoreCase(entry.eventID) !=0 )
-            org.testng.Assert.fail("Event written to log: "+ entry.eventID + " Is not matched to the event ID found at portal: " +foundID);
-
     }
 
-    public void PublishNewDownloads(String customerName, int waitForPublishInSec) throws IOException, InterruptedException {
+    public void PublishNewDownloads(String customerName, int waitForPublishInSec) {
+        try {
 
-        SelectCustomerAtConfigurationPage(customerName);
+            SelectCustomerAtCentComSearchPage(customerName);
 
-        CentComSearchPage centSearch = new CentComSearchPage();
-        centSearch.detailsButton_element.click();
+            CentComSearchPage centSearch = new CentComSearchPage();
+            centSearch.detailsButton_element.click();
 
-        CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
-        detailsPage.resetInstaller_element.click();
-        detailsPage.continueButton_element.click();
-        detailsPage.openConfiguration_element.click();
+            CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
+            detailsPage.resetInstaller_element.click();
+            detailsPage.continueButton_element.click();
+            detailsPage.openConfiguration_element.click();
 
-        PublishConfiguration(waitForPublishInSec);
+            PublishConfiguration(waitForPublishInSec);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not publish new downloads for customer: " + customerName + "\n" + e.toString());
+        }
 
     }
 
 
-    public void ChangeConfigurationAndPublish(String customerName, int waitForPublishInSec) throws IOException, InterruptedException {
+    public void ChangeConfigurationAndPublish(String customerName, int waitForPublishInSec) {
+        try {
+            SelectCustomerAtCentComSearchPage(customerName);
+            CentComSearchPage centSearch = new CentComSearchPage();
+            centSearch.openConfigurationButton_element.click();
 
-        SelectCustomerAtConfigurationPage(customerName);
-        CentComSearchPage centSearch = new CentComSearchPage();
-        centSearch.openConfigurationButton_element.click();
+            //Put here code for changing configuration
 
-        //Put here code for changing configuration
-
-        PublishConfiguration(waitForPublishInSec);
+            PublishConfiguration(waitForPublishInSec);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not change configuration and publish for customer: " + customerName + "\n" + e.toString());
+        }
 
     }
 
-    public void SelectCustomerAtConfigurationPage(String customerName){
-        CentComSearchPage centSearch = new CentComSearchPage();
-        centSearch.customersText_element.sendKeys(customerName);
-        centSearch.searchButton_element.click();
-        centSearch.GetCustomerRow(customerName).click();
+
+    public void SelectCustomerAtCentComSearchPage(String customerName) {
+        try {
+            CentComSearchPage centSearch = new CentComSearchPage();
+            centSearch.customersText_element.sendKeys(customerName);
+            centSearch.searchButton_element.click();
+            centSearch.GetCustomerRow(customerName).click();
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not select customer at CentCom search page. customer: " + customerName + "\n" + e.toString());
+        }
+
     }
 
 
-    public void PublishConfiguration(int waitForPublishInSec) throws InterruptedException  {
+    public void PublishConfiguration(int waitForPublishInSec) {
+        try {
 
-        CentComConfigurationPage conf = new CentComConfigurationPage();
-        conf.WaitUntilObjectDisappear(conf.spinnerBy);
-        conf.WaitUntilObjectClickable(conf.publishBy);
-        conf.publishButton_element.click();
-        conf.continueButton_element.click();
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(waitForPublishInSec);
-        boolean found =false;
+            CentComConfigurationPage conf = new CentComConfigurationPage();
+            conf.WaitUntilObjectDisappear(conf.spinnerBy);
+            conf.WaitUntilObjectClickable(conf.publishBy);
+            conf.publishButton_element.click();
+            conf.continueButton_element.click();
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(waitForPublishInSec);
+            boolean found = false;
 
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            Thread.sleep(5000);
-            current = LocalDateTime.now();
-            conf.refreshButton_element.click();
-            if( conf.IsElementExist(conf.percent100By) ){
-                found = true;
-                break;
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(5000);
+                current = LocalDateTime.now();
+                conf.refreshButton_element.click();
+                if (conf.IsElementExist(conf.percent100By)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                org.testng.Assert.fail("Publish configuration not completed successfully. Could not find publish completed \"100%\" indication after timeout of: " + waitForPublishInSec + "(sec) See screenshot/video links below");
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not publish configuration" + "\n" + e.toString());
+        }
+
+    }
+
+
+    public void CheckEndPointOkInCentCom(String customerName) {
+        try {
+
+            CentComSearchPage centSearch = new CentComSearchPage();
+            centSearch.customersText_element.sendKeys(customerName);
+            centSearch.searchButton_element.click();
+            centSearch.GetCustomerRow(customerName).click();
+            centSearch.detailsButton_element.click();
+
+            CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
+            detailsPage.endPointTab_element.click();
+
+            String host = InetAddress.getLocalHost().getHostName();
+
+            detailsPage.endPointSearchBox_element.sendKeys(host + "\n");
+            detailsPage.refreshButton_element.click();
+
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
+            detailsPage.WaitUntilObjectClickable(detailsPage.rowBy);
+
+            Thread.sleep(5000); //after all 3 wait above needs some more - to be investigated
+
+            if (!detailsPage.IsElementExist(detailsPage.GetHostNameRowBy(host))) {
+                org.testng.Assert.fail("Could not find hostname: " + host);
+            }
+
+            if (!detailsPage.IsElementExist(detailsPage.OkBy)) {
+                org.testng.Assert.fail("Host: " + host + " Status is not Okay. See screenshot/video.");
             }
         }
-
-        if(!found)
-            org.testng.Assert.fail("Publish configuration not completed successfully. Could not find publish completed \"100%\" indication after timeout of: " + waitForPublishInSec + "(sec) See screenshot/video links below");
-
-    }
-
-
-
-    public void CheckEndPointOkInCentCom(String customerName) throws IOException, InterruptedException {
-        CentComSearchPage centSearch = new CentComSearchPage();
-        centSearch.customersText_element.sendKeys(customerName);
-        centSearch.searchButton_element.click();
-        centSearch.GetCustomerRow(customerName).click();
-        centSearch.detailsButton_element.click();
-
-        CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
-        detailsPage.endPointTab_element.click();
-
-        String host = InetAddress.getLocalHost().getHostName();
-
-        detailsPage.endPointSearchBox_element.sendKeys(host+"\n");
-        detailsPage.refreshButton_element.click();
-
-        detailsPage.WaitUntilPageLoad();
-        detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
-        detailsPage.WaitUntilObjectClickable(detailsPage.rowBy);
-
-        Thread.sleep(5000); //after all 3 wait above needs some more - to be investigated
-
-        if(!detailsPage.IsElementExist(detailsPage.GetHostNameRowBy(host))) {
-            org.testng.Assert.fail("Could not find hostname: " + host);
-        }
-
-        if(!detailsPage.IsElementExist(detailsPage.OkBy)) {
-            org.testng.Assert.fail("Host: " + host + " Status is not Okay. See screenshot/video.");
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not check endpoint status at CentCom for customer: " + customerName + "\n" + e.toString());
         }
 
     }
 
 
+    public void SelectCustomer(String customerName) {
+        try {
+            UpperMenu up = new UpperMenu();
 
-    public void SelectCustomer(String customerName) throws InterruptedException {
+            up.WaitUntilObjectDisappear(up.spinnerBy);
+            up.WaitUntilPageLoad();
+            up.WaitUntilObjectDisappear(up.spinnerBy);
+            up.WaitUntilPageLoad();
 
-        UpperMenu up = new UpperMenu();
+            up.WaitUntilObjectClickable(up.customerSelectorBy);
+            up.customerSelector_element.click();
 
-        up.WaitUntilObjectDisappear(up.spinnerBy);
-        up.WaitUntilPageLoad();
-        up.WaitUntilObjectDisappear(up.spinnerBy);
-        up.WaitUntilPageLoad();
+            up.WaitUntilObjectClickable(up.searchTextBy);
+            up.searchText_element.clear();
+            up.searchText_element.sendKeys(customerName);
 
-        up.WaitUntilObjectClickable(up.customerSelectorBy);
-        up.customerSelector_element.click();
-
-        up.WaitUntilObjectClickable(up.searchTextBy);
-        up.searchText_element.clear();
-        up.searchText_element.sendKeys(customerName);
-
-        up.WaitUntilObjectClickable(up.customerNameBy);
-        up.customerName.click();
+            up.WaitUntilObjectClickable(up.customerNameBy);
+            up.customerName.click();
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not select customer at portal. Customer: " + customerName + "\n" + e.toString());
+        }
 
     }
 
-    public void DeleteAllDownloads(){
+    public void DeleteAllDownloads() {
+        try {
+            FileCabinet fc = new FileCabinet();
+            fc.TrustwaveEndpointFolder_element.click();
 
-
-        FileCabinet fc = new FileCabinet();
-        fc.TrustwaveEndpointFolder_element.click();
-
-        fc.WaitUntilObjectDisappear(fc.spinnerBy);
-        fc.WaitUntilObjectClickable(fc.refreshButtonBy);
-        fc.WaitUntilPageLoad();
-
-
-        while (fc.GetFirstThreeDotsIcon().size()>0 ) {
-            fc.WaitUntilObjectClickable(fc.threeDotsIconBy);
+            fc.WaitUntilObjectDisappear(fc.spinnerBy);
+            fc.WaitUntilObjectClickable(fc.refreshButtonBy);
             fc.WaitUntilPageLoad();
-            fc.threeDotsIcon_element.click();
-            fc.WaitUntilObjectClickable(fc.removeMenuItemBy);
-            fc.WaitUntilPageLoad();
-            fc.WaitUntilObjectDisappear(fc.spinnerBy);
-            fc.WaitUntilObjectClickable(fc.removeMenuItemBy);
-            fc.removeMenuItem_element.click();
-            fc.WaitUntilObjectClickable(fc.removeButtonConfirmBy);
-            fc.removeButtonConfirm_element.click();
+
+
+            while (fc.GetFirstThreeDotsIcon().size() > 0) {
+                fc.WaitUntilObjectClickable(fc.threeDotsIconBy);
+                fc.WaitUntilPageLoad();
+                fc.threeDotsIcon_element.click();
+                fc.WaitUntilObjectClickable(fc.removeMenuItemBy);
+                fc.WaitUntilPageLoad();
+                fc.WaitUntilObjectDisappear(fc.spinnerBy);
+                fc.WaitUntilObjectClickable(fc.removeMenuItemBy);
+                fc.removeMenuItem_element.click();
+                fc.WaitUntilObjectClickable(fc.removeButtonConfirmBy);
+                fc.removeButtonConfirm_element.click();
+            }
+        } catch (Exception e) {
+            org.testng.Assert.fail("Could not delete all endpoint downloads at portal." + "\n" + e.toString());
         }
+
 
     }
 
-    public void DownloadFilesFromTrustWaveEndPointFolder(String fileToAppearTimeoutString, String fileStoredAndVirusScanTimeoutString) throws InterruptedException {
-        int fileToAppearTimeout = Integer.parseInt(fileToAppearTimeoutString);
-        int fileStoredAndVirusScanTimeout = Integer.parseInt(fileStoredAndVirusScanTimeoutString);
+    public void DownloadFilesFromTrustWaveEndPointFolder(String fileToAppearTimeoutString, String fileStoredAndVirusScanTimeoutString) {
+        try {
 
-        FileCabinet fc = new FileCabinet();
+            int fileToAppearTimeout = Integer.parseInt(fileToAppearTimeoutString);
+            int fileStoredAndVirusScanTimeout = Integer.parseInt(fileStoredAndVirusScanTimeoutString);
 
-        fc.TrustwaveEndpointFolder_element.click();
+            FileCabinet fc = new FileCabinet();
 
-        boolean found = false;
+            fc.TrustwaveEndpointFolder_element.click();
 
-
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(fileToAppearTimeout);
-
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            fc.WaitUntilObjectClickable(fc.refreshButtonBy);
-            fc.WaitUntilObjectDisappear(fc.spinnerBy);
-            fc.WaitUntilObjectClickable(fc.refreshButtonBy);
-
-            fc.refreshButton_element.click();
-
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
+            boolean found = false;
 
 
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(fileToAppearTimeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                fc.WaitUntilObjectClickable(fc.refreshButtonBy);
+                fc.WaitUntilObjectDisappear(fc.spinnerBy);
+                fc.WaitUntilObjectClickable(fc.refreshButtonBy);
+
+                fc.refreshButton_element.click();
+
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
 
 
-            if ( fc.IsElementExist(FileCabinet.endPointExeBy)) {
-                found = true;
-                break;
+                if (fc.IsElementExist(FileCabinet.endPointExeBy)) {
+                    found = true;
+                    break;
+                }
+
             }
 
-
-        }
-
-        if(!found)
-            org.testng.Assert.fail("Download failed. Installation file did not appeared at File Cabinet after timeout: " + fileToAppearTimeoutString+ " seconds. See screenshot or video links below" );
+            if (!found)
+                org.testng.Assert.fail("Download failed. Installation file did not appeared at File Cabinet after timeout: " + fileToAppearTimeoutString + " seconds. See screenshot or video links below");
 
 
+            boolean errorMessageAppear = true;
 
-        boolean errorMessageAppear = true;
+
+            start = LocalDateTime.now();
+            current = start;
+            durationTimeout = Duration.ofSeconds(fileStoredAndVirusScanTimeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+
+                fc.WaitUntilObjectClickable(fc.endPointExeBy);
+                fc.TrustwaveEndpointExe_element.click();
+                if (!fc.IsElementExist(fc.fileUnableToBeDownloadedBy)) {
+                    errorMessageAppear = false;
+                    break;
+                }
+
+                fc.errorMessageOKButton_element.click();
+
+                fc.refreshButton_element.click();
+
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
 
 
-        start = LocalDateTime.now();
-        current = start;
-        durationTimeout = Duration.ofSeconds(fileStoredAndVirusScanTimeout);
+                fc.WaitUntilObjectClickable(fc.refreshButtonBy);
+                fc.WaitUntilObjectDisappear(fc.spinnerBy);
+                fc.WaitUntilObjectClickable(fc.refreshButtonBy);
 
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
 
-            fc.WaitUntilObjectClickable(fc.endPointExeBy);
-            fc.TrustwaveEndpointExe_element.click();
-            if (! fc.IsElementExist(fc.fileUnableToBeDownloadedBy) ) {
-                errorMessageAppear=false;
-                break;
             }
 
-            fc.errorMessageOKButton_element.click();
-
-            fc.refreshButton_element.click();
-
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-
-
-            fc.WaitUntilObjectClickable(fc.refreshButtonBy);
-            fc.WaitUntilObjectDisappear(fc.spinnerBy);
-            fc.WaitUntilObjectClickable(fc.refreshButtonBy);
-
+            if (errorMessageAppear)
+                org.testng.Assert.fail("Message appears: File is still being processed (virus scanned and stored). after timeout: " + fileStoredAndVirusScanTimeoutString + " seconds. See video link below");
 
         }
-
-        if(errorMessageAppear)
-            org.testng.Assert.fail("Message appears: File is still being processed (virus scanned and stored). after timeout: " + fileStoredAndVirusScanTimeoutString+ " seconds. See video link below" );
-
-
-
-    }
-
-
-    public void CreateAndCleanDownloadFolder() throws IOException {
-        String downloadLocation = PropertiesFile.readProperty("DownloadFolder");
-        String oldLocation = downloadLocation + "\\" + archiveFolderName;
-        String installerLocation = downloadLocation +  "\\" + windowsInstallationFile;
-        String uninstallFolder = downloadLocation + "\\" + uninstallFolderName;
-        String installerAtFolderUninstall = uninstallFolder + "\\" +windowsInstallationFile;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-YY--HH-mm-ss");
-
-        String oldInstallerLocation = oldLocation +  "\\" + windowsInstallationFile.substring(0,windowsInstallationFile.indexOf("."))+java.time.LocalDateTime.now().format(formatter)+  windowsInstallationFile.substring(windowsInstallationFile.indexOf("."));
-
-        TestFiles.CreateFolder(downloadLocation);
-        TestFiles.CreateFolder(oldLocation);
-        TestFiles.CreateFolder(uninstallFolder);
-
-        if(TestFiles.Exists(installerLocation)) {
-            TestFiles.Copy(installerLocation, oldInstallerLocation);
-            if(! TestFiles.Exists(installerAtFolderUninstall))
-                TestFiles.Copy(installerLocation,installerAtFolderUninstall);
-
-            TestFiles.DeleteFile(installerLocation);
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not download endpoint installation files" + "\n" + e.toString());
         }
 
     }
 
-    public void VerifyFilesExist (int timeoutSeconds) throws IOException, InterruptedException {
-        File nepFolder = new File(PropertiesFile.readProperty("DownloadFolder"));
-        //String [] expected = {"client.pem" , "client_key.pem" , "TrustwaveEndpoint.exe"};
-        String [] expected = {archiveFolderName,windowsInstallationFile,uninstallFolderName};
+    public void CreateAndCleanDownloadFolder() {
+        try {
 
-        boolean foundFiles =false;
-        String [] filesArr = nepFolder.list();
+            String downloadLocation = PropertiesFile.readProperty("DownloadFolder");
+            String oldLocation = downloadLocation + "\\" + archiveFolderName;
+            String installerLocation = downloadLocation + "\\" + windowsInstallationFile;
+            String uninstallFolder = downloadLocation + "\\" + uninstallFolderName;
+            String installerAtFolderUninstall = uninstallFolder + "\\" + windowsInstallationFile;
 
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(timeoutSeconds);
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-            filesArr = nepFolder.list();
-            if (Arrays.equals(nepFolder.list(), expected)) {
-                foundFiles = true;
-                break;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-YY--HH-mm-ss");
+
+            String oldInstallerLocation = oldLocation + "\\" + windowsInstallationFile.substring(0, windowsInstallationFile.indexOf(".")) + java.time.LocalDateTime.now().format(formatter) + windowsInstallationFile.substring(windowsInstallationFile.indexOf("."));
+
+            TestFiles.CreateFolder(downloadLocation);
+            TestFiles.CreateFolder(oldLocation);
+            TestFiles.CreateFolder(uninstallFolder);
+
+            if (TestFiles.Exists(installerLocation)) {
+                TestFiles.Copy(installerLocation, oldInstallerLocation);
+                if (!TestFiles.Exists(installerAtFolderUninstall))
+                    TestFiles.Copy(installerLocation, installerAtFolderUninstall);
+
+                TestFiles.DeleteFile(installerLocation);
             }
         }
-        if (foundFiles == false)
-                org.testng.Assert.fail("Could not find expected installation files at folder: " + nepFolder + "\n"+ "Found files:   " + Arrays.toString(filesArr)
-                    + "\n" + "Expected files:" + Arrays.toString(expected));
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not create test download folder and clean it" + "\n" + e.toString());
 
+        }
     }
 
-    public void VerifyInstallerSignature() throws IOException {
-        final String expectedVerified1 = "Verified:\tA certificate chain processed, but terminated in a root certificate which is not trusted by the trust provider";
-        final String expectedVerified2 = "Verified:\tSigned ";
+    public void VerifyFilesExist(int timeoutSeconds) {
+        try {
 
-        String sigcheckPath = "c:\\Selenium\\Utils\\sigcheck.exe";
+            File nepFolder = new File(PropertiesFile.readProperty("DownloadFolder"));
+            //String [] expected = {"client.pem" , "client_key.pem" , "TrustwaveEndpoint.exe"};
+            String[] expected = {archiveFolderName, windowsInstallationFile, uninstallFolderName};
 
-        File file = new File(sigcheckPath);
-        if( ! file.exists())
-            org.testng.Assert.fail("Signature check failed. Could not find signature check utility at: " + sigcheckPath);
+            boolean foundFiles = false;
+            String[] filesArr = nepFolder.list();
 
-        String command = sigcheckPath + " -nobanner -a ";
-        String installerLocation = PropertiesFile.readProperty("DownloadFolder");
-        installerLocation += "\\" + windowsInstallationFile;
-        command += installerLocation;
-        String result = execCmd(command , false);
-        if (  ! (result.contains(expectedVerified1)  || result.contains(expectedVerified2) ) )
-            org.testng.Assert.fail("Failed to verify siganture of file: " + installerLocation + "\nCheck Signature output:\n" + result
-                    + "\nExpected check signature result could be one of the following:\n" + expectedVerified1 + "\nOr:\n" + expectedVerified2);
-
-        int startLine = result.indexOf("Binary Version");
-        int endLine = result.indexOf("\n", startLine);
-        String version = result.substring(startLine,endLine);
-        JLog.logger.info("End Point Agent " + version);
-
-    }
-
-    public void InstallEndPoint(int timeout) throws IOException, InterruptedException {
-
-        String installerLocation = PropertiesFile.readProperty("DownloadFolder");
-        installerLocation += "\\" + windowsInstallationFile;
-        //String host = "DS_HOST_NAME=" + PropertiesFile.getCurrentClusterNepHost() ;
-        String command =  installerLocation + " /q " ;//+ host;
-        String result = execCmd(command, false);
-        boolean found = false;
-
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(timeout);
-
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-            if (EndPointServiceExist()) {
-                found=true;
-                break;
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeoutSeconds);
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                filesArr = nepFolder.list();
+                if (Arrays.equals(nepFolder.list(), expected)) {
+                    foundFiles = true;
+                    break;
+                }
             }
-        }
+            if (foundFiles == false)
+                org.testng.Assert.fail("Could not find expected installation files at folder: " + nepFolder + "\n" + "Found files:   " + Arrays.toString(filesArr)
+                        + "\n" + "Expected files:" + Arrays.toString(expected));
 
-        if(!found)
-            org.testng.Assert.fail("Trustwave Endpoint installation failed. Trustwave Endpoint Agent Service was not found on services list");
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not verify installation files exist." + "\n" + e.toString());
+        }
+    }
+
+    public void VerifyInstallerSignature() {
+        try {
+
+            final String expectedVerified1 = "Verified:\tA certificate chain processed, but terminated in a root certificate which is not trusted by the trust provider";
+            final String expectedVerified2 = "Verified:\tSigned ";
+
+            String sigcheckPath = "c:\\Selenium\\Utils\\sigcheck.exe";
+
+            File file = new File(sigcheckPath);
+            if (!file.exists())
+                org.testng.Assert.fail("Signature check failed. Could not find signature check utility at: " + sigcheckPath);
+
+            String command = sigcheckPath + " -nobanner -a ";
+            String installerLocation = PropertiesFile.readProperty("DownloadFolder");
+            installerLocation += "\\" + windowsInstallationFile;
+            command += installerLocation;
+            String result = execCmd(command, false);
+            if (!(result.contains(expectedVerified1) || result.contains(expectedVerified2)))
+                org.testng.Assert.fail("Failed to verify siganture of file: " + installerLocation + "\nCheck Signature output:\n" + result
+                        + "\nExpected check signature result could be one of the following:\n" + expectedVerified1 + "\nOr:\n" + expectedVerified2);
+
+            int startLine = result.indexOf("Binary Version");
+            int endLine = result.indexOf("\n", startLine);
+            String version = result.substring(startLine, endLine);
+            JLog.logger.info("End Point Agent " + version);
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not verify installer signature." + "\n" + e.toString());
+        }
 
     }
 
-    public void UnInstallEndPoint(int timeout) throws IOException, InterruptedException {
+    public void InstallEndPoint(int timeout) {
+        try {
+            String installerLocation = PropertiesFile.readProperty("DownloadFolder");
+            installerLocation += "\\" + windowsInstallationFile;
+            //String host = "DS_HOST_NAME=" + PropertiesFile.getCurrentClusterNepHost() ;
+            String command = installerLocation + " /q ";//+ host;
+            String result = execCmd(command, false);
+            boolean found = false;
 
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
 
-        String downloadFolder = PropertiesFile.readProperty("DownloadFolder");
-        String installerLocation = downloadFolder + "\\" + uninstallFolderName + "\\" + windowsInstallationFile;
-        boolean toDeleteInstaller=true;
-
-        if(!TestFiles.Exists(installerLocation)) {
-            installerLocation = downloadFolder + "\\" + windowsInstallationFile;
-            toDeleteInstaller=false;
-        }
-        String command =  installerLocation + " /q /uninstall" ;
-
-        //wmic is not working because EP bootstrap has missing data
-        //execCmd("wmic product where \"description='Trustwave Endpoint Agent (64bit)' \" uninstall",true);
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(timeout);
-
-        execCmd(command, false);
-        boolean found = true;
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-            if (!EndPointServiceExist()) {
-                found=false;
-                break;
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (EndPointServiceExist()) {
+                    found = true;
+                    break;
+                }
             }
+
+            if (!found)
+                org.testng.Assert.fail("Trustwave Endpoint installation failed. Trustwave Endpoint Agent Service was not found on services list");
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not install endpoint." + "\n" + e.toString());
         }
 
-        if(found)
-            org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint Agent Service still found after timeout(sec): " + Integer.toString(timeout));
+    }
 
+    public void UnInstallEndPoint(int timeout) {
+        try {
 
-        final String installationFolder = "C:\\Program Files\\Trustwave\\NEPAgent";
-        File installationFolderFile = new File(installationFolder);
-        found = true;
+            String downloadFolder = PropertiesFile.readProperty("DownloadFolder");
+            String installerLocation = downloadFolder + "\\" + uninstallFolderName + "\\" + windowsInstallationFile;
+            boolean toDeleteInstaller = true;
 
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            if (!installationFolderFile.exists()) {
-                found=false;
-                break;
+            if (!TestFiles.Exists(installerLocation)) {
+                installerLocation = downloadFolder + "\\" + windowsInstallationFile;
+                toDeleteInstaller = false;
             }
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-            //JLog.logger.debug("Found Folder!!!");
+            String command = installerLocation + " /q /uninstall";
 
-        }
+            //wmic is not working because EP bootstrap has missing data
+            //execCmd("wmic product where \"description='Trustwave Endpoint Agent (64bit)' \" uninstall",true);
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
 
-        if(found) {
-            TestFiles.DeleteDirectory(installationFolder);
-            durationTimeout = durationTimeout.plusMinutes(1);
-        }
-
-        //org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint installation folder not deleted  after timeout(sec): " + Integer.toString(timeout) + "   Installation folder: " + installationFolder);
-
-        found = true;
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-
-            String result = execCmd("tasklist", false);
-            if (! result.contains(windowsInstallationFile)) {
-                found= false;
-                break;
+            execCmd(command, false);
+            boolean found = true;
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (!EndPointServiceExist()) {
+                    found = false;
+                    break;
+                }
             }
-            //JLog.logger.debug("Found Process!!!");
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
 
-        }
-
-        if(found)
-            org.testng.Assert.fail("Uninstall failed. Trustwave installation process is still active after timeout (sec): " +  Integer.toString(timeout) + "   Installation process: " + windowsInstallationFile);
-
-        if(toDeleteInstaller)
-            TestFiles.DeleteFile(installerLocation);
-
-    }
+            if (found)
+                org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint Agent Service still found after timeout(sec): " + Integer.toString(timeout));
 
 
-    public void StopEPService (int timeout) throws IOException, InterruptedException {
-        execCmd("Net stop NepaService", false);
+            final String installationFolder = "C:\\Program Files\\Trustwave\\NEPAgent";
+            File installationFolderFile = new File(installationFolder);
+            found = true;
 
-        boolean active = true;
-        String result ="";
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                if (!installationFolderFile.exists()) {
+                    found = false;
+                    break;
+                }
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                //JLog.logger.debug("Found Folder!!!");
 
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(timeout);
-
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-            result = execCmd("sc query \"NepaService\"", false);
-            if (result.contains("STOPPED")) {
-                active = false;
-                break;
             }
-        }
 
-        if(active)
-            org.testng.Assert.fail("Failed to stop End Point service");
-
-    }
-
-    public void StartEPService(int timeout) throws IOException, InterruptedException {
-        execCmd("Net start NepaService", false);
-
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(timeout);
-
-        boolean active = false;
-
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-
-            String result = execCmd("sc query \"NepaService\"", false);
-            if (result.contains("RUNNING")) {
-                active = true;
-                break;
+            if (found) {
+                TestFiles.DeleteDirectory(installationFolder);
+                durationTimeout = durationTimeout.plusMinutes(1);
             }
+
+            //org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint installation folder not deleted  after timeout(sec): " + Integer.toString(timeout) + "   Installation folder: " + installationFolder);
+
+            found = true;
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+
+                String result = execCmd("tasklist", false);
+                if (!result.contains(windowsInstallationFile)) {
+                    found = false;
+                    break;
+                }
+                //JLog.logger.debug("Found Process!!!");
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+
+            }
+
+            if (found)
+                org.testng.Assert.fail("Uninstall failed. Trustwave installation process is still active after timeout (sec): " + Integer.toString(timeout) + "   Installation process: " + windowsInstallationFile);
+
+            if (toDeleteInstaller)
+                TestFiles.DeleteFile(installerLocation);
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not uninstall end point" + "\n" + e.toString());
         }
 
-        if(!active)
-            org.testng.Assert.fail("Failed to start End Point service");
-
     }
 
-    public void ChangeReportInterval(String interval) throws IOException, InterruptedException {
 
-        StopEPService(ServiceStartStopTimeout);
+    public void StopEPService(int timeout) {
+        try {
 
-        File file = new File(configJsonPath);
-        if( ! file.exists())
-            org.testng.Assert.fail("Could not find config.json file was not found at: " + dbJsonPath);
+            execCmd("Net stop NepaService", false);
 
-        FileInputStream inputStream = new FileInputStream(configJsonPath);
-        String text = IOUtils.toString(inputStream, Charset.defaultCharset());
-        inputStream.close();
+            boolean active = true;
+            String result = "";
 
-        if( ! text.contains(configJsonReportInterval)) {
-            StartEPService(ServiceStartStopTimeout);
-            org.testng.Assert.fail("Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonPath);
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                result = execCmd("sc query \"NepaService\"", false);
+                if (result.contains("STOPPED")) {
+                    active = false;
+                    break;
+                }
+            }
+
+            if (active)
+                org.testng.Assert.fail("Failed to stop End Point service");
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not stop endpoint service." + "\n" + e.toString());
         }
 
-        int start= text.indexOf(configJsonReportInterval)+ configJsonReportInterval.length();
-        int end = text.indexOf(",",start);
-        StringBuilder builder = new StringBuilder(text);
-        builder.replace(start,end,interval);
-
-        PrintWriter out = new PrintWriter(configJsonPath);
-        out.print(builder.toString());
-        out.close();
-
-
-        inputStream = new FileInputStream(configJsonPath);
-        text = IOUtils.toString(inputStream, Charset.defaultCharset());
-        inputStream.close();
-        end = text.indexOf(",",start);
-        String foundInFile = text.substring(start,end);
-        if(foundInFile.compareTo(interval) != 0 )
-            org.testng.Assert.fail("Could not change value of report interval at at the file: " + configJsonPath);
-
-        StartEPService(ServiceStartStopTimeout);
-
     }
 
+    public void StartEPService(int timeout) {
+        try {
+            execCmd("Net start NepaService", false);
 
-    public void WriteEvent (LogEntry entry) throws IOException {
-        //Example "EventCreate /t INFORMATION /id 123 /l APPLICATION /so AutomationTest /d \"Hello!! this is the test info\""
-        if (entry.addedTimeToDescription)
-            entry.AddTimeToDescription(java.time.LocalDateTime.now().toString());
-        entry.eventDescription = "\"" + entry.eventDescription + "\"";
-        String eventCommand ="EventCreate /t " + entry.eventType + " /id " + entry.eventID + " /l " + entry.eventLog + " /so " + entry.eventSource + " /d " + entry.eventDescription;
-        String result = execCmd(eventCommand,false);
-        if ( ! result.contains("SUCCESS: An event of type"))
-            org.testng.Assert.fail("Could no add log event.\nAdd event result: " + result + "\nCommand sent: " +eventCommand);
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
 
-    }
+            boolean active = false;
 
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
 
-
-
-    public void CheckEndPointActiveByDbJson(int timeout) throws IOException, InterruptedException {
-        String text = "";
-        boolean active = false;
-        File file = new File(dbJsonPath);
-
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime current = start;
-        Duration durationTimeout = Duration.ofSeconds(timeout);
-
-        while ( durationTimeout.compareTo( Duration.between(start,current) ) > 0 ) {
-            if( file.exists()) {
-                FileInputStream inputStream = new FileInputStream(dbJsonPath);
-                text = IOUtils.toString(inputStream, Charset.defaultCharset());
-                inputStream.close();
-                if (text.contains("\"EndpointId\": \"")  && text.contains("\"DsInitialHost\": ")) {
+                String result = execCmd("sc query \"NepaService\"", false);
+                if (result.contains("RUNNING")) {
                     active = true;
                     break;
                 }
             }
 
-            Thread.sleep(checkInterval);
-            current = LocalDateTime.now();
-
+            if (!active)
+                org.testng.Assert.fail("Failed to start End Point service");
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not start endpoint service." + "\n" + e.toString());
         }
 
-        if(! file.exists())
-            org.testng.Assert.fail("Service is not connected - db.json file was not found at: " + dbJsonPath + " after timeout(sec): " + timeout );
+    }
 
-        if(! active)
-            org.testng.Assert.fail("Service is not connected according to db.json file after timeout(sec): " + timeout + ". Failed to find in db.json: End Point ID  Or Host.\n"+ "db.json file content:\n"+text);
+    public void ChangeReportInterval(String interval) {
+        try {
+            StopEPService(ServiceStartStopTimeout);
+            File file = new File(configJsonPath);
+            if (!file.exists())
+                org.testng.Assert.fail("Could not find config.json file was not found at: " + dbJsonPath);
+
+            FileInputStream inputStream = new FileInputStream(configJsonPath);
+            String text = IOUtils.toString(inputStream, Charset.defaultCharset());
+            inputStream.close();
+
+            if (!text.contains(configJsonReportInterval)) {
+                StartEPService(ServiceStartStopTimeout);
+                org.testng.Assert.fail("Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonPath);
+            }
+
+            int start = text.indexOf(configJsonReportInterval) + configJsonReportInterval.length();
+            int end = text.indexOf(",", start);
+            StringBuilder builder = new StringBuilder(text);
+            builder.replace(start, end, interval);
+
+            PrintWriter out = new PrintWriter(configJsonPath);
+            out.print(builder.toString());
+            out.close();
+
+
+            inputStream = new FileInputStream(configJsonPath);
+            text = IOUtils.toString(inputStream, Charset.defaultCharset());
+            inputStream.close();
+            end = text.indexOf(",", start);
+            String foundInFile = text.substring(start, end);
+            if (foundInFile.compareTo(interval) != 0)
+                org.testng.Assert.fail("Could not change value of report interval at at the file: " + configJsonPath);
+
+            StartEPService(ServiceStartStopTimeout);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not change endpoint report interval." + "\n" + e.toString());
+        }
+
+
+    }
+
+    //Example "EventCreate /t INFORMATION /id 123 /l APPLICATION /so AutomationTest /d \"Hello!! this is the test info\""
+    public void WriteEvent(LogEntry entry) {
+        try {//int ddd = 0/0;
+            if (entry.addedTimeToDescription)
+                entry.AddTimeToDescription(java.time.LocalDateTime.now().toString());
+            entry.eventDescription = "\"" + entry.eventDescription + "\"";
+            String eventCommand = "EventCreate /t " + entry.eventType + " /id " + entry.eventID + " /l " + entry.eventLog + " /so " + entry.eventSource + " /d " + entry.eventDescription;
+            String result = execCmd(eventCommand, false);
+            if (!result.contains("SUCCESS: An event of type"))
+                org.testng.Assert.fail("Could no add log event.\nAdd event result: " + result + "\nCommand sent: " + eventCommand);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not write event to windows log." + "\n" + e.toString());
+        }
+
+    }
+
+    public void CheckEndPointActiveByDbJson(int timeout) {
+        try {
+
+            String text = "";
+            boolean active = false;
+            File file = new File(dbJsonPath);
+
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                if (file.exists()) {
+                    FileInputStream inputStream = new FileInputStream(dbJsonPath);
+                    text = IOUtils.toString(inputStream, Charset.defaultCharset());
+                    inputStream.close();
+                    if (text.contains("\"EndpointId\": \"") && text.contains("\"DsInitialHost\": ")) {
+                        active = true;
+                        break;
+                    }
+                }
+
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+
+            }
+
+            if (!file.exists())
+                org.testng.Assert.fail("Service is not connected - db.json file was not found at: " + dbJsonPath + " after timeout(sec): " + timeout);
+
+            if (!active)
+                org.testng.Assert.fail("Service is not connected according to db.json file after timeout(sec): " + timeout + ". Failed to find in db.json: End Point ID  Or Host.\n" + "db.json file content:\n" + text);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not check if endpoint is active by db.json file." + "\n" + e.toString());
+        }
+
 
     }
 
 
-    public boolean EndPointServiceExist() throws IOException {
-        //String result = execCmd("net start | find \"Trustwave Endpoint Agent Service\"");
-        String result = execCmd("net start", false);
-        if (result.contains("Trustwave Endpoint Agent Service"))
-            return true;
-        else
+    public boolean EndPointServiceExist() {
+        try {
+            //String result = execCmd("net start | find \"Trustwave Endpoint Agent Service\"");
+            String result = execCmd("net start", false);
+            if (result.contains("Trustwave Endpoint Agent Service"))
+                return true;
+            else
+                return false;
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not check if endpoint service exist." + "\n" + e.toString());
             return false;
-
+        }
     }
+
 
 }
+
 
 /*
     //legacy flow - Setting customer MTD would generate files creation

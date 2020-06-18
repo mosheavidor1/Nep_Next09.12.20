@@ -18,7 +18,7 @@ public class ChangeEPConfigurationTest extends GenericTest {
     }
 
     @Test(groups = { "download" } )
-    public void DownloadTest () throws Exception {
+    public void DownloadTest () {
 
         action.LaunchApplication(general.get("Browser"));
         action.SetApplicationUrl(general.get("Fusion Link"));

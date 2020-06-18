@@ -32,17 +32,22 @@ public class CloudActions extends TestActions {
 		super();
 	}
 
-	public void Login(String userName, String password) throws Exception {
-		LoginPage login = new LoginPage();
-		DashboardPage dash = new DashboardPage();
+	public void Login(String userName, String password) {
+		try {
+			LoginPage login = new LoginPage();
+			DashboardPage dash = new DashboardPage();
 
-		login.WaitUntilTitleAppearAndPageLoad("Trustwave Fusion");
-		login.UserName.SetText(userName);
-		login.Password.SetText(password);
-		login.LoginButton.click();
+			login.WaitUntilTitleAppearAndPageLoad("Trustwave Fusion");
+			login.UserName.SetText(userName);
+			login.Password.SetText(password);
+			login.LoginButton.click();
 
-		//wait until page load
-		dash.WaitUntilObjectClickable(DashboardPage.dashboradByID);
+			//wait until page load
+			dash.WaitUntilObjectClickable(DashboardPage.dashboradByID,120);
+		}
+		catch (Exception e){
+
+		}
 
 	}
 

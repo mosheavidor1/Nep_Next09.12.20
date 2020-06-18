@@ -38,7 +38,7 @@ public class GenericTest {
 
 
 	@DataProvider(name = "getData")
-	public static Object[] getDataForInstances(ITestNGMethod m) throws Exception {
+	public static Object[] getDataForInstances(ITestNGMethod m)  {
 
 		String fullTestName = m.getConstructorOrMethod().getName(); //m.getMethodName();
 		String[] arr = fullTestName.split("\\.");
@@ -61,13 +61,13 @@ public class GenericTest {
 
 			excelFileStatus = generalSettings.setExcelFileAndSheet(fileName, generalSettingsIdentifier);
 			Object[] getGenericSettings = null;
-			if (excelFileStatus)
+			if (excelFileStatus) {
 				getGenericSettings = generalSettings.getTestData();
-
-			if (getGenericSettings == null)
-				JLog.logger.error("Could not find General Settings Excel sheet");
-			else
 				general = (HashMap<String, String>) getGenericSettings[0];
+			}
+			else
+				JLog.logger.error("Could not find General Settings Excel sheet");//as there is an exception when error occurs at Excel class this code currently unreachable. Leave it if future design will allow no General settings
+
 		}
 
 		return getTestData;
@@ -75,12 +75,16 @@ public class GenericTest {
 	}
 
 	@BeforeMethod
-	public void BeforeMethod() throws Exception {
+	public void BeforeMethod()  {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss");
 		Date date = new Date();
 		video = new VideoCapture(".\\test-output\\Capture", this.getClass().getSimpleName() + " " + dateFormat.format(date));
 
-		video.startRecording();
+		try {
+			video.startRecording();
+		} catch (Exception e) {
+			JLog.logger.warn("Could not start video recording. If multiple screens are used do not change the browser location to avoid this issue.");
+		}
 		String captureFilesPrefix = System.getProperty("user.dir") + "\\test-output\\Capture\\" + this.getClass().getSimpleName() + " " + dateFormat.format(date);
 		screenShot = captureFilesPrefix + ".png";
 		InvokedMethodListener.screenShot = screenShot;

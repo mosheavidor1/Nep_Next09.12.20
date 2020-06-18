@@ -7,7 +7,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import java.net.InetAddress;
 
 public class ClientLogToPortalTest extends GenericTest {
     private NepActions action;
@@ -20,7 +19,7 @@ public class ClientLogToPortalTest extends GenericTest {
     }
 
     @Test( groups = { "logs" } )
-    public void SendLogsAndVerify () throws Exception {
+    public void SendLogsAndVerify () {
 
         action.ChangeReportInterval(data.get("Report Interval"));
 

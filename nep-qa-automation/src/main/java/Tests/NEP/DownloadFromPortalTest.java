@@ -1,7 +1,9 @@
 package Tests.NEP;
 
 import Actions.NepActions;
+import Applications.SeleniumBrowser;
 import Tests.GenericTest;
+import Utils.Data.Excel;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.*;
 
@@ -16,7 +18,7 @@ public class DownloadFromPortalTest extends GenericTest {
     }
 
     @Test(groups = { "download" } )
-    public void DownloadTest () throws Exception {
+    public void DownloadTest ()  {
 
         action.CreateAndCleanDownloadFolder();
 

@@ -16,7 +16,7 @@ public class VerifyEndPointOkAtPortalTest extends GenericTest {
     }
 
     @Test( groups = { "verify" } )
-    public void VerifyEndPointStatusAtPortalTest () throws Exception {
+    public void VerifyEndPointStatusAtPortalTest () {
 
 
         action.LaunchApplication(general.get("Browser"));

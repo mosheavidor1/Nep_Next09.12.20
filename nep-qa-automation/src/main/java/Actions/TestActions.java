@@ -33,7 +33,7 @@ public abstract class TestActions {
         application.Launch(ApplicationType, proxyIP, true);
     }
 
-    public void LaunchApplication(String ApplicationType) throws IOException {
+    public void LaunchApplication(String ApplicationType) {
         application.Launch(ApplicationType);
     }
 

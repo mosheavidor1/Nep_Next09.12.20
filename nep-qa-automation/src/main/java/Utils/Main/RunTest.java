@@ -1,6 +1,7 @@
 package Utils.Main;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import Utils.PropertiesFile.PropertiesFile;
@@ -13,7 +14,7 @@ public class RunTest {
 	public static final String suitesFolder = "nep-qa-automation/src/main/java/TestSuites/NEP/";
 	public static String runAtDirectory ="";
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws URISyntaxException {
 
 		String currentSuite="";
 		String clusterToTest="";
