@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -43,9 +44,11 @@ public class SeleniumBrowser implements Application {
 	@Override
 	public void Launch(String applicationType, String proxyIP , boolean loadProxyExtension)  {
 		try {
+			JLog.logger.debug("Selenium browser Launch - Before switch application type: " + applicationType);
 			switch (applicationType) {
 				case "Chrome":
 					System.setProperty("webdriver.chrome.driver", "C:\\Selenium\\chromedriver.exe");
+					JLog.logger.debug("Selenium browser Launch - After set chrome property");
 
 					if (proxyIP.compareTo("") != 0) {
 						ChromeOptions options = new ChromeOptions();
@@ -72,16 +75,26 @@ public class SeleniumBrowser implements Application {
 
 					} else {
 						HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
-						chromePrefs.put("safebrowsing.enabled", "false");
+						JLog.logger.debug("Selenium browser Launch - After creating new hashMap");
+
+						//chromePrefs.put("safebrowsing.enabled", "false");
 						//chromePrefs.put("profile.default_content_settings.popups", 0);
 						//chromePrefs.put("download.prompt_for_download", "false");
 						String downloadFilepath = PropertiesFile.readProperty("DownloadFolder");
+						JLog.logger.debug("Selenium browser Launch - After reading DownloadFolder property: " + downloadFilepath);
+
 						chromePrefs.put("download.default_directory", downloadFilepath);
+						JLog.logger.debug("Selenium browser Launch - After put to hash" );
 
 						ChromeOptions options = new ChromeOptions();
+						JLog.logger.debug("Selenium browser Launch - After new chrome options" );
+
 						options.setExperimentalOption("prefs", chromePrefs);
+						JLog.logger.debug("Selenium browser Launch - After chrome setExperimentalOption" );
 
 						driver = new ChromeDriver(options);
+						JLog.logger.debug("Selenium browser Launch - After creating new chrome driver" );
+
 
 					}
 
@@ -141,11 +154,12 @@ public class SeleniumBrowser implements Application {
 
 
 			driver.manage().timeouts().implicitlyWait(implicitWait, TimeUnit.SECONDS);
+			JLog.logger.debug("After Setting implicit timeout" );
 			driver.manage().window().maximize();
+			JLog.logger.debug("After maximizing window " );
+
 		}
 		catch (Exception e) {
-			if(applicationType==null)
-				applicationType="null";
 			org.testng.Assert.fail("Could load the following browser: " + applicationType + "\n" + e.toString());
 		}
 
@@ -192,13 +206,19 @@ public class SeleniumBrowser implements Application {
 	@Override
 	public void LoadUrl(String URL) {
 		try {
+			JLog.logger.debug("LoadURL: Before check if driver equals to null " );
+
 			if (driver == null)
 				return;
+			JLog.logger.debug("LoadURL: After check if driver equals to null " );
 
 			if (!URL.startsWith("http"))
 				URL = "http://" + URL;
+			JLog.logger.debug("LoadURL: URL =  " + URL);
 
 			driver.get(URL);
+			JLog.logger.debug("LoadURL: after get URL =  " + URL);
+
 		}
 		catch (Exception e) {
 			org.testng.Assert.fail("Could not load URL at browser. " + "\n" + e.toString());
