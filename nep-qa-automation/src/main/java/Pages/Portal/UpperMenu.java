@@ -20,14 +20,14 @@ public class UpperMenu extends GenericPage{
 	public Button pendingChanes;
 
 
-	//private static final String customerSelectorXpath = "//*[@id=\"stg-support\"]/div/div[1]/twa-org-selector/div/div[3]/div[1]/span";
-	private static final String customerSelectorXpath = "//twa-portal-stage[not(@hidden)]//twa-org-selector/div/div[3]/div[1]";
+	//private static final String customerSelectorXpath = "//twa-portal-stage[not(@hidden)]//twa-org-selector/div/div[3]/div[1]";
+	private static final String customerSelectorXpath = "//twa-portal-stage[not(@hidden)]//twa-org-selector/div/div[3]";
 	public static final By customerSelectorBy = By.xpath(customerSelectorXpath);
 	@FindBy(how= How.XPATH,using=customerSelectorXpath)
 	public WebElement customerSelector_element;
 
-	private static final String searchTextXpath = "/html/body/div/div[*]/div/div/div/main/div/div/div[1]/div/twa-input/div/material-input/div/div[1]/label/input";
-
+	//private static final String searchTextXpath = "/html/body/div/div[*]/div/div/div/main/div/div/div[1]/div/twa-input/div/material-input/div/div[1]/label/input";
+	private static final String searchTextXpath = "//input[@aria-label='Search']";
 	public static final By searchTextBy = By.xpath(searchTextXpath);
 	@FindBy(how= How.XPATH,using=searchTextXpath)
 	public WebElement searchText_element;
