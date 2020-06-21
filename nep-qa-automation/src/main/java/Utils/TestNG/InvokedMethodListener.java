@@ -1,6 +1,7 @@
 package Utils.TestNG;
 
 import Applications.SeleniumBrowser;
+import Utils.Logs.JLog;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -26,6 +27,7 @@ public class InvokedMethodListener implements IInvokedMethodListener {
 
             try {
                 FieldUtils.writeField(throwable, "detailMessage", newMessage, true);
+                JLog.logger.error(newMessage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
