@@ -248,7 +248,6 @@ public class NepActions extends CloudActions {
 
     public void CheckEndPointOkInCentCom(String customerName) {
         try {
-
             CentComSearchPage centSearch = new CentComSearchPage();
             centSearch.customersText_element.sendKeys(customerName);
             centSearch.searchButton_element.click();
@@ -260,7 +259,13 @@ public class NepActions extends CloudActions {
 
             String host = InetAddress.getLocalHost().getHostName();
 
-            detailsPage.endPointSearchBox_element.sendKeys(host + "\n");
+            //detailsPage.endPointSearchBox_element.sendKeys(host + "\n");
+            detailsPage.binocularsButton_element.click();
+
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectClickable(detailsPage.valueToSearchBy);
+            detailsPage.valueToSearch_element.sendKeys(host + "\n");
+
             detailsPage.refreshButton_element.click();
 
             detailsPage.WaitUntilPageLoad();

@@ -20,8 +20,21 @@ public class CentComSearchDetailsPage extends GenericPage {
     @FindBy(how= How.XPATH,using="//span[contains(text(),'Open Configuration')]")
     public WebElement openConfiguration_element;
 
+    //This item removed from Fusion July 2020 version. Still exist in production
     @FindBy(how= How.XPATH,using="//twa-table-search-input//twa-search-input//input[@placeholder='All Columns']")
     public WebElement endPointSearchBox_element;
+
+    @FindBy(how= How.XPATH,using="//twa-button[@icon='tw-binoculars']/material-button")
+    public WebElement binocularsButton_element;
+
+    private static final String valueToSearchXpath ="//twa-form-item[@label='Value']//input";
+    public static final By valueToSearchBy = By.xpath(valueToSearchXpath);
+    @FindBy(how= How.XPATH,using=valueToSearchXpath)
+    public WebElement valueToSearch_element;
+
+    //no need for find as text is searched with \n does the same operation
+    @FindBy(how= How.XPATH,using="//twa-button[@aria-label='Find']/material-button")
+    public WebElement findButton_element;
 
     @FindBy(how= How.XPATH,using="//twa-button[@icon='tw-refresh']//material-button")
     public WebElement refreshButton_element;
