@@ -736,7 +736,7 @@ public class NepActions extends CloudActions {
 
     //Example "EventCreate /t INFORMATION /id 123 /l APPLICATION /so AutomationTest /d \"Hello!! this is the test info\""
     public void WriteEvent(LogEntry entry) {
-        try {//int ddd = 0/0;
+        try {
             if (entry.addedTimeToDescription)
                 entry.AddTimeToDescription(java.time.LocalDateTime.now().toString());
             entry.eventDescription = "\"" + entry.eventDescription + "\"";
