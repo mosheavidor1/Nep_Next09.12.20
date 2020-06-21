@@ -77,9 +77,9 @@ public class SeleniumBrowser implements Application {
 						HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
 						JLog.logger.debug("Selenium browser Launch - After creating new hashMap");
 
-						//chromePrefs.put("safebrowsing.enabled", "false");
-						//chromePrefs.put("profile.default_content_settings.popups", 0);
-						//chromePrefs.put("download.prompt_for_download", "false");
+						// This Chrome Preference is needed to not block download of exe files
+						chromePrefs.put("safebrowsing.enabled", "false");
+
 						String downloadFilepath = PropertiesFile.readProperty("DownloadFolder");
 						JLog.logger.debug("Selenium browser Launch - After reading DownloadFolder property: " + downloadFilepath);
 
