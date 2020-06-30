@@ -1,0 +1,11 @@
+#!/usr/bin/env groovy
+
+node('nep-build-centos7') {
+
+    stage('Install') {
+        echo "install"
+	}
+    stage('Run tests') {
+        echo "test"
+    }
+}
