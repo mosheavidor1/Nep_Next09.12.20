@@ -1,10 +1,11 @@
 #!/usr/bin/env groovy
 
 node('nep-build-centos7') {
+    try {
+        NEP_BRANCH = 'next'
 
     node('master') {
         stage("Read modules versions from files on Master") {
-            NEP_BRANCH = 'next'
             IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
             DS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-DS-${NEP_BRANCH}.row"
             DS_MGMT_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-DS-Mgmt-${NEP_BRANCH}.row"
@@ -14,131 +15,129 @@ node('nep-build-centos7') {
             DS_MGMT_VERSION = getProdVersionFromFile( DS_MGMT_VERSION_FILE )
     
             echo """
-                    IS_VERSION      = ${IS_VERSION}
-                    DS_VERSION      = ${DS_VERSION}
-                    DS_MGMT_VERSION = ${DS_MGMT_VERSION} 
-                   """
-            }
+            IS_VERSION      = ${IS_VERSION}
+            DS_VERSION      = ${DS_VERSION}
+            DS_MGMT_VERSION = ${DS_MGMT_VERSION} 
+            """
+        }
     }
+
+    stage("Linux part install") {
+    
     def inst_type = "skip"
     if ( inst_type == "skip" ) {
-        stage ('Install Linux components') {
-            echo "skip install"
-        }
+        echo "skip install"
     }
     else {
         
-    USERNAME = "root"
-    PASSWORD = "trustwave"
-    HOST_IP  = "10.85.25.60"
-	//RESTORE_SNAPSHOT
-    //ESX_IP
-    //VM_NAME
-    //SNAPSHOT_NAME // NEP Base OS || Centos 7 (minimal) + SELinux disabled
+        USERNAME = "root"
+        PASSWORD = "trustwave"
+        HOST_IP  = "10.85.25.60"
+        //RESTORE_SNAPSHOT
+        //ESX_IP
+        //VM_NAME
+        //SNAPSHOT_NAME // NEP Base OS || Centos 7 (minimal) + SELinux disabled
 
-	def ALL_SERVICSES_LIST = [
-		'ca',
-		'kafka',
-		'nginx',
-		'redis',
-		'siem',
-		'ep',
-		'stub-srv',
-		'haproxy',
-		'ds',		
-		'ds-mgmt',
-		'is',
-		'mysql'
-	]
+        def ALL_SERVICSES_LIST = [
+            'ca',
+            'kafka',
+            'nginx',
+            'redis',
+            'siem',
+            'ep',
+            'stub-srv',
+            'haproxy',
+            'ds',		
+            'ds-mgmt',
+            'is',
+            'mysql'
+        ]
 
-	def UP_SERVICES_YAMLS = [
-		'ca.yml',
-		'redis.yml',
-		'siem.yml',
-		'ep.yml',
-		'kafka.yml',
-		'stub-srv.yml',
-		'ds.yml',
-		'ds-mgmt.yml',
-		'is.yml',
-		'nginx.yml',
-		'mysql'
-	]
+        def UP_SERVICES_YAMLS = [
+            'ca.yml',
+            'redis.yml',
+            'siem.yml',
+            'ep.yml',
+            'kafka.yml',
+            'stub-srv.yml',
+            'ds.yml',
+            'ds-mgmt.yml',
+            'is.yml',
+            'nginx.yml',
+            'mysql'
+        ]
 		
-	def DOWN_SERVICES_YAMLS = [
-		'nginx.yml',
-		'is.yml',
-		'ds-mgmt.yml',
-		'ds.yml',
-		'stub-srv.yml',
-		'kafka.yml',
-		'siem.yml',
-		'ep.yml',
-		'redis.yml',
-		'ca.yml',
-		'mysql'
-	]
+        def DOWN_SERVICES_YAMLS = [
+            'nginx.yml',
+            'is.yml',
+            'ds-mgmt.yml',
+            'ds.yml',
+            'stub-srv.yml',
+            'kafka.yml',
+            'siem.yml',
+            'ep.yml',
+            'redis.yml',
+            'ca.yml',
+            'mysql'
+        ]
 
-	def remote = [:]
-	remote.name = 'smoke_test'
-	remote.host = "${HOST_IP}"
-	remote.user = "${USERNAME}"
-	remote.password = "${PASSWORD}"
-	remote.allowAnyHosts = true
+        def remote = [:]
+        remote.name = 'smoke_test'
+        remote.host = "${HOST_IP}"
+        remote.user = "${USERNAME}"
+        remote.password = "${PASSWORD}"
+        remote.allowAnyHosts = true
 	
-	GIT_REPOSITORY_WITH_CREDENTIALS='https://svc_wafbuild:IcUcN0lc@bitbucket.trustwave.com/scm/nep/nep-tools.git'
+        GIT_REPOSITORY_WITH_CREDENTIALS='https://svc_wafbuild:IcUcN0lc@bitbucket.trustwave.com/scm/nep/nep-tools.git'
 	
 	
-	WORK_FOLDER='/work'
-	LOG_FOLDER="${WORK_FOLDER}/log"
-	UPDATES_FOLDER="${WORK_FOLDER}/updates"
-	IMAGES_LOCATION_FOLDER="${WORK_FOLDER}/nep-tools/testing-tools/docker/images"
-	DOCKER_YMLS_SRC="${WORK_FOLDER}/nep-tools/testing-tools/docker/ymls"
-	DOCKER_YMLS_DST="${WORK_FOLDER}/ymls"
-	SERVICES_LOCATION_SRC="${WORK_FOLDER}/nep-tools/testing-tools/services"
-	SERVICES_LOCATION_DST="${WORK_FOLDER}/services"
+        WORK_FOLDER='/work'
+        LOG_FOLDER="${WORK_FOLDER}/log"
+        UPDATES_FOLDER="${WORK_FOLDER}/updates"
+        IMAGES_LOCATION_FOLDER="${WORK_FOLDER}/nep-tools/testing-tools/docker/images"
+        DOCKER_YMLS_SRC="${WORK_FOLDER}/nep-tools/testing-tools/docker/ymls"
+        DOCKER_YMLS_DST="${WORK_FOLDER}/ymls"
+        SERVICES_LOCATION_SRC="${WORK_FOLDER}/nep-tools/testing-tools/services"
+        SERVICES_LOCATION_DST="${WORK_FOLDER}/services"
 
-	DOCKER_CONFIG='/etc/docker/daemon.json'
-	NEXUS_DOCKER_REPO='192.168.120.150:8083'
+        DOCKER_CONFIG='/etc/docker/daemon.json'
+        NEXUS_DOCKER_REPO='192.168.120.150:8083'
 
-	DOCKER_TOOLS_SRC="${WORK_FOLDER}/nep-tools/testing-tools/docker/tools"
-	DOCKER_TOOLS_DST="${WORK_FOLDER}/tools"
-	S3_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nepa-tools.internal&a=s3tools&v=LATEST&e=cmd"
-	S3_ARTIFACT_DST="${DOCKER_TOOLS_DST}/bin/s3_cmd"
-	S3_BLOCKER_SRC="${WORK_FOLDER}/nep-tools/internal-tools/s3tools/s3-blocker"
-	NEXUS_URL_PRFX='https://nexus01.trustwave.com/content/repositories/releases/com/trustwave'
+        DOCKER_TOOLS_SRC="${WORK_FOLDER}/nep-tools/testing-tools/docker/tools"
+        DOCKER_TOOLS_DST="${WORK_FOLDER}/tools"
+        S3_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nepa-tools.internal&a=s3tools&v=LATEST&e=cmd"
+        S3_ARTIFACT_DST="${DOCKER_TOOLS_DST}/bin/s3_cmd"
+        S3_BLOCKER_SRC="${WORK_FOLDER}/nep-tools/internal-tools/s3tools/s3-blocker"
+        NEXUS_URL_PRFX='https://nexus01.trustwave.com/content/repositories/releases/com/trustwave'
 	
-	DS_ARTIFACT_NAME='nepa-dserver.jar'
-	DS_ARTIFACT_CONTAINER="/var/lib/nepa-dserver/${DS_ARTIFACT_NAME}"
-	DS_ARTIFACT_SRC="${NEXUS_URL_PRFX}/nep/services/nepa-dserver/${DS_VERSION}/nepa-dserver-${DS_VERSION}.war"
-	DS_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/ds${DS_ARTIFACT_CONTAINER}"
+        DS_ARTIFACT_NAME='nepa-dserver.jar'
+        DS_ARTIFACT_CONTAINER="/var/lib/nepa-dserver/${DS_ARTIFACT_NAME}"
+        DS_ARTIFACT_SRC="${NEXUS_URL_PRFX}/nep/services/nepa-dserver/${DS_VERSION}/nepa-dserver-${DS_VERSION}.war"
+        DS_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/ds${DS_ARTIFACT_CONTAINER}"
 
-	DS_MGMT_ARTIFACT_NAME='nepa-dserver-mgmt.jar'
-	DS_MGMT_ARTIFACT_CONTAINER="/var/lib/nepa-dserver-mgmt/${DS_MGMT_ARTIFACT_NAME}"
-	DS_MGMT_ARTIFACT_SRC="${NEXUS_URL_PRFX}/nep/services/nepa-dserver-mgmt/${DS_MGMT_VERSION}/nepa-dserver-mgmt-${DS_MGMT_VERSION}.war"
-	DS_MGMT_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/ds-mgmt${DS_MGMT_ARTIFACT_CONTAINER}"
+        DS_MGMT_ARTIFACT_NAME='nepa-dserver-mgmt.jar'
+        DS_MGMT_ARTIFACT_CONTAINER="/var/lib/nepa-dserver-mgmt/${DS_MGMT_ARTIFACT_NAME}"
+        DS_MGMT_ARTIFACT_SRC="${NEXUS_URL_PRFX}/nep/services/nepa-dserver-mgmt/${DS_MGMT_VERSION}/nepa-dserver-mgmt-${DS_MGMT_VERSION}.war"
+        DS_MGMT_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/ds-mgmt${DS_MGMT_ARTIFACT_CONTAINER}"
 
-	IS_ARTIFACT_NAME='nepa-is.jar'
-	IS_ARTIFACT_CONTAINER="/var/lib/nepa-is/${IS_ARTIFACT_NAME}"
-	IS_ARTIFACT_SRC="${NEXUS_URL_PRFX}/nep/services/nepa-is/${IS_VERSION}/nepa-is-${IS_VERSION}.war"
-	IS_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/is${IS_ARTIFACT_CONTAINER}"
+        IS_ARTIFACT_NAME='nepa-is.jar'
+        IS_ARTIFACT_CONTAINER="/var/lib/nepa-is/${IS_ARTIFACT_NAME}"
+        IS_ARTIFACT_SRC="${NEXUS_URL_PRFX}/nep/services/nepa-is/${IS_VERSION}/nepa-is-${IS_VERSION}.war"
+        IS_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/is${IS_ARTIFACT_CONTAINER}"
 
-	DUMMY_PORTAL_SRC="${WORK_FOLDER}/nep-tools/testing-tools/services-src/dummy-portal-services"
-	DUMMY_PORTAL_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nepa-tools.testing&a=dummy-portal-services&v=LATEST&e=war"
-	DUMMY_PORTAL_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/stub-srv/apps/dummy-portal-services.war"
+        DUMMY_PORTAL_SRC="${WORK_FOLDER}/nep-tools/testing-tools/services-src/dummy-portal-services"
+        DUMMY_PORTAL_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nepa-tools.testing&a=dummy-portal-services&v=LATEST&e=war"
+        DUMMY_PORTAL_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/stub-srv/apps/dummy-portal-services.war"
 
-	CENTCOM_SRC="${WORK_FOLDER}/nep-tools/testing-tools/services-src/nepa-centcom-client"
-	CENTCOM_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nepa-tools.testing&a=nepa-centcom-client&v=LATEST&e=war"
-	CENTCOM_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/stub-srv/apps/nepa-centcom-client.war"
+        CENTCOM_SRC="${WORK_FOLDER}/nep-tools/testing-tools/services-src/nepa-centcom-client"
+        CENTCOM_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nepa-tools.testing&a=nepa-centcom-client&v=LATEST&e=war"
+        CENTCOM_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/stub-srv/apps/nepa-centcom-client.war"
 	
-	DOCKER_IMAGES_URL_PRFX="${NEXUS_URL_PRFX}/nep/docker/images"
-	DOCKER_IMAGES_DST="${WORK_FOLDER}/images"
-
-    try {
-        stage ('install Linux components') {
-
-            sshCommand remote: remote, command: """			
-					set -x
+        DOCKER_IMAGES_URL_PRFX="${NEXUS_URL_PRFX}/nep/docker/images"
+        DOCKER_IMAGES_DST="${WORK_FOLDER}/images"
+        
+        sshCommand remote: remote, command: """			
+                    set -x
 
 					SELINUXSTATUS=\$(getenforce);
 					if [ "\${SELINUXSTATUS,,}" != "disabled" ]; then
@@ -193,8 +192,8 @@ _EOB
 					chmod +x /bin/yq
 
 				"""
-
-                				sshCommand remote: remote, command: """		
+                
+                sshCommand remote: remote, command: """		
 					set -x 
 					
 					> /info.nep.folder
@@ -301,7 +300,7 @@ _EOB
 						password(description: '', name: 'PASSWORD', value: "${PASSWORD}")
 					]
 
-                    sshCommand remote: remote, command: """		
+                sshCommand remote: remote, command: """		
 					set -x 
 		
 					declare -a services
@@ -420,7 +419,8 @@ _EOB
 					done < "${LOG_FOLDER}/info.containers"
 		
 				"""
-                				sshCommand remote: remote, command: """		
+                
+                sshCommand remote: remote, command: """		
 					set -x 
 		
 		        	PROPERTIES_SRC_DST=("${DUMMY_PORTAL_SRC}/etc/nep-properties/*.properties" \
@@ -451,7 +451,7 @@ _EOB
 		                    echo   "\${src} --> \${dst}" >> ${LOG_FOLDER}/info.properties.copy
 		                fi
 		            done
-				"""
+                """
 
 				sshCommand remote: remote, command: """		
 					set -x 
@@ -468,6 +468,7 @@ _EOB
 						chmod +x ${SERVICES_LOCATION_DST}/\$path
 					done
 				"""
+
 				sshCommand remote: remote, command: """		
 					set -x 		
 					
@@ -522,20 +523,20 @@ _EOB
 
 				"""
                 }
-        }
-   
-        catch (exc) {
-		   currentBuild.result = "FAILURE"
-           sendEmail("Failed")
-           throw exc
-        }
-        finally {
-            // sendEmail("Smoke run OK")
-        }
     }
-    stage('Run tests') {
+         stage('Run tests') {
         //// echo "test"
     }
+    }
+    catch (exc) {
+        currentBuild.result = "FAILURE"
+        sendEmail("Failed")
+        throw exc
+    }
+    finally {
+        // sendEmail("Smoke run OK")
+    }
+
 }
 
 
