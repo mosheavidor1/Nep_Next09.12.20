@@ -3,7 +3,8 @@
 node('nep-build-centos7') {
     try {
         NEP_BRANCH = 'next'
-
+        HOST_IP  = "10.85.25.60"
+        
     node('master') {
         stage("Read modules versions from files on Master") {
             IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
@@ -30,9 +31,7 @@ node('nep-build-centos7') {
     }
     else {
         
-        USERNAME = "root"
-        PASSWORD = "trustwave"
-        HOST_IP  = "10.85.25.60"
+  
         //RESTORE_SNAPSHOT
         //ESX_IP
         //VM_NAME
@@ -81,6 +80,9 @@ node('nep-build-centos7') {
             'mysql'
         ]
 
+        USERNAME = "root"
+        PASSWORD = "trustwave"
+        
         def remote = [:]
         remote.name = 'smoke_test'
         remote.host = "${HOST_IP}"
@@ -524,9 +526,46 @@ _EOB
 				"""
                 }
     }
-         stage('Run tests') {
-        //// echo "test"
-    }
+        stage('Run Linux tests') {
+            //// echo "test"
+            node('nep-qa-nightly-25.187') {
+                try {
+                   SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
+                   DISPLAY_VERSION = "${BUILD_NUMBER}-${NEP_BRANCH}"
+                    MODULE_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
+	                MODULE_ARTIFACT_DST="${WORKSPACE}\\nep-qa-automation.jar"
+	                echo "RUN LUNUX TESTS  ${MODULE_ARTIFACT_DST}"
+	                deleteDir()
+	                git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
+	               	powershell """
+				Get-ChildItem env:
+				
+				echo "From: ${MODULE_ARTIFACT_SRC}"
+				echo "To: 	${MODULE_ARTIFACT_DST}" 
+	
+				##### Download artifact from Nexus
+				echo "curl -o ${MODULE_ARTIFACT_DST} ${MODULE_ARTIFACT_SRC}"
+				curl -o "${MODULE_ARTIFACT_DST}" "$MODULE_ARTIFACT_SRC"
+				
+				if ( -Not (Test-Path "${MODULE_ARTIFACT_DST}")) {
+					Write-host "${MODULE_ARTIFACT_DST} file can't be downloaded"
+					exit 1
+				}
+			"""
+			    SETTINGS_XML = "DownloadInstallAndSendLogs.xml"
+			    ENVIRONMENT_NAME = 'qa'
+	            bat """
+				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
+			    """
+
+	                
+                }
+            	catch (exc) {
+	            	currentBuild.result = "FAILURE"
+                    throw exc
+                }
+            }
+        }
     }
     catch (exc) {
         currentBuild.result = "FAILURE"
@@ -536,7 +575,6 @@ _EOB
     finally {
         // sendEmail("Smoke run OK")
     }
-
 }
 
 
@@ -548,10 +586,9 @@ def getProdVersionFromFile( versionFile ) {
     ver_tmp=\"\${ver_tmp##*>}\"
     echo \$ver_tmp
     """,
-   returnStdout: true).trim()
+    returnStdout: true).trim()
     
     return verString
-    
 }
 
 def sendEmail( bodyMsg ) {
