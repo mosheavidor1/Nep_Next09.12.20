@@ -229,7 +229,10 @@ public class NepActions extends CloudActions {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 Thread.sleep(5000);
                 current = LocalDateTime.now();
-                conf.refreshButton_element.click();
+                
+                if(conf.IsElementExist(conf.refreshBy))
+                    conf.refreshButton_element.click();
+
                 if (conf.IsElementExist(conf.percent100By)) {
                     found = true;
                     break;
