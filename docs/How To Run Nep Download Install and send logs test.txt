@@ -1,5 +1,5 @@
 1. Download jar file
-2. Download src folder from: https://bitbucket.trustwave.com/projects/NEP/repos/nep-qa/browse/nep-automation
+2. Download nep-qa-automation folder from: https://bitbucket.trustwave.com/projects/NEP/repos/nep-qa/browse/
 3. Put src folder next to jar file location
 4. Use the following command to run the test:
     java -jar Automation.jar NEP\DownloadInstallAndSendLogs.xml <cluster to test: qa,inc, stg>
