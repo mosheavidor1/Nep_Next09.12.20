@@ -1,4 +1,4 @@
-package Tests.NEP.Lenny;
+package Tests.NEP.LNE;
 
 import Actions.NepActions;
 import Tests.GenericTest;
@@ -6,7 +6,6 @@ import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -44,13 +43,6 @@ public class SetConfigurationTest extends GenericTest {
         else
             org.testng.Assert.fail("Error. Response status code received is: " + response);
 
-        //Second method of posting and verifying response
-        given()
-                .contentType("application/json").
-                body(myJson).
-                when().
-                post("initCustomerSettings").
-                then().statusCode(200);
     }
 
 }

@@ -1,8 +1,12 @@
 package Utils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.Scanner;
+
 import org.apache.commons.io.FileUtils;
 
 public class TestFiles {
@@ -33,11 +37,9 @@ public class TestFiles {
                 if (dir.exists())
                     org.testng.Assert.fail("Could delete directory: " + path);
             }
-
         }
-
         catch (IOException e) {
-            org.testng.Assert.fail("Could delete directory: " + path + "\n" + e.toString());
+            org.testng.Assert.fail("Could not delete directory: " + path + "\n" + e.toString());
         }
 
     }
@@ -84,4 +86,40 @@ public class TestFiles {
     }
 
 
+
+    public static void AppendToFile(String path, String addThisString , boolean checkIfStringAlreadyExists){
+        try {
+            if (!Exists(path))
+                org.testng.Assert.fail("Could not find file:" + path + " needed to append the following: " + addThisString);
+
+            File file = new File(path);
+
+
+            Scanner scanner = new Scanner(file);
+
+            boolean found = false;
+
+            if ( checkIfStringAlreadyExists) {
+                while (scanner.hasNextLine()) {
+                    String lineFromFile = scanner.nextLine();
+                    if (addThisString.trim().equalsIgnoreCase(lineFromFile.trim())) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+
+            if(! found) {
+                FileWriter fr = new FileWriter(file, true);
+                fr.write( addThisString);
+                fr.close();
+            }
+        }
+        catch (Exception e){
+            org.testng.Assert.fail("Could not append to file:" + path + " needed to append the following: " + addThisString + "\n" + e.toString());
+        }
+
+
+    }
 }
