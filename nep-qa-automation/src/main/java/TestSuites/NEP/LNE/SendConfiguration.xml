@@ -5,7 +5,7 @@
 
     <test name = "Send Configuration" >
         <classes>
-            <class name = "Tests.NEP.Lenny.SetConfigurationTest" />
+            <class name = "Tests.NEP.LNE.SetConfigurationTest" />
         </classes>
     </test>
 

@@ -40,7 +40,7 @@ public class NepActions extends CloudActions {
     private static final String dbJsonPath = "C:\\ProgramData\\Trustwave\\NEPAgent\\db.json";
     private static final String configJsonPath = "C:\\ProgramData\\Trustwave\\NEPAgent\\config.json";
     private static final String configJsonReportInterval = "\"report_period\":";
-    private static final int checkInterval = 5000;
+    protected static final int checkInterval = 5000;
 
     private static final int ServiceStartStopTimeout = 180;
 
@@ -787,10 +787,10 @@ public class NepActions extends CloudActions {
             }
 
             if (!file.exists())
-                org.testng.Assert.fail("Service is not connected - db.json file was not found at: " + dbJsonPath + " after timeout(sec): " + timeout);
+                org.testng.Assert.fail("Endpoint is not connected - db.json file was not found at: " + dbJsonPath + " after timeout(sec): " + timeout);
 
             if (!active)
-                org.testng.Assert.fail("Service is not connected according to db.json file after timeout(sec): " + timeout + ". Failed to find in db.json: End Point ID  Or Host.\n" + "db.json file content:\n" + text);
+                org.testng.Assert.fail("Endpoint is not connected according to db.json file after timeout(sec): " + timeout + ". Failed to find in db.json: End Point ID  Or Host.\n" + "db.json file content:\n" + text);
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not check if endpoint is active by db.json file." + "\n" + e.toString());
