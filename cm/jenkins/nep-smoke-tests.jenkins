@@ -526,8 +526,16 @@ _EOB
 				"""
                 }
     }
-        stage('Run Linux tests') {
+         stage('Run Linux tests') {
             //// echo "test"
+            def skip_lin_test = "skip"
+            if ( skip_lin_test == "skip" ) {
+               echo "Skip Linux tests"
+            }
+            else {
+               echo "Slots for Linux tests"
+            /***********************************
+
             node('nep-qa-nightly-25.187') {
                 try {
                    SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
@@ -564,6 +572,8 @@ _EOB
 	            	currentBuild.result = "FAILURE"
                     throw exc
                 }
+            }
+            *****************************/
             }
         }
     }
