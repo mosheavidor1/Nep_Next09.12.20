@@ -5,7 +5,7 @@
 
     <test name = "Send Configuration" >
         <classes>
-            <class name = "Tests.NEP.LNE.VerifyInstall" />
+            <class name = "Tests.NEP.LNE.VerifyWinInstall" />
         </classes>
     </test>
 

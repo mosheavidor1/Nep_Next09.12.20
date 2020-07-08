@@ -38,7 +38,7 @@ public class NepActions extends CloudActions {
 
 
     private static final String dbJsonPath = "C:\\ProgramData\\Trustwave\\NEPAgent\\db.json";
-    private static final String configJsonPath = "C:\\ProgramData\\Trustwave\\NEPAgent\\config.json";
+    public static final String configJsonPath = "C:\\ProgramData\\Trustwave\\NEPAgent\\config.json";
     private static final String configJsonReportInterval = "\"report_period\":";
     protected static final int checkInterval = 5000;
 
@@ -712,7 +712,7 @@ public class NepActions extends CloudActions {
 
             if (!text.contains(configJsonReportInterval)) {
                 StartEPService(ServiceStartStopTimeout);
-                org.testng.Assert.fail("Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonPath);
+                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonPath);
             }
 
             int start = text.indexOf(configJsonReportInterval) + configJsonReportInterval.length();
