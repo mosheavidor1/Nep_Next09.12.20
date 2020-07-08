@@ -21,7 +21,7 @@ public class SetConfigurationTest extends GenericTest {
 
     }
 
-    @Test()
+    @Test(groups = { "SetConfiguration" } )
     public void SetConfiguration () {
 
         //Short POC test
