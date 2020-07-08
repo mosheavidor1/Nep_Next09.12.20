@@ -29,8 +29,6 @@ public class ChangeCustomerConfiguration extends GenericTest {
 
         String confJson =data.get("Settings Json");
 
-        action.CompareConfigurationToEPConfiguration(confJson);
-
         action.SetCustomerConfiguration(confJson);
         action.StopEPService(Integer.parseInt(general.get("EP Service Timeout")));
         action.StartEPService(Integer.parseInt(general.get("EP Service Timeout")));
