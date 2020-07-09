@@ -259,13 +259,16 @@ public class LNEActions extends NepActions {
                             post("CA_get.sh?ca");
 
             int response = r.getStatusCode();
+            String certificate = r.getBody().print();
+
+            //restoring base uri to default
+            SetLNEBaseURI(LNE_IP);
 
             if (response == 200)
                 JLog.logger.info("Success. LNE certificate received");
             else
                 org.testng.Assert.fail("Could not get LNE CA certificate. LNE response status code received is: " + response);
 
-            String certificate = r.getBody().print();
             String firstLine = "";
             int indexOfFirstNewLine = -1;
             if (certificate != null && (indexOfFirstNewLine = certificate.indexOf("\n")) > 0) {

@@ -13,7 +13,7 @@
 
         <classes>
             <class name = "Tests.NEP.LNE.VerifyWinInstall" />
-            <class name = "Tests.NEP.LNE.SetConfigurationTest" />
+            <class name = "Tests.NEP.LNE.ChangeCustomerConfiguration" />
         </classes>
     </test>
 
