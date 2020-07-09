@@ -6,6 +6,15 @@ import Utils.SSH.SSHManager;
 import Utils.TestFiles;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -189,8 +198,55 @@ public class LNEActions extends NepActions {
                 org.testng.Assert.fail("Could not init customer settings. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not init customer settings with json: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not init customer settings. LNE machine" + LNE_IP + " json sent: " + configJson + "\n" + e.toString());
         }
+
+    }
+
+
+    public void SetCustomerConfiguration (String configJson) {
+        try {
+            Response r = given()
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("setConfig");
+
+            int response = r.getStatusCode();
+
+            if (response == 200)
+                JLog.logger.info("Success. LNE setConfig response: " + response);
+            else
+                org.testng.Assert.fail("Could not set customer configuration. LNE response status code received is: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not set customer configuration. LNE machine" + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
+
+    public void CompareConfigurationToEPConfiguration (String sentConfiguration){
+        String configJson=null;
+        try {
+            FileInputStream inputStream = new FileInputStream(configJsonPath);
+            configJson = IOUtils.toString(inputStream, Charset.defaultCharset());
+            inputStream.close();
+
+            JSONObject configSent = new JSONObject(sentConfiguration);
+            long sentCustomerID = configSent.getLong("customerId");
+            JSONObject configurationObjectSent = configSent.getJSONObject("configuration");
+
+            JSONObject configReceived = new JSONObject(configJson);
+            String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
+
+            org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
+            JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configurationObjectSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
+        }
+        catch ( Exception e){
+            org.testng.Assert.fail("Could not compare configuration sent to configuration received by endpoint:\n" + e.toString() + "\n Configuration sent:  " + sentConfiguration.replaceAll("\n", "") + "\nConfiguration received: " + configJson );
+
+        }
+
 
     }
 
@@ -203,13 +259,16 @@ public class LNEActions extends NepActions {
                             post("CA_get.sh?ca");
 
             int response = r.getStatusCode();
+            String certificate = r.getBody().print();
+
+            //restoring base uri to default
+            SetLNEBaseURI(LNE_IP);
 
             if (response == 200)
                 JLog.logger.info("Success. LNE certificate received");
             else
                 org.testng.Assert.fail("Could not get LNE CA certificate. LNE response status code received is: " + response);
 
-            String certificate = r.getBody().print();
             String firstLine = "";
             int indexOfFirstNewLine = -1;
             if (certificate != null && (indexOfFirstNewLine = certificate.indexOf("\n")) > 0) {

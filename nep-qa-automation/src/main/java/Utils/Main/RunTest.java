@@ -11,7 +11,7 @@ import org.testng.collections.Lists;
 
 
 public class RunTest {
-	public static final String suitesFolder = "nep-qa-automation/src/main/java/TestSuites/NEP/";
+	public static final String suitesFolder = "src/main/java/TestSuites/NEP/";
 	public static String runAtDirectory ="";
 
 	public static void main(String[] args) throws URISyntaxException {

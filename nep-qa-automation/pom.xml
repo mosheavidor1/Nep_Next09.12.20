@@ -138,6 +138,14 @@
             <version>20200518</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.skyscreamer/jsonassert -->
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+
+
 
 
     </dependencies>

@@ -8,16 +8,16 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 
-public class VerifyInstall extends GenericTest {
+public class VerifyWinInstall extends GenericTest {
 
     private LNEActions action;
 
     @Factory(dataProvider = "getData")
-    public VerifyInstall(Object dataToSet) {
+    public VerifyWinInstall(Object dataToSet) {
         super(dataToSet);
     }
 
-    @Test()
+    @Test(groups = { "Verify" } )
     public void SetConfigurationDownloadInstallAndVerify () {
         action = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
@@ -37,9 +37,9 @@ public class VerifyInstall extends GenericTest {
 
         action.UnInstallEndPoint(Integer.parseInt(general.get("EP Installation timeout")));
         action.InstallEndPoint(Integer.parseInt(general.get("EP Installation timeout")));
-        action.StopEPService(Integer.parseInt(general.get("EP Installation timeout")));
+        action.StopEPService(Integer.parseInt(general.get("EP Service Timeout")));
         action.AddCACertificate();
-        action.StartEPService(Integer.parseInt(general.get("EP Installation timeout")));
+        action.StartEPService(Integer.parseInt(general.get("EP Service Timeout")));
         action.CheckEndPointActiveByDbJson(Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
 
 
