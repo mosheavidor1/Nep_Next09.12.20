@@ -2,7 +2,7 @@
 
 node('nep-build-centos7') {
     try {
-        NEP_BRANCH = 'next'
+        NEP_BRANCH = 'master'
         HOST_IP  = "10.85.25.60"
 
     node('master') {
@@ -38,6 +38,7 @@ node('nep-build-centos7') {
             case "ext" :
                 echo "external LNE installation part"
 
+                /* 
                 build job: 'esx-revert-snapshot',
                     parameters:  [
                         string(name: 'VM_NAME', value: "${VM_NAME}"),
@@ -46,7 +47,7 @@ node('nep-build-centos7') {
                         string(name: 'USERNAME', value: 'root'),
                         password(name: 'PASSWORD', defaultValue: 'trustwave' )
                     ]
-
+                */
 
 
                 break
