@@ -234,7 +234,16 @@ public class LNEActions extends NepActions {
 
             JSONObject configSent = new JSONObject(sentConfiguration);
             long sentCustomerID = configSent.getLong("customerId");
+
+            //compare only the configuration part of the json sent. Customer ID is checked separately
             JSONObject configurationObjectSent = configSent.getJSONObject("configuration");
+
+            //add schema version to corresponds config.json schema version location at the json checked
+            String schemaVersionSent = configurationObjectSent.getJSONObject("centcom_meta").getString("schema_version");
+            configurationObjectSent.optJSONObject("global_conf").put("schema_version", schemaVersionSent);
+
+            //remove centcom_meta from compared json as it is not part of client's config.json
+            configurationObjectSent.remove("centcom_meta");
 
             JSONObject configReceived = new JSONObject(configJson);
             String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
