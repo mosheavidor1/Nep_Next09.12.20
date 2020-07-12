@@ -23,11 +23,12 @@ public class VerifyWinInstall extends GenericTest {
 
         action.CreateAndCleanDownloadFolder();
 
-        String conjJson =data.get("Settings Json");
-        JSONObject json = new JSONObject(conjJson);
+        String confJson =data.get("Settings Json");
+        JSONObject json = new JSONObject(confJson);
         long customerId = json.getLong( "customerId" );
 
-        action.InitCustomerSettings(conjJson);
+        action.InitCustomerSettings(confJson,Integer.parseInt(data.get("From LNE up until response OK timeout")));
+
         action.DownloadInstaller(general.get("LNE File Cabinet Path"),customerId , Integer.parseInt(data.get("Download timeout")));
 
         action.VerifyFilesExist(30);

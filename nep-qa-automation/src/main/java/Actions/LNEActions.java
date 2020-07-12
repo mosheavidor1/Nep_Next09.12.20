@@ -182,26 +182,64 @@ public class LNEActions extends NepActions {
 
     }
 
-    public void InitCustomerSettings (String configJson) {
+    public void InitCustomerSettings (String configJson, int fromLNEStartUntilLNEResponseOKTimeout) {
         try {
-            Response r = given()
-                    .contentType("application/json").
-                            body(configJson).
-                            when().
-                            post("initCustomerSettings");
 
-            int response = r.getStatusCode();
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(fromLNEStartUntilLNEResponseOKTimeout);
+            int response = -1;
+            boolean exception = false;
+            String saveException = "";
+            //From all LNE machine services are up and running until response OK there is timeout therefore put InitCustomerSettings in a wait loop
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
 
-            if (response == 200)
-                JLog.logger.info("Success. LNE InitCustomerSettings response: " + response);
+                exception = false;
+                try {
+                    response = InitCustomerSettings(configJson);
+                }
+                catch (Exception e){
+                    JLog.logger.info("Retrying... LNE InitCustomerSettings response exception: " + e.toString());
+                    exception = true;
+                    saveException = e.toString();
+                }
+
+                if (response == 200 ) {
+                    break;
+                }
+                else if (!exception){
+                    JLog.logger.info("LNE InitCustomerSettings response: " + response + " Retrying....");
+                }
+
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+            }
+            if( exception)
+                org.testng.Assert.fail("Could not init customer settings: " + saveException  +"\nLNE machine: " + LNE_IP + "\njson sent: " + configJson + "\n" );
+
+            if (response != 200 )
+                org.testng.Assert.fail("Could not init customer settings. LNE response status code received is: " + response + " after several retries during: " + fromLNEStartUntilLNEResponseOKTimeout + " Seconds. LNE machine: " + LNE_IP);
             else
-                org.testng.Assert.fail("Could not init customer settings. LNE response status code received is: " + response);
+                JLog.logger.info("Success. LNE InitCustomerSettings response: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not init customer settings. LNE machine" + LNE_IP + " json sent: " + configJson + "\n" + e.toString());
+            org.testng.Assert.fail("Could not init customer settings. LNE machine: " + LNE_IP + " json sent: " + configJson + "\n" + e.toString());
         }
 
     }
+
+    private int InitCustomerSettings (String configJson ) {
+
+               Response r = given()
+                       .contentType("application/json").
+                             body(configJson).
+                             when().
+                             post("initCustomerSettings");
+
+                return r.getStatusCode();
+
+    }
+
 
 
     public void SetCustomerConfiguration (String configJson) {
@@ -220,7 +258,7 @@ public class LNEActions extends NepActions {
                 org.testng.Assert.fail("Could not set customer configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer configuration. LNE machine" + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not set customer configuration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
         }
 
     }
