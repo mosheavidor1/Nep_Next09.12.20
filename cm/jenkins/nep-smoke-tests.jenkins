@@ -4,7 +4,7 @@ node('nep-build-centos7') {
     try {
         NEP_BRANCH = 'next'
         HOST_IP  = "10.85.25.60"
-        
+
     node('master') {
         stage("Read modules versions from files on Master") {
             IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
@@ -14,22 +14,41 @@ node('nep-build-centos7') {
             IS_VERSION = getProdVersionFromFile( IS_VERSION_FILE )
             DS_VERSION = getProdVersionFromFile( DS_VERSION_FILE )
             DS_MGMT_VERSION = getProdVersionFromFile( DS_MGMT_VERSION_FILE )
-    
+
             echo """
             IS_VERSION      = ${IS_VERSION}
             DS_VERSION      = ${DS_VERSION}
-            DS_MGMT_VERSION = ${DS_MGMT_VERSION} 
+            DS_MGMT_VERSION = ${DS_MGMT_VERSION}
             """
         }
     }
 
     stage("Linux part install") {
+
+        echo """
+        IS_VERSION      = ${IS_VERSION}
+        DS_VERSION      = ${DS_VERSION}
+        DS_MGMT_VERSION = ${DS_MGMT_VERSION}
+        """
+
         switch (LNE_INSTALL_TYPE) {
             case "skip" :
                 echo "skip LNE installation part"
                 break
             case "ext" :
                 echo "external LNE installation part"
+
+                build job: 'esx-revert-snapshot',
+                    parameters:  [
+                        string(name: 'VM_NAME', value: "${VM_NAME}"),
+                        string(name: 'SNAPSHOT_NAME', value: "${SNAPSHOT_NAME}"),
+                        string(name: 'ESX_HOSTNAME', value: "${ESX_IP}"),
+                        string(name: 'USERNAME', value: 'root'),
+                        password(name: 'PASSWORD', defaultValue: 'trustwave' )
+                    ]
+
+
+
                 break
             case "int" :
                 echo "internal LNE installation part"
@@ -41,8 +60,8 @@ node('nep-build-centos7') {
         echo "skip install"
     }
     else {
-        
-  
+
+
         //RESTORE_SNAPSHOT
         //ESX_IP
         //VM_NAME
@@ -57,7 +76,7 @@ node('nep-build-centos7') {
             'ep',
             'stub-srv',
             'haproxy',
-            'ds',		
+            'ds',
             'ds-mgmt',
             'is',
             'mysql'
@@ -76,7 +95,7 @@ node('nep-build-centos7') {
             'nginx.yml',
             'mysql'
         ]
-		
+
         def DOWN_SERVICES_YAMLS = [
             'nginx.yml',
             'is.yml',
@@ -93,17 +112,17 @@ node('nep-build-centos7') {
 
         USERNAME = "root"
         PASSWORD = "trustwave"
-        
+
         def remote = [:]
         remote.name = 'smoke_test'
         remote.host = "${HOST_IP}"
         remote.user = "${USERNAME}"
         remote.password = "${PASSWORD}"
         remote.allowAnyHosts = true
-	
+
         GIT_REPOSITORY_WITH_CREDENTIALS='https://svc_wafbuild:IcUcN0lc@bitbucket.trustwave.com/scm/nep/nep-tools.git'
-	
-	
+
+
         WORK_FOLDER='/work'
         LOG_FOLDER="${WORK_FOLDER}/log"
         UPDATES_FOLDER="${WORK_FOLDER}/updates"
@@ -122,7 +141,7 @@ node('nep-build-centos7') {
         S3_ARTIFACT_DST="${DOCKER_TOOLS_DST}/bin/s3_cmd"
         S3_BLOCKER_SRC="${WORK_FOLDER}/nep-tools/internal-tools/s3tools/s3-blocker"
         NEXUS_URL_PRFX='https://nexus01.trustwave.com/content/repositories/releases/com/trustwave'
-	
+
         DS_ARTIFACT_NAME='nepa-dserver.jar'
         DS_ARTIFACT_CONTAINER="/var/lib/nepa-dserver/${DS_ARTIFACT_NAME}"
         DS_ARTIFACT_SRC="${NEXUS_URL_PRFX}/nep/services/nepa-dserver/${DS_VERSION}/nepa-dserver-${DS_VERSION}.war"
@@ -145,16 +164,16 @@ node('nep-build-centos7') {
         CENTCOM_SRC="${WORK_FOLDER}/nep-tools/testing-tools/services-src/nepa-centcom-client"
         CENTCOM_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nepa-tools.testing&a=nepa-centcom-client&v=LATEST&e=war"
         CENTCOM_ARTIFACT_DST="${SERVICES_LOCATION_SRC}/stub-srv/apps/nepa-centcom-client.war"
-	
+
         DOCKER_IMAGES_URL_PRFX="${NEXUS_URL_PRFX}/nep/docker/images"
         DOCKER_IMAGES_DST="${WORK_FOLDER}/images"
-        
-        sshCommand remote: remote, command: """			
+
+        sshCommand remote: remote, command: """
                     set -x
 
 					SELINUXSTATUS=\$(getenforce);
 					if [ "\${SELINUXSTATUS,,}" != "disabled" ]; then
-						
+
 						sed -i 's/enforcing/disabled/;s/permissive/disabled/' /etc/selinux/config /etc/selinux/config
 					    echo "======================================================================================="
 					    echo "SELinux has been disabled"
@@ -165,17 +184,17 @@ node('nep-build-centos7') {
 					    echo "SELinux disabled. Continue..."
 					fi
 
-					### Find out if required packages are installed	
+					### Find out if required packages are installed
 					yum -y install epel-release yum-utils
 
 					yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 					yum install -y docker-ce docker-ce-cli containerd.io
-					
+
 					for pkg in {'git','curl','rsync','net-tools','jq'}
-					do 
-						yum -y install \$pkg			
+					do
+						yum -y install \$pkg
 					done
-					
+
 					mkdir -p \$(dirname ${DOCKER_CONFIG})
 					cat <<_EOB > "${DOCKER_CONFIG}"
 {
@@ -193,22 +212,22 @@ _EOB
 						curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-\$(uname -s)-\$(uname -m)" -o /usr/local/bin/docker-compose
 						chmod +x /usr/local/bin/docker-compose
 						ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-	
+
 						if [[ ! -f /usr/bin/docker-compose ]]; then
 							echo "Can't install docker-compose utility"
 							exit 1
 						fi
 					fi
-					
+
 					### Install yq
 					curl -o /bin/yq -L https://github.com/mikefarah/yq/releases/download/3.3.0/yq_linux_amd64
 					chmod +x /bin/yq
 
 				"""
-                
-                sshCommand remote: remote, command: """		
-					set -x 
-					
+
+                sshCommand remote: remote, command: """
+					set -x
+
 					> /info.nep.folder
 					> /info.nep.hostip
 					### Clone GIT repository
@@ -219,129 +238,129 @@ _EOB
 					mkdir -p ${SERVICES_LOCATION_DST}
 					mkdir -p ${DOCKER_YMLS_DST}
 					mkdir -p ${DOCKER_TOOLS_DST}
-					
+
 					echo "${WORK_FOLDER}" > /info.nep.folder
 					echo \$(hostname -I | awk ' {print \$1}') > /info.nep.hostip
-					
+
 					git clone -b ${NEP_BRANCH} ${GIT_REPOSITORY_WITH_CREDENTIALS}
-		
+
 					### Copy yml files from SRC to DST - for update
-					rsync -avzL "${DOCKER_YMLS_SRC}"  "${WORK_FOLDER}"		
+					rsync -avzL "${DOCKER_YMLS_SRC}"  "${WORK_FOLDER}"
 					### Copy tools from SRC to DST
 					rsync -avzL "${DOCKER_TOOLS_SRC}"  "${WORK_FOLDER}"
 					### Copy S3 tools from SRC to DST
 					cp -f "${S3_BLOCKER_SRC}" "${DOCKER_TOOLS_DST}/bin/"
 					### Get latest utility S3TOOLS from Nexus
 					curl -L "${S3_ARTIFACT_SRC}" -o "${S3_ARTIFACT_DST}"
-					
+
 					chmod -R +x "${DOCKER_TOOLS_DST}"
-					
+
 					### Update Application-specific startup files
 					echo "PATH=\$PATH:${DOCKER_TOOLS_DST}/bin:${DOCKER_TOOLS_DST}/s3" > /etc/profile.d/nep.sh
-					
+
 					### Update Application-specific startup files
 				"""
-                
-                sshCommand remote: remote, command: """		
-					set -x 
-					
+
+                sshCommand remote: remote, command: """
+					set -x
+
 					### Get required docker images from Nexus
 					>${LOG_FOLDER}/info.docker_images
-					
+
 					for image_tmp in \$(awk '{print \$0}' ${DOCKER_YMLS_DST}/*.yml | yq r -P - services.*.image | cut -d'/' -f2- | uniq); do
 						image=\$(echo \$image_tmp | tr -d '[],')
 						echo \$image >> ${LOG_FOLDER}/info.docker_images
-						
+
 						if [ -z "\$(docker images \$image -q)" ]; then
 							docker pull ${NEXUS_DOCKER_REPO}/\${image}
 						fi
 					done
 				"""
 
-                build job: 'download-in-loop-and-check-hash', 
+                build job: 'download-in-loop-and-check-hash',
 					parameters: [
-						string(name: 'SRC_FILE', value: DS_ARTIFACT_SRC), 
-						string(name: 'DST_FILE', value: DS_ARTIFACT_DST), 
-						string(name: 'HASH_UTILITY', value: 'sha1'), 
-						string(name: 'LOOP_TIMES', value: '3'), 
-						string(name: 'HOST_IP', value: "${HOST_IP}"), 
-						string(name: 'USERNAME', value: "${USERNAME}"), 
+						string(name: 'SRC_FILE', value: DS_ARTIFACT_SRC),
+						string(name: 'DST_FILE', value: DS_ARTIFACT_DST),
+						string(name: 'HASH_UTILITY', value: 'sha1'),
+						string(name: 'LOOP_TIMES', value: '3'),
+						string(name: 'HOST_IP', value: "${HOST_IP}"),
+						string(name: 'USERNAME', value: "${USERNAME}"),
 						password(description: '', name: 'PASSWORD', value: "${PASSWORD}")
 					]
 
-				build job: 'download-in-loop-and-check-hash', 
+				build job: 'download-in-loop-and-check-hash',
 					parameters: [
-						string(name: 'SRC_FILE', value: DS_MGMT_ARTIFACT_SRC), 
-						string(name: 'DST_FILE', value: DS_MGMT_ARTIFACT_DST), 
-						string(name: 'HASH_UTILITY', value: 'sha1'), 
-						string(name: 'LOOP_TIMES', value: '3'), 
-						string(name: 'HOST_IP', value: "${HOST_IP}"), 
-						string(name: 'USERNAME', value: "${USERNAME}"), 
+						string(name: 'SRC_FILE', value: DS_MGMT_ARTIFACT_SRC),
+						string(name: 'DST_FILE', value: DS_MGMT_ARTIFACT_DST),
+						string(name: 'HASH_UTILITY', value: 'sha1'),
+						string(name: 'LOOP_TIMES', value: '3'),
+						string(name: 'HOST_IP', value: "${HOST_IP}"),
+						string(name: 'USERNAME', value: "${USERNAME}"),
 						password(description: '', name: 'PASSWORD', value: "${PASSWORD}")
 					]
 
-				build job: 'download-in-loop-and-check-hash', 
+				build job: 'download-in-loop-and-check-hash',
 					parameters: [
-						string(name: 'SRC_FILE', value: IS_ARTIFACT_SRC), 
-						string(name: 'DST_FILE', value: IS_ARTIFACT_DST), 
-						string(name: 'HASH_UTILITY', value: 'sha1'), 
-						string(name: 'LOOP_TIMES', value: '3'), 
-						string(name: 'HOST_IP', value: "${HOST_IP}"), 
-						string(name: 'USERNAME', value: "${USERNAME}"), 
+						string(name: 'SRC_FILE', value: IS_ARTIFACT_SRC),
+						string(name: 'DST_FILE', value: IS_ARTIFACT_DST),
+						string(name: 'HASH_UTILITY', value: 'sha1'),
+						string(name: 'LOOP_TIMES', value: '3'),
+						string(name: 'HOST_IP', value: "${HOST_IP}"),
+						string(name: 'USERNAME', value: "${USERNAME}"),
 						password(description: '', name: 'PASSWORD', value: "${PASSWORD}")
 					]
 
-				build job: 'download-in-loop-and-check-hash', 
+				build job: 'download-in-loop-and-check-hash',
 					parameters: [
-						string(name: 'SRC_FILE', value: DUMMY_PORTAL_ARTIFACT_SRC), 
-						string(name: 'DST_FILE', value: DUMMY_PORTAL_ARTIFACT_DST), 
-						string(name: 'HASH_UTILITY', value: 'md5'), 
-						string(name: 'LOOP_TIMES', value: '3'), 
-						string(name: 'HOST_IP', value: "${HOST_IP}"), 
-						string(name: 'USERNAME', value: "${USERNAME}"), 
+						string(name: 'SRC_FILE', value: DUMMY_PORTAL_ARTIFACT_SRC),
+						string(name: 'DST_FILE', value: DUMMY_PORTAL_ARTIFACT_DST),
+						string(name: 'HASH_UTILITY', value: 'md5'),
+						string(name: 'LOOP_TIMES', value: '3'),
+						string(name: 'HOST_IP', value: "${HOST_IP}"),
+						string(name: 'USERNAME', value: "${USERNAME}"),
 						password(description: '', name: 'PASSWORD', value: "${PASSWORD}")
 					]
 
-				build job: 'download-in-loop-and-check-hash', 
+				build job: 'download-in-loop-and-check-hash',
 					parameters: [
-						string(name: 'SRC_FILE', value: CENTCOM_ARTIFACT_SRC), 
-						string(name: 'DST_FILE', value: CENTCOM_ARTIFACT_DST), 
-						string(name: 'HASH_UTILITY', value: 'md5'), 
-						string(name: 'LOOP_TIMES', value: '3'), 
-						string(name: 'HOST_IP', value: "${HOST_IP}"), 
-						string(name: 'USERNAME', value: "${USERNAME}"), 
+						string(name: 'SRC_FILE', value: CENTCOM_ARTIFACT_SRC),
+						string(name: 'DST_FILE', value: CENTCOM_ARTIFACT_DST),
+						string(name: 'HASH_UTILITY', value: 'md5'),
+						string(name: 'LOOP_TIMES', value: '3'),
+						string(name: 'HOST_IP', value: "${HOST_IP}"),
+						string(name: 'USERNAME', value: "${USERNAME}"),
 						password(description: '', name: 'PASSWORD', value: "${PASSWORD}")
 					]
 
-                sshCommand remote: remote, command: """		
-					set -x 
-		
+                sshCommand remote: remote, command: """
+					set -x
+
 					declare -a services
 					declare -a volumes
-		
+
 					cd ${SERVICES_LOCATION_SRC}
 					>${LOG_FOLDER}/info.containers
-		 
+
 					for container_tmp in ${ALL_SERVICSES_LIST}; do
-						container=\$(echo \$container_tmp | tr -d '[],') 	
+						container=\$(echo \$container_tmp | tr -d '[],')
 						container_src_path="${SERVICES_LOCATION_SRC}/\$container"
 						echo \$container >>${LOG_FOLDER}/info.containers
-						
+
 						### Get all services from container.yml file
 						echo "Get all services from \$container.yml file"
 						readarray -t services < <(cat ${DOCKER_YMLS_DST}/\$container.yml | yq r -pp  - 'services.*' | cut -d. -f2 )
 						echo \${services[@]} > ${LOG_FOLDER}/info.\$container.services
-						
+
 						for service in \${services[@]}; do
 							>${LOG_FOLDER}/info.\$container.\$service
 							>${DOCKER_YMLS_DST}/\$service.yml.env
-								
+
 							### Prepare enviroment file for docker compose
 							echo "SERVICE_NAME=\$service"  	>> ${DOCKER_YMLS_DST}/\$service.yml.env
-								
+
 							### Definition on default path prefix, if changes required - it will be applied inside case command
 							service_path_prefix=${SERVICES_LOCATION_DST}/\$service
-							
+
 							### Download services artifacts and prepare env.variables for containers
 							case \$service in
 								ds) service_path_prefix=${SERVICES_LOCATION_DST}/nepa-services/ds;
@@ -351,7 +370,7 @@ _EOB
 									echo "SERVICE_PATH=${DS_MGMT_ARTIFACT_CONTAINER}"	>> ${DOCKER_YMLS_DST}/\$service.yml.env
 									;;
 								haproxy) service_path_prefix=${SERVICES_LOCATION_DST}/proxy/haproxy;
-									;;							
+									;;
 								is) service_path_prefix=${SERVICES_LOCATION_DST}/nepa-services/is;
 									echo "SERVICE_PATH=${IS_ARTIFACT_CONTAINER}"	>> ${DOCKER_YMLS_DST}/\$service.yml.env
 									;;
@@ -365,61 +384,61 @@ _EOB
 							if [ "\$service" == "\$container" ]; then
 								echo \$service_path_prefix > ${LOG_FOLDER}/info.\$container.prefix
 							fi
-							
+
 							readarray -t volumes < <(cat ${DOCKER_YMLS_DST}/\$container.yml | yq r -P - services.\$service.volumes | awk '{print \$2}')
 							index=0
 							for volume in \${volumes[@]}; do
 								svc_vol_src=\$(echo \$volume | cut -d: -f1)
 								svc_vol_dst=\$(echo \$volume | cut -d: -f2)
 								svc_vol_suffix=\$(echo \$volume | cut -d: -f3)
-								
+
 								srv_path_src=\$container_src_path\${svc_vol_dst}
 								srv_path_dst=\${service_path_prefix}\${svc_vol_dst}
-								
+
 								echo "\$index:\${srv_path_src}:\${srv_path_dst}"	>> ${LOG_FOLDER}/info.\$container.\$service
-								
+
 								### Due to limitation in yq - it's impossible to add double quotes during "yq w" command
 								### String "replacedoublequotes" will be added and later will be repalced by double quotes
 								tmp_str="replacedoublequotes\$srv_path_dst:\$svc_vol_dst:\$svc_vol_suffix"
 								tmp_str+="replacedoublequotes"
-		
-								cat ${DOCKER_YMLS_DST}/\$container.yml | yq w - services.\$service.volumes[\$index] \$tmp_str | tee ${DOCKER_YMLS_DST}/\$container-tmp.yml	
-								sed -i 's/replacedoublequotes/"/g' ${DOCKER_YMLS_DST}/\$container-tmp.yml 
+
+								cat ${DOCKER_YMLS_DST}/\$container.yml | yq w - services.\$service.volumes[\$index] \$tmp_str | tee ${DOCKER_YMLS_DST}/\$container-tmp.yml
+								sed -i 's/replacedoublequotes/"/g' ${DOCKER_YMLS_DST}/\$container-tmp.yml
 								mv -f ${DOCKER_YMLS_DST}/\$container-tmp.yml  ${DOCKER_YMLS_DST}/\$container.yml
 								rm -f ${DOCKER_YMLS_DST}/\$container-tmp.yml
-								
+
 								((index++))
 							done
 						done
 					done
-				"""	
+				"""
 
 				sshCommand remote: remote, command: """
-					set -x 
-		
+					set -x
+
 					while IFS= read -r container; do
 						>${LOG_FOLDER}/info.\$container.mapping
-						
+
 						while IFS= read -r services; do
-							
+
 							for service in \${services[@]}; do
 								echo "Service: \$service" >> ${LOG_FOLDER}/info.\$container.mapping
-							
+
 								while IFS= read -r volume_map; do
 									index=\$(echo "\$volume_map" | cut -d: -f1)
 									srv_path_src=\$(echo "\$volume_map" | cut -d: -f2)
 									srv_path_dst=\$(echo "\$volume_map" | cut -d: -f3)
-									
+
 									if [[ -d \${srv_path_src} ]]; then
 										echo "mkdir -p \${srv_path_dst}" >> ${LOG_FOLDER}/info.\$container.mapping
 										echo "rsync -avzL \${srv_path_src}   \$(dirname \${srv_path_dst})" >> ${LOG_FOLDER}/info.\$container.mapping
-										
+
 										mkdir -p \${srv_path_dst}
 										rsync -avzL \${srv_path_src}   \$(dirname \${srv_path_dst})
 									elif [[ -f \${srv_path_src} ]]; then
 										echo "mkdir -p \$(dirname \${srv_path_dst})" >> ${LOG_FOLDER}/info.\$container.mapping
 										echo "rsync -avzL \$srv_path_src   \${srv_path_dst}" >> ${LOG_FOLDER}/info.\$container.mapping
-										
+
 										mkdir -p \$(dirname \${srv_path_dst})
 										rsync -avzL \$srv_path_src   \${srv_path_dst}
 									else
@@ -430,12 +449,12 @@ _EOB
 							done
 						done < "${LOG_FOLDER}/info.\$container.services"
 					done < "${LOG_FOLDER}/info.containers"
-		
+
 				"""
-                
-                sshCommand remote: remote, command: """		
-					set -x 
-		
+
+                sshCommand remote: remote, command: """
+					set -x
+
 		        	PROPERTIES_SRC_DST=("${DUMMY_PORTAL_SRC}/etc/nep-properties/*.properties" \
 										"${WORK_FOLDER}/services/stub-srv/etc/nep-properties/" \
 		        						"${DUMMY_PORTAL_SRC}/src/main/resources/*.properties" \
@@ -449,26 +468,26 @@ _EOB
 		        						"${CENTCOM_SRC}/src/main/resources/*.properties" \
 										"${WORK_FOLDER}/services/stub-srv/etc/nepa-centcom-client/" \
 		        						"${CENTCOM_SRC}/etc/*.xml" \
-										"${WORK_FOLDER}/services/stub-srv/etc/nepa-centcom-client/") 
-		
+										"${WORK_FOLDER}/services/stub-srv/etc/nepa-centcom-client/")
+
 					>${LOG_FOLDER}/info.properties.copy
-		            for index in \${!PROPERTIES_SRC_DST[@]}; do 
+		            for index in \${!PROPERTIES_SRC_DST[@]}; do
 		                if [ \$((10#\$index % 2)) == 0 ]; then
-		                	
+
 		                	src=\${PROPERTIES_SRC_DST[\$index]}
 		                	dst=\${PROPERTIES_SRC_DST[\$index+1]}
-		                	
+
 		                	mkdir -p \${dst}
 		                	rsync -avzL  \${src} \${dst}
-		                	
+
 		                    echo   "\${src} --> \${dst}" >> ${LOG_FOLDER}/info.properties.copy
 		                fi
 		            done
                 """
 
-				sshCommand remote: remote, command: """		
-					set -x 
-					
+				sshCommand remote: remote, command: """
+					set -x
+
 					LIST="ca/etc/camanager/data kafka/bitnami zookeeper/bitnami ep/opt redis/var/lib/redis siem/var/siem/data/nep siem/scp/var/siem/data/nep siem/nep/siem/scp/var/siem/data/nep siem/syslog/var/log"
 					for path in \$LIST
 					do
@@ -482,55 +501,55 @@ _EOB
 					done
 				"""
 
-				sshCommand remote: remote, command: """		
-					set -x 		
-					
+				sshCommand remote: remote, command: """
+					set -x
+
 					docker network create nep-tier
 
 					${DOCKER_TOOLS_DST}/bin/nep_base up
-					
+
 					curl http://127.0.0.1:8000/ca/CA_init.sh
 					curl http://127.0.0.1:8000/ca/CA_sign.sh?siem
 					curl http://127.0.0.1:8000/ca/CA_scp.sh?siem
 					curl http://127.0.0.1:8000/ca/CA_sign.sh?endpoint-protection-services.local.tw-test.net
 				"""
-                
-                sshCommand remote: remote, command: """		
-					set -x 
-		
+
+                sshCommand remote: remote, command: """
+					set -x
+
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/customer_data/endpoint-protection-services.local.tw-test.net_bundle.pem ${SERVICES_LOCATION_DST}/proxy/haproxy/usr/local/etc/haproxy/certs/endpoint-protection.bundle.pem
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/customer_data/endpoint-protection-services.local.tw-test.net_bundle.pem ${SERVICES_LOCATION_DST}/proxy/haproxy/usr/local/etc/haproxy/certs/nep.bundle.pem
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/public/ca-cert.pem ${SERVICES_LOCATION_DST}/proxy/haproxy/usr/local/etc/haproxy/ca/ca.pem
-		
+
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/public/ca-cert.pem ${SERVICES_LOCATION_DST}/proxy/nginx/etc/pki/tls/certs/endpoint-protection-services.local.tw-test.net.staple
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/public/ca-cert.pem ${SERVICES_LOCATION_DST}/proxy/nginx/etc/pki/tls/certs/endpoint-protection-services.local.tw-test.net.client_ca
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/customer_data/endpoint-protection-services.local.tw-test.net_crt.pem ${SERVICES_LOCATION_DST}/proxy/nginx/etc/pki/tls/certs/endpoint-protection-services.local.tw-test.net.combined
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/customer_data/endpoint-protection-services.local.tw-test.net_key.pem ${SERVICES_LOCATION_DST}/proxy/nginx/etc/pki/tls/private/endpoint-protection-services.local.tw-test.net.key
-		
+
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/public/ca-cert.pem ${SERVICES_LOCATION_DST}/siem/etc/pki/tls/ca.pem
 					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/customer_data/siem_crt.pem ${SERVICES_LOCATION_DST}/siem/etc/pki/tls/cert.pem
-					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/customer_data/siem_key.pem ${SERVICES_LOCATION_DST}/siem/etc/pki/tls/key.pem 
+					ln -f ${SERVICES_LOCATION_DST}/ca/etc/camanager/data/customer_data/siem_key.pem ${SERVICES_LOCATION_DST}/siem/etc/pki/tls/key.pem
 				"""
 
-                sshCommand remote: remote, command: """		
-					set -x 
-		
+                sshCommand remote: remote, command: """
+					set -x
+
 					echo "00 * * * * root ${DOCKER_TOOLS_DST}/bin/s3-blocker ${WORK_FOLDER}/flag-s3-lifetime 12" > /etc/cron.d/s3-blocker.crond
 					chmod 0644 /etc/cron.d/s3-blocker.crond
 					systemctl reload crond
 				"""
 
-                sshCommand remote: remote, command: """		
-					set -x 
+                sshCommand remote: remote, command: """
+					set -x
 
 					${DOCKER_TOOLS_DST}/bin/nep_service all up
-					
+
 					for usr in ca redis kafka mysql is ds ds-mgmt stub-srv siem nginx ep
 					do
 					     useradd -G docker -s ${DOCKER_TOOLS_DST}/bin/nep_ssh \$usr
 					     echo "\$usr:trustwave" | chpasswd
 					done
-					
+
 					cp ${DOCKER_TOOLS_DST}/bin/nep_boot.service /etc/systemd/system/nep_boot.service
 					systemctl enable nep_boot.service
 
@@ -558,14 +577,14 @@ _EOB
 	                git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 	               	powershell """
 				Get-ChildItem env:
-				
+
 				echo "From: ${MODULE_ARTIFACT_SRC}"
-				echo "To: 	${MODULE_ARTIFACT_DST}" 
-	
+				echo "To: 	${MODULE_ARTIFACT_DST}"
+
 				##### Download artifact from Nexus
 				echo "curl -o ${MODULE_ARTIFACT_DST} ${MODULE_ARTIFACT_SRC}"
 				curl -o "${MODULE_ARTIFACT_DST}" "$MODULE_ARTIFACT_SRC"
-				
+
 				if ( -Not (Test-Path "${MODULE_ARTIFACT_DST}")) {
 					Write-host "${MODULE_ARTIFACT_DST} file can't be downloaded"
 					exit 1
@@ -577,7 +596,7 @@ _EOB
 				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
 			    """
 
-	                
+
                 }
             	catch (exc) {
 	            	currentBuild.result = "FAILURE"
@@ -586,6 +605,9 @@ _EOB
             }
             *****************************/
             }
+        }
+        stage('Run Win tests') {
+            echo "test"
         }
     }
     catch (exc) {
@@ -601,21 +623,21 @@ _EOB
 
 def getProdVersionFromFile( versionFile ) {
   verString = sh (
-   script: """    
+   script: """
     ver_tmp=`cat ${versionFile}`
     ver_tmp=\"<\${ver_tmp%%</a>*}\"
     ver_tmp=\"\${ver_tmp##*>}\"
     echo \$ver_tmp
     """,
     returnStdout: true).trim()
-    
+
     return verString
 }
 
 def sendEmail( bodyMsg ) {
 	mail (
-		to: "ivalevich@trustwave.com", 
-		subject: "Build $BUILD_NUMBER -($JOB_NAME)", 
+		to: "ivalevich@trustwave.com",
+		subject: "Build $BUILD_NUMBER -($JOB_NAME)",
 		//// body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n")
         body: "Mail: " + bodyMsg + " +n\n Check console output at: $BUILD_URL/console" + "\n")
 }
