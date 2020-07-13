@@ -23,7 +23,7 @@ node('nep-build-centos7') {
         }
     }
 
-    stage("Linux part install") {
+    stage("LNE - Linux part install") {
         switch (LNE_INSTALL_TYPE) {
             case "skip" :
                 echo "skip LNE installation part"
