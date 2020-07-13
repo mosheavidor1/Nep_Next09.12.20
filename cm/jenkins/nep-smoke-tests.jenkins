@@ -55,7 +55,6 @@ node('nep-build-centos7') {
         }
     
         stage('Run LNE side tests') {
-            //// echo "test"
             def skip_lin_test = "skip"
             if ( skip_lin_test == "skip" ) {
                 echo "Skip Linux tests"
@@ -79,7 +78,7 @@ node('nep-build-centos7') {
                 
                     echo "2. download latest nep-qa-automation.jar from nexus"
                     powershell """
-                    Get-ChildItem env:
+                    # Get-ChildItem env:
                 
                     echo "From: ${MODULE_ARTIFACT_SRC}"
                     echo "To: 	${MODULE_ARTIFACT_DST}"
@@ -94,7 +93,7 @@ node('nep-build-centos7') {
                     }
                     """
                     SETTINGS_XML = "LNE/WinInstall.xml"
-                    ENVIRONMENT_NAME = 'qa'
+                    // ENVIRONMENT_NAME = 'qa'
                     timeout(time: 10, unit: 'MINUTES') {
                         retry(2) {
                             bat """
@@ -121,8 +120,8 @@ node('nep-build-centos7') {
 }
 
 def getProdVersionFromFile( versionFile ) {
-  verString = sh (
-   script: """
+    verString = sh (
+    script: """
     ver_tmp=`cat ${versionFile}`
     ver_tmp=\"<\${ver_tmp%%</a>*}\"
     ver_tmp=\"\${ver_tmp##*>}\"
