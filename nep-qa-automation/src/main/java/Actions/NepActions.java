@@ -230,8 +230,15 @@ public class NepActions extends CloudActions {
                 Thread.sleep(5000);
                 current = LocalDateTime.now();
                 
-                if(conf.IsElementExist(conf.refreshBy))
-                    conf.refreshButton_element.click();
+                if(conf.IsElementExist(conf.refreshBy)) {
+                    try {
+                        conf.refreshButton_element.click();
+                        JLog.logger.info("Refresh button of publish configuration clicked successfully: "+ conf.refreshBy.toString() );
+                    }
+                    catch (Exception e) {
+                        JLog.logger.warn("Could not click the refresh button of publish configuration: " + e.toString() +"\nRefresh button:"+ conf.refreshBy.toString() );
+                    }
+                }
 
                 if (conf.IsElementExist(conf.percent100By)) {
                     found = true;
