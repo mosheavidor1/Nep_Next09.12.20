@@ -31,7 +31,6 @@ node('nep-build-centos7') {
             DS_VERSION      = ${DS_VERSION}
             DS_MGMT_VERSION = ${DS_MGMT_VERSION}
             """
-            LNE_INSTALL_TYPE = 'ext'
             switch (LNE_INSTALL_TYPE) {
             case "skip" :
                 echo "skip LNE installation part"
