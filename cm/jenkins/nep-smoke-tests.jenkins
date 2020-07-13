@@ -7,7 +7,7 @@ node('nep-build-centos7') {
 
         
         node('master') {
-            stage("Read modules versions from files on Master") {
+            stage("Get modules versions") {
                 IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
                 DS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-DS-${NEP_BRANCH}.row"
                 DS_MGMT_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-DS-Mgmt-${NEP_BRANCH}.row"
@@ -41,7 +41,10 @@ node('nep-build-centos7') {
                 build job: 'tools-tst-bin-deploy-local-env',
                       parameters:  [
                           string(name: 'NEP_BRANCH', value: 'master'),
-                          string(name: 'HOST_IP', value: "${HOST_IP}" )
+                          string(name: 'HOST_IP', value: "${HOST_IP}" ),
+                          booleanParam(name: 'RESTORE_SNAPSHOT', value: true ),
+                          string(name: 'ESX_IP', value:  '10.85.26.75'),
+                          string(name: 'VM_NAME', value:  'NEP-DEV-19')
                       ]
 
                 break
@@ -93,13 +96,13 @@ node('nep-build-centos7') {
                     """
                     SETTINGS_XML = "LNE/WinInstall.xml"
                     // ENVIRONMENT_NAME = 'qa'
-                    timeout(time: 10, unit: 'MINUTES') {
-                        retry(2) {
+                            //timeout(time: 10, unit: 'MINUTES') {
+                            //    retry(2) {
                             bat """
                             java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
                             """
-                        }
-                    }
+                            //    }
+                            // }
                 }
                 catch (exc) {
 	            	currentBuild.result = "FAILURE"
