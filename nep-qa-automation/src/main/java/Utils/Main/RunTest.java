@@ -63,6 +63,7 @@ public class RunTest {
 		}*/
 
 
+		System.exit(0);
 
 	}
 
