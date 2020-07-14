@@ -1,5 +1,6 @@
 package Utils.SSH;
 
+import Utils.Logs.JLog;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -22,6 +23,8 @@ public class SSHManager {
         this.password = password;
         this.hostName = hostName;
         this.port = port;
+        sftpChannel =null;
+        port = 0;
         Connect();
 
     }
@@ -93,6 +96,19 @@ public class SSHManager {
             org.testng.Assert.fail("Could not copy file from :  " + source +  " at machine: " + hostName + " to local destination: " + destination + "\n" + e.toString());
         }
 
+    }
+
+    public void Close (){
+        try {
+
+            if (sftpChannel != null && !sftpChannel.isClosed()) {
+                sftpChannel.exit();
+            }
+        }
+        catch (Exception e){
+            JLog.logger.error("Could not close: sftpChannel" +  "\n" + e.toString());
+
+        }
     }
 
 

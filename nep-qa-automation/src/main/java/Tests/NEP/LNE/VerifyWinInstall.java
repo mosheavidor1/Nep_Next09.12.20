@@ -27,9 +27,11 @@ public class VerifyWinInstall extends GenericTest {
         JSONObject json = new JSONObject(confJson);
         long customerId = json.getLong( "customerId" );
 
+        action.DeleteCurrentInstaller(customerId);
+
         action.InitCustomerSettings(confJson,Integer.parseInt(data.get("From LNE up until response OK timeout")));
 
-        action.DownloadInstaller(general.get("LNE File Cabinet Path"),customerId , Integer.parseInt(data.get("Download timeout")));
+        action.DownloadInstaller(customerId , Integer.parseInt(data.get("Download timeout")));
 
         action.VerifyFilesExist(30);
         action.VerifyInstallerSignature();
@@ -42,7 +44,6 @@ public class VerifyWinInstall extends GenericTest {
         action.AddCACertificate();
         action.StartEPService(Integer.parseInt(general.get("EP Service Timeout")));
         action.CheckEndPointActiveByDbJson(Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
-
 
     }
 

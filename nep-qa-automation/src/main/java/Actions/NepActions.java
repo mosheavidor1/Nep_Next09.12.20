@@ -531,6 +531,7 @@ public class NepActions extends CloudActions {
 
     public void InstallEndPoint(int timeout) {
         try {
+            JLog.logger.info("Installing EP...");
             String installerLocation = PropertiesFile.readProperty("DownloadFolder");
             installerLocation += "\\" + windowsInstallationFile;
             //String host = "DS_HOST_NAME=" + PropertiesFile.getCurrentClusterNepHost() ;
@@ -563,6 +564,7 @@ public class NepActions extends CloudActions {
 
     public void UnInstallEndPoint(int timeout) {
         try {
+            JLog.logger.info("Uninstalling EP if exists...");
 
             String downloadFolder = PropertiesFile.readProperty("DownloadFolder");
             String installerLocation = downloadFolder + "\\" + uninstallFolderName + "\\" + windowsInstallationFile;
