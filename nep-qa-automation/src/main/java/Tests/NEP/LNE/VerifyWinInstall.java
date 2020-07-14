@@ -3,6 +3,7 @@ package Tests.NEP.LNE;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.PropertiesFile.PropertiesFile;
+import Utils.TestFiles;
 import org.json.JSONObject;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -17,12 +18,11 @@ public class VerifyWinInstall extends GenericTest {
         super(dataToSet);
     }
 
-    @Test(groups = { "Verify" } )
+    @Test(groups = { "VerifyInstallation" } )
     public void SetConfigurationDownloadInstallAndVerify () {
+
         action = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-
         action.CreateAndCleanDownloadFolder();
-
         String confJson =data.get("Settings Json");
         JSONObject json = new JSONObject(confJson);
         long customerId = json.getLong( "customerId" );
