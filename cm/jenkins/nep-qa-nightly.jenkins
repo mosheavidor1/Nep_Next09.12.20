@@ -42,16 +42,18 @@ node('nep-qa-nightly-25.187') {
 			"""
 		}
 		
-		stage('Run Tests') {
+		stage('Run Tests and Backup results') {
 			bat """
 				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENVIRONMENT_NAME}"
+				
+				xcopy ${WORKSPACE}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K
 			"""
 		}
 		
-		stage('Send Email and Backup results') {
+		stage('Send Email') {
 			sendEmail("Success")
 			
-			bat("xcopy ${WORKSPACE}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K")
+			
 		}
 	}
 	catch (err) {
