@@ -1,17 +1,12 @@
 package Utils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 
 public class TestFiles {
-
-
 
         public static void DeleteFile(String path) {
         try {
@@ -21,7 +16,6 @@ public class TestFiles {
                 if(result == false || file.exists())
                     org.testng.Assert.fail("Could delete file: " + path);
             }
-
         }
         catch (Exception e){
             org.testng.Assert.fail("Could delete file: " + path + "\n" + e.toString());
@@ -109,7 +103,6 @@ public class TestFiles {
                 }
             }
 
-
             if(! found) {
                 FileWriter fr = new FileWriter(file, true);
                 fr.write( addThisString);
@@ -120,6 +113,38 @@ public class TestFiles {
             org.testng.Assert.fail("Could not append to file:" + path + " needed to append the following: " + addThisString + "\n" + e.toString());
         }
 
+    }
+
+    public static void RemoveLines(String path, String ifContainThisStringCommentLine , char commentSign)  {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(path));
+
+            String currentLine;
+            String textToWrite="";
+
+            boolean changeDone =false;
+            while ((currentLine = reader.readLine()) != null) {
+                if (currentLine.contains(ifContainThisStringCommentLine)) {
+                    if (currentLine.length() > 0 && currentLine.trim().charAt(0) != commentSign) {
+                        currentLine = "";
+                        changeDone = true;
+                    }
+                }
+                textToWrite+= System.getProperty("line.separator") + currentLine;
+            }
+            reader.close();
+
+            if (changeDone) {
+                PrintWriter out = new PrintWriter(path);
+                out.print(textToWrite);
+                out.close();
+            }
+
+        }
+        catch (Exception e){
+            org.testng.Assert.fail("Could not remove lines from the following file: " + path + "\n" + e.toString());
+        }
 
     }
+
 }

@@ -32,6 +32,7 @@ public class LNEActions extends NepActions {
     public static final String nepa_caDotPemPath = "C:\\Program Files\\Trustwave\\NEPAgent\\certs\\nepa_ca.pem";
     private static final String copyWinInstallerLocation = "C:\\SeleniumDownloads\\TrustwaveEndpoint.exe";
     public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
+    public static final char hostsFileCommentChar = '#';
 
     private String LNE_IP, userNameLNE, passwordLNE;
     int LNE_SSH_port;
@@ -194,6 +195,7 @@ public class LNEActions extends NepActions {
 
     public void AppendToHostsFile () {
         try {
+            TestFiles.RemoveLines(windowsHostsFile, hostsFileRedirection, hostsFileCommentChar);
             String toAppend = "\n" + LNE_IP + " " + hostsFileRedirection;
             TestFiles.AppendToFile(windowsHostsFile, toAppend, true);
         }
