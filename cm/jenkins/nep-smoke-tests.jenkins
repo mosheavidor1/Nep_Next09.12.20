@@ -5,6 +5,11 @@ node('nep-build-centos7') {
         NEP_BRANCH = 'master'
         HOST_IP  = "10.85.25.60"
 
+        skip_lne_install = false
+        skip_lin_test = false
+        skip_win_test = false
+
+
 
         node('master') {
             stage("Get modules versions") {
@@ -24,8 +29,11 @@ node('nep-build-centos7') {
             }
         }
 
-        stage("Linux part install") {
-
+        stage("LNE install part") {
+            if ( skip_lne_install ) {
+                echo "DEBUG: skip LNE install process"
+                return
+            }
             echo """
             IS_VERSION      = ${IS_VERSION}
             DS_VERSION      = ${DS_VERSION}
@@ -57,18 +65,39 @@ node('nep-build-centos7') {
         }
 
         stage('Run LNE side tests') {
-            def skip_lin_test = "skip"
-            if ( skip_lin_test == "skip" ) {
-                echo "Skip Linux tests"
+            if ( skip_lin_test ) {
+                echo "DEBUG: skip stage Run LNE side tests"
+                return
             }
-            else {
-                echo "Slots for Linux tests"
-            }
+
+//             writeFile file: 'lne_san.sh', text: '''
+// #!/bin/bash
+
+// FCAB=/work/services/stub-srv/var/file_cabinet
+// CID=14159
+// REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version":"1.1.1"},"global_conf":{"log_level":"debug","conf_version":3},"agent":{"ds_host":"endpoint-protection-services.local.tw-test.net","ds_port":443,"ds_protocol":"https","check_update_period":62,"report_period":60,"ds_max_off_period":48,"modules":[{"name":"Windows Log Monitor","binary_name":"WLM.dll","enabled":true},{"name":"Log File Monitor","binary_name":"LFM.dll","enabled":true}],"transport":{"transport_type":2,"syslog":{"port":0},"scp":{"host":"siem-ingress.trustwave.com","dest_folder":"/var/siem/data/nep","port":9022,"user":"twsiem","ack":false,"max_send_folder_size":100}}},"wlm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[{"log_name":"Security","enabled":true,"advanced_filter":false,"filters":[]},{"log_name":"System","enabled":true,"advanced_filter":false,"filters":[]}]},"lfm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[]}}}' | sed "s/\\\\$CID/$CID/"` ; \\rm -rf $FCAB/$CID/ ; curl -v -H "Content-Type: application/json" http://localhost:9091/nep-centcom-client/initCustomerSettings -d "$REQ" && sleep 120 && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.exe\\* -printf %f` | head -1 | strings | grep -q DOS\\ mode && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.lnx_\\* -printf %f` | head -c 4 | grep -q ELF && echo nep_sanity_has_passed
+//             '''
+
+//             USERNAME = "${ "${env.USERNAME}" == "" ? "root"  :  "${env.USERNAME}" }"
+//             PASSWORD = "${ "${env.PASSWORD}" == "" ? "trustwave"  :  "${env.PASSWORD}" }"
+
+//             def remote = [:]
+//             remote.name = 'test'
+//             remote.host = "${HOST_IP}"
+//             remote.user = "${USERNAME}"
+//             remote.password = "${PASSWORD}"
+//             remote.allowAnyHosts = true
+//             sshPut remote: remote, from: 'lne_san.sh', into: '/tmp'
         }
 
         stage('Run Win tests') {
             node('WinSmoke_10_85_24_247') {
                 try {
+                    if ( skip_win_test ) {
+                        echo "DEBUG: skip stage Windows side tests"
+                        return
+                    }
+
                     SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
                     DISPLAY_VERSION = "${BUILD_NUMBER}-${NEP_BRANCH}"
                     MODULE_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
@@ -116,12 +145,12 @@ node('nep-build-centos7') {
                       attachLog: true,
                       attachmentsPattern: "**\\*.html",
                       body: """
-                           Windows smoke test for ${NEP_BRANCH} failed.
+                           Windows smoke test for ${NEP_BRANCH}
                            ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
                            More info at: ${env.BUILD_URL} and in attach.
                       """.trim(),
                       to: 'ivalevich@trustwave.com',
-                      subject: "Win smoke test for {NEP_BRANCH} failed."
+                      subject: "Win smoke test for {NEP_BRANCH}."
                     )
                 }
             }
