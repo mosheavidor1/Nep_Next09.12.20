@@ -132,7 +132,7 @@ node('nep-build-centos7') {
                         //    }
                     }
                     //art_str = '**/*.html'
-                    archiveArtifacts artifacts: "**/*.html" // ${art_str}
+                    archiveArtifacts artifacts: "**/emailable-report.html" // ${art_str}
                 }
                 catch (exc) {
 	            	currentBuild.result = "FAILURE"
@@ -143,7 +143,7 @@ node('nep-build-centos7') {
                     // emailext attachmentsPattern: 'TestResults\\*.trx',
                     emailext (
                       attachLog: true,
-                      attachmentsPattern: "**\\*.html",
+                      attachmentsPattern: "**\\emailable-report.html",
                       body: """
                            Windows smoke test for ${NEP_BRANCH}
                            ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
