@@ -5,7 +5,7 @@ node('nep-build-centos7') {
         NEP_BRANCH = 'master'
         HOST_IP  = "10.85.25.60"
 
-        
+
         node('master') {
             stage("Get modules versions") {
                 IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
@@ -55,7 +55,7 @@ node('nep-build-centos7') {
                 break;
             }
         }
-    
+
         stage('Run LNE side tests') {
             def skip_lin_test = "skip"
             if ( skip_lin_test == "skip" ) {
@@ -65,7 +65,7 @@ node('nep-build-centos7') {
                 echo "Slots for Linux tests"
             }
         }
-        
+
         stage('Run Win tests') {
             node('WinSmoke_10_85_24_247') {
                 try {
@@ -77,14 +77,14 @@ node('nep-build-centos7') {
                     echo "1. checkout qa-tests automation folder"
                     deleteDir()
                     git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
-                
+
                     echo "2. download latest nep-qa-automation.jar from nexus"
                     powershell """
                     # Get-ChildItem env:
-                
+
                     echo "From: ${MODULE_ARTIFACT_SRC}"
                     echo "To: 	${MODULE_ARTIFACT_DST}"
-                  
+
                     ##### Download artifact from Nexus
                     echo "curl -o ${MODULE_ARTIFACT_DST} ${MODULE_ARTIFACT_SRC}"
                     curl -o "${MODULE_ARTIFACT_DST}" "$MODULE_ARTIFACT_SRC"
@@ -95,18 +95,34 @@ node('nep-build-centos7') {
                     }
                     """
                     SETTINGS_XML = "LNE/WinInstall.xml"
-                    // ENVIRONMENT_NAME = 'qa'
-                            //timeout(time: 10, unit: 'MINUTES') {
+                    timeout(time: 20, unit: 'MINUTES') {
                             //    retry(2) {
-                            bat """
-                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
-                            """
-                            //    }
-                            // }
+                        bat """
+                        java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
+                        """
+                        //    }
+                    }
+                    //art_str = '**/*.html'
+                    archiveArtifacts artifacts: "**/*.html" // ${art_str}
                 }
                 catch (exc) {
 	            	currentBuild.result = "FAILURE"
                     throw exc
+                }
+                finally {
+                    // env.ForEmailPlugin = env.WORKSPACE
+                    // emailext attachmentsPattern: 'TestResults\\*.trx',
+                    emailext (
+                      attachLog: true,
+                      attachmentsPattern: "**\\*.html",
+                      body: """
+                           Windows smoke test for ${NEP_BRANCH} failed.
+                           ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+                           More info at: ${env.BUILD_URL} and in attach.
+                      """.trim(),
+                      to: 'ivalevich@trustwave.com',
+                      subject: "Win smoke test for {NEP_BRANCH} failed."
+                    )
                 }
             }
         }
