@@ -7,7 +7,7 @@
 
         <groups>
             <dependencies>
-                <group  name= "SetConfiguration" depends-on="Verify" ></group>
+                <group  name= "ChangeConfiguration" depends-on="VerifyInstallation" ></group>
             </dependencies>
         </groups>
 

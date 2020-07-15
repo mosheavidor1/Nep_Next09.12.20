@@ -23,7 +23,7 @@ public class ChangeCustomerConfiguration extends GenericTest {
         super(dataToSet);
     }
 
-    @Test()
+    @Test(groups = { "ChangeConfiguration" } )
     public void ChangeCustomerConfigurationAndVerify()  {
         action = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 

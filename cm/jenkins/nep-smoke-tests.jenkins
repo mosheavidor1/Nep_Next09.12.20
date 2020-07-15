@@ -9,8 +9,6 @@ node('nep-build-centos7') {
         skip_lin_test = false
         skip_win_test = true
 
-
-
         node('master') {
             stage("Get modules versions") {
                 IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"

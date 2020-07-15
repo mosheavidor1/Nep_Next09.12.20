@@ -31,6 +31,8 @@ public class LNEActions extends NepActions {
     public static final String hostsFileRedirection = "endpoint-protection-services.local.tw-test.net";
     public static final String nepa_caDotPemPath = "C:\\Program Files\\Trustwave\\NEPAgent\\certs\\nepa_ca.pem";
     private static final String copyWinInstallerLocation = "C:\\SeleniumDownloads\\TrustwaveEndpoint.exe";
+    public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
+    public static final char hostsFileCommentChar = '#';
 
     private String LNE_IP, userNameLNE, passwordLNE;
     int LNE_SSH_port;
@@ -60,22 +62,44 @@ public class LNEActions extends NepActions {
 
     }
 
-    public void DownloadInstaller(String lneFileCabinetPath, long  customerId, int timeout){
+    public void DeleteCurrentInstaller(long  customerId) {
+        SSHManager ssh=null;
         try {
-            SSHManager ssh = new SSHManager(userNameLNE, passwordLNE, LNE_IP, LNE_SSH_port);
+
+            JLog.logger.info("Checking if current installer exist. If yes deleting it... LNE machine:" + LNE_IP);
+
+            ssh = new SSHManager(userNameLNE, passwordLNE, LNE_IP, LNE_SSH_port);
 
             //deleting previous installer
             String clientFolder = lneFileCabinetPath + customerId;
-            if (ssh.IsFileExists(clientFolder)){
+
+            if (ssh.IsFileExists(clientFolder)) {
                 List<String> list = ssh.ListOfFiles(clientFolder);
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(winInstallerName) && !list.get(i).contains(backupIdentifier)) {
                         String currentInstaller = clientFolder + "/" + list.get(i);
                         ssh.DeleteFile(currentInstaller);
+                        break;
                     }
                 }
             }
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not delete current installer contains: " + winInstallerName + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
+        }
+        finally {
+            ssh.Close();
+        }
+    }
 
+    public void DownloadInstaller(long  customerId, int timeout){
+        SSHManager ssh=null;
+        try {
+            ssh = new SSHManager(userNameLNE, passwordLNE, LNE_IP, LNE_SSH_port);
+
+            String clientFolder = lneFileCabinetPath + customerId;
+
+            JLog.logger.info("Waiting file cabinet folder tp appear... LNE machine:" + LNE_IP);
             LocalDateTime start = LocalDateTime.now();
             LocalDateTime current = start;
             Duration durationTimeout = Duration.ofSeconds(timeout);
@@ -90,28 +114,27 @@ public class LNEActions extends NepActions {
                 current = LocalDateTime.now();
             }
 
-            if (!found)
+            if (!found) {
                 org.testng.Assert.fail("Could not find FileCabinet folder: " + lneFileCabinetPath + " at LNE machine: " + LNE_IP);
+            }
 
+            JLog.logger.info("Waiting for customer folder tp appear at file cabinet... LNE machine:" + LNE_IP);
             found = false;
-
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                if (ssh.IsFileExists(lneFileCabinetPath)) {
+                if (ssh.IsFileExists(clientFolder)) {
                     found = true;
                     break;
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
             }
-
-
             if (!found) {
                 org.testng.Assert.fail("Could not find client FileCabinet folder: " + clientFolder + " at LNE machine: " + LNE_IP + " for customer: " + customerId);
             }
 
+            JLog.logger.info("Getting the list of files at customer folder... LNE machine:" + LNE_IP);
             List<String> list = null;
             found = false;
-            //Get the list of files for the first time may fail because the folder was just created. Therefore wait until list of files is received with not exception for the first time.
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 try {
                     list = ssh.ListOfFilesWithoutExceptionProtection(clientFolder);
@@ -121,18 +144,20 @@ public class LNEActions extends NepActions {
                     }
                 }
                 catch (Exception e){
-                    //if execption happened do nothing just try again
-                }
+                    //if exception happened do nothing just try again
+                    //Get the list of files for the first time may fail because the folder was just created. Therefore wait until list of files is received with not exception for the first time.
 
+                }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
 
             }
 
             if (! found) {
-                org.testng.Assert.fail("Could get the list of files of folder: " + clientFolder + " LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder + " LNE machine: " + LNE_IP);
             }
 
+            JLog.logger.info("Waiting for installer file to be ready... LNE machine:" + LNE_IP);
 
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
@@ -142,7 +167,11 @@ public class LNEActions extends NepActions {
                         String destination = copyWinInstallerLocation;
                         ssh.CopyToLocal(source, destination);
                         found = true;
+                        break;
                     }
+                }
+                if (found ) {
+                    break;
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
@@ -157,18 +186,23 @@ public class LNEActions extends NepActions {
         catch (Exception e) {
             org.testng.Assert.fail("Could not download installer contains: " + winInstallerName + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
         }
+        finally{
+            ssh.Close();
+        }
 
 
     }
 
     public void AppendToHostsFile () {
         try {
+            TestFiles.RemoveLines(windowsHostsFile, hostsFileRedirection, hostsFileCommentChar);
             String toAppend = "\n" + LNE_IP + " " + hostsFileRedirection;
             TestFiles.AppendToFile(windowsHostsFile, toAppend, true);
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not change endpoint machine hosts file: " + windowsHostsFile  + "\n" + e.toString());
         }
+
     }
 
     public void AddCACertificate(){
@@ -182,26 +216,64 @@ public class LNEActions extends NepActions {
 
     }
 
-    public void InitCustomerSettings (String configJson) {
+    public void InitCustomerSettings (String configJson, int fromLNEStartUntilLNEResponseOKTimeout) {
         try {
-            Response r = given()
-                    .contentType("application/json").
-                            body(configJson).
-                            when().
-                            post("initCustomerSettings");
 
-            int response = r.getStatusCode();
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(fromLNEStartUntilLNEResponseOKTimeout);
+            int response = -1;
+            boolean exception = false;
+            String saveException = "";
+            //From all LNE machine services are up and running until response OK there is timeout therefore put InitCustomerSettings in a wait loop
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
 
-            if (response == 200)
-                JLog.logger.info("Success. LNE InitCustomerSettings response: " + response);
+                exception = false;
+                try {
+                    response = InitCustomerSettings(configJson);
+                }
+                catch (Exception e){
+                    JLog.logger.info("Retrying... LNE InitCustomerSettings response exception: " + e.toString());
+                    exception = true;
+                    saveException = e.toString();
+                }
+
+                if (response == 200 ) {
+                    break;
+                }
+                else if (!exception){
+                    JLog.logger.info("LNE InitCustomerSettings response: " + response + " Retrying....");
+                }
+
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+            }
+            if( exception)
+                org.testng.Assert.fail("Could not init customer settings: " + saveException  +"\nLNE machine: " + LNE_IP + "\njson sent: " + configJson + "\n" );
+
+            if (response != 200 )
+                org.testng.Assert.fail("Could not init customer settings. LNE response status code received is: " + response + " after several retries during: " + fromLNEStartUntilLNEResponseOKTimeout + " Seconds. LNE machine: " + LNE_IP);
             else
-                org.testng.Assert.fail("Could not init customer settings. LNE response status code received is: " + response);
+                JLog.logger.info("Success. LNE InitCustomerSettings response: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not init customer settings. LNE machine" + LNE_IP + " json sent: " + configJson + "\n" + e.toString());
+            org.testng.Assert.fail("Could not init customer settings. LNE machine: " + LNE_IP + " json sent: " + configJson + "\n" + e.toString());
         }
 
     }
+
+    private int InitCustomerSettings (String configJson ) {
+
+               Response r = given()
+                       .contentType("application/json").
+                             body(configJson).
+                             when().
+                             post("initCustomerSettings");
+
+                return r.getStatusCode();
+
+    }
+
 
 
     public void SetCustomerConfiguration (String configJson) {
@@ -220,7 +292,7 @@ public class LNEActions extends NepActions {
                 org.testng.Assert.fail("Could not set customer configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer configuration. LNE machine" + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not set customer configuration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
         }
 
     }
@@ -234,7 +306,16 @@ public class LNEActions extends NepActions {
 
             JSONObject configSent = new JSONObject(sentConfiguration);
             long sentCustomerID = configSent.getLong("customerId");
+
+            //compare only the configuration part of the json sent. Customer ID is checked separately
             JSONObject configurationObjectSent = configSent.getJSONObject("configuration");
+
+            //add schema version to corresponds config.json schema version location at the json checked
+            String schemaVersionSent = configurationObjectSent.getJSONObject("centcom_meta").getString("schema_version");
+            configurationObjectSent.optJSONObject("global_conf").put("schema_version", schemaVersionSent);
+
+            //remove centcom_meta from compared json as it is not part of client's config.json
+            configurationObjectSent.remove("centcom_meta");
 
             JSONObject configReceived = new JSONObject(configJson);
             String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");

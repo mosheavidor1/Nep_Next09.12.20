@@ -55,14 +55,11 @@ public class RunTest {
         testng.addListener(tla);
 		testng.run();
 		
-		// if exit code is needed this code will help
-		/*int status = testng.getStatus();
+		// if a test failed throw exception for Jenkins to catch
+		int status = testng.getStatus();
 		if (status != 0) {
-			//System.exit(status);
-			throw new IllegalStateException("TestNG exited with error code: " + status);
-		}*/
-
-
+			throw new IllegalStateException("Test failed. Throwing exception for Jenkins to catch. TestNG error code: " + status);
+		}
 
 	}
 
