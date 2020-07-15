@@ -14,11 +14,11 @@ public class TestFiles {
             if (file.exists()){
                 boolean result = file.delete();
                 if(result == false || file.exists())
-                    org.testng.Assert.fail("Could delete file: " + path);
+                    org.testng.Assert.fail("Could not delete file: " + path);
             }
         }
         catch (Exception e){
-            org.testng.Assert.fail("Could delete file: " + path + "\n" + e.toString());
+            org.testng.Assert.fail("Could not delete file: " + path + "\n" + e.toString());
         }
 
     }
@@ -29,7 +29,7 @@ public class TestFiles {
             if (dir.exists()) {
                 FileUtils.forceDelete(dir);
                 if (dir.exists())
-                    org.testng.Assert.fail("Could delete directory: " + path);
+                    org.testng.Assert.fail("Could not delete directory: " + path);
             }
         }
         catch (IOException e) {

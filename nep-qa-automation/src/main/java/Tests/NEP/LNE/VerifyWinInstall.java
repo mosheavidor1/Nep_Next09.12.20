@@ -2,6 +2,7 @@ package Tests.NEP.LNE;
 
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.JsonUtil;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.TestFiles;
 import org.json.JSONObject;
@@ -23,9 +24,11 @@ public class VerifyWinInstall extends GenericTest {
 
         action = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         action.CreateAndCleanDownloadFolder();
+
+
         String confJson =data.get("Settings Json");
-        JSONObject json = new JSONObject(confJson);
-        long customerId = json.getLong( "customerId" );
+
+        long customerId = JsonUtil.GetCustomerIDFromSentConfiguration(confJson);
 
         action.DeleteCurrentInstaller(customerId);
 
