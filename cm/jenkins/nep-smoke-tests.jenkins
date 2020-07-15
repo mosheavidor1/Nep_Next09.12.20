@@ -4,13 +4,13 @@ node('nep-build-centos7') {
     try {
 
         HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
-        WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_2488'
+        WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
         ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
         VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
-        skip_lne_install = false
+        skip_lne_install = true
         skip_lin_test = false
-        skip_win_test = true
+        skip_win_test = false
 
         node('master') {
             stage("Get modules versions") {
@@ -92,7 +92,8 @@ node('nep-build-centos7') {
         }
 
         stage('Run Win tests') {
-            node('WinSmoke_10_85_24_247') {
+            // node('WinSmoke_10_85_24_247') {
+            node( WIN_NODE ) {
                 try {
                     if ( skip_win_test ) {
                         echo "DEBUG: skip stage Windows side tests"
@@ -150,8 +151,9 @@ node('nep-build-centos7') {
                            ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
                            More info at: ${env.BUILD_URL} and in attach.
                       """.trim(),
+                      from: 'ivalevich@trustwave.com',
                       to: 'ivalevich@trustwave.com',
-                      subject: "Win smoke test for {NEP_BRANCH}."
+                      subject: "Win smoke test for ${NEP_BRANCH}."
                     )
                 }
             }
