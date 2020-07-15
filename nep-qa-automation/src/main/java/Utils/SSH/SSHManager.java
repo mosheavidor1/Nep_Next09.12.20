@@ -15,8 +15,9 @@ import java.util.Vector;
 
 public class SSHManager {
     private String userName, password, hostName;
-    int port;
+    private int port;
     private ChannelSftp sftpChannel;
+    private Session jschSession;
 
     public SSHManager(String userName, String password, String hostName,int port){
         this.userName = userName;
@@ -24,7 +25,7 @@ public class SSHManager {
         this.hostName = hostName;
         this.port = port;
         sftpChannel =null;
-        port = 0;
+        jschSession = null;
         Connect();
 
     }
@@ -32,15 +33,15 @@ public class SSHManager {
     public void Connect(){
         try {
             JSch jsch = new JSch();
-            Session session = jsch.getSession(userName, hostName, port);
-            session.setPassword(password);
-            session.setConfig("StrictHostKeyChecking", "no");
+            jschSession = jsch.getSession(userName, hostName, port);
+            jschSession.setPassword(password);
+            jschSession.setConfig("StrictHostKeyChecking", "no");
             System.out.println("Establishing Connection...");
-            session.connect();
+            jschSession.connect();
             System.out.println("Connection established.");
             System.out.println("Crating SFTP Channel.");
 
-            sftpChannel = (ChannelSftp) session.openChannel("sftp");
+            sftpChannel = (ChannelSftp) jschSession.openChannel("sftp");
             sftpChannel.connect();
             System.out.println("SFTP Channel created.");
         }
@@ -101,12 +102,15 @@ public class SSHManager {
     public void Close (){
         try {
 
-            if (sftpChannel != null && !sftpChannel.isClosed()) {
-                sftpChannel.exit();
+            if (sftpChannel != null) {
+                sftpChannel.quit();
+            }
+            if(jschSession != null ) {
+                jschSession.disconnect();
             }
         }
         catch (Exception e){
-            JLog.logger.error("Could not close: sftpChannel" +  "\n" + e.toString());
+            JLog.logger.error("Could not close SSH manager session" +  "\n" + e.toString());
 
         }
     }
