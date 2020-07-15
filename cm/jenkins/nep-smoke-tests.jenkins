@@ -2,10 +2,11 @@
 
 node('nep-build-centos7') {
     try {
-        HOST_IP  = ${NEP_BRANCH} == 'master' ? '10.85.25.60' : '10.85.25.47'
-        WIN_NODE = ${NEP_BRANCH} == 'master' ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_2488'
-        ESX_IP   = ${NEP_BRANCH} == 'master' ? '10.85.26.75' : '10.85.26.75' // yes, the same now
-        VM_NAME  = ${NEP_BRANCH} == 'master' ? 'NEP-DEV-19' : 'NEP-DEV-20' 
+
+        HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
+        WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_2488'
+        ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
+        VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
         skip_lne_install = false
         skip_lin_test = false
