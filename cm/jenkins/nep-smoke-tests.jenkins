@@ -2,8 +2,10 @@
 
 node('nep-build-centos7') {
     try {
-        HOST_IP =  ${NEP_BRANCH} == 'master' ? '10.85.25.60' : '10.85.25.47'
+        HOST_IP  = ${NEP_BRANCH} == 'master' ? '10.85.25.60' : '10.85.25.47'
         WIN_NODE = ${NEP_BRANCH} == 'master' ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_2488'
+        ESX_IP   = ${NEP_BRANCH} == 'master' ? '10.85.26.75' : '10.85.26.75' // yes, the same now
+        VM_NAME  = ${NEP_BRANCH} == 'master' ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
         skip_lne_install = false
         skip_lin_test = false
@@ -46,11 +48,11 @@ node('nep-build-centos7') {
 
                 build job: 'tools-tst-bin-deploy-local-env',
                       parameters:  [
-                          string(name: 'NEP_BRANCH', value: 'master'),
+                          string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
                           string(name: 'HOST_IP', value: "${HOST_IP}" ),
                           booleanParam(name: 'RESTORE_SNAPSHOT', value: true ),
-                          string(name: 'ESX_IP', value:  '10.85.26.75'),
-                          string(name: 'VM_NAME', value:  'NEP-DEV-19')
+                          string(name: 'ESX_IP', value: "${ESX_IP}"),
+                          string(name: 'VM_NAME', value: "${VM_NAME}")
                       ]
 
                 break
