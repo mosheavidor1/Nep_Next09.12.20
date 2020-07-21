@@ -8,7 +8,7 @@ node('nep-build-centos7') {
         ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
         VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
-        skip_lne_install = true
+        skip_lne_install = false
         skip_lin_test = false
         skip_win_test = false
 
