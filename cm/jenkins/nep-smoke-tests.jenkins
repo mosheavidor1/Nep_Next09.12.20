@@ -2,14 +2,15 @@
 
 node('nep-build-centos7') {
     try {
-        NEP_BRANCH = 'master'
-        HOST_IP  = "10.85.25.60"
+
+        HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
+        WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
+        ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
+        VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
         skip_lne_install = false
         skip_lin_test = false
         skip_win_test = false
-
-
 
         node('master') {
             stage("Get modules versions") {
@@ -48,11 +49,11 @@ node('nep-build-centos7') {
 
                 build job: 'tools-tst-bin-deploy-local-env',
                       parameters:  [
-                          string(name: 'NEP_BRANCH', value: 'master'),
+                          string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
                           string(name: 'HOST_IP', value: "${HOST_IP}" ),
                           booleanParam(name: 'RESTORE_SNAPSHOT', value: true ),
-                          string(name: 'ESX_IP', value:  '10.85.26.75'),
-                          string(name: 'VM_NAME', value:  'NEP-DEV-19')
+                          string(name: 'ESX_IP', value: "${ESX_IP}"),
+                          string(name: 'VM_NAME', value: "${VM_NAME}")
                       ]
 
                 break
@@ -70,28 +71,37 @@ node('nep-build-centos7') {
                 return
             }
 
-//             writeFile file: 'lne_san.sh', text: '''
-// #!/bin/bash
+            cmdstr = '''
+#!/bin/bash
 
-// FCAB=/work/services/stub-srv/var/file_cabinet
-// CID=14159
-// REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version":"1.1.1"},"global_conf":{"log_level":"debug","conf_version":3},"agent":{"ds_host":"endpoint-protection-services.local.tw-test.net","ds_port":443,"ds_protocol":"https","check_update_period":62,"report_period":60,"ds_max_off_period":48,"modules":[{"name":"Windows Log Monitor","binary_name":"WLM.dll","enabled":true},{"name":"Log File Monitor","binary_name":"LFM.dll","enabled":true}],"transport":{"transport_type":2,"syslog":{"port":0},"scp":{"host":"siem-ingress.trustwave.com","dest_folder":"/var/siem/data/nep","port":9022,"user":"twsiem","ack":false,"max_send_folder_size":100}}},"wlm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[{"log_name":"Security","enabled":true,"advanced_filter":false,"filters":[]},{"log_name":"System","enabled":true,"advanced_filter":false,"filters":[]}]},"lfm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[]}}}' | sed "s/\\\\$CID/$CID/"` ; \\rm -rf $FCAB/$CID/ ; curl -v -H "Content-Type: application/json" http://localhost:9091/nep-centcom-client/initCustomerSettings -d "$REQ" && sleep 120 && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.exe\\* -printf %f` | head -1 | strings | grep -q DOS\\ mode && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.lnx_\\* -printf %f` | head -c 4 | grep -q ELF && echo nep_sanity_has_passed
-//             '''
+FCAB=/work/services/stub-srv/var/file_cabinet
+CID=14159
+REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version":"1.1.1"},"global_conf":{"log_level":"debug","conf_version":3},"agent":{"ds_host":"endpoint-protection-services.local.tw-test.net","ds_port":443,"ds_protocol":"https","check_update_period":62,"report_period":60,"ds_max_off_period":48,"modules":[{"name":"Windows Log Monitor","binary_name":"WLM.dll","enabled":true},{"name":"Log File Monitor","binary_name":"LFM.dll","enabled":true}],"transport":{"transport_type":2,"syslog":{"port":0},"scp":{"host":"siem-ingress.trustwave.com","dest_folder":"/var/siem/data/nep","port":9022,"user":"twsiem","ack":false,"max_send_folder_size":100}}},"wlm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[{"log_name":"Security","enabled":true,"advanced_filter":false,"filters":[]},{"log_name":"System","enabled":true,"advanced_filter":false,"filters":[]}]},"lfm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[]}}}' | sed "s/\\\\$CID/$CID/"` ; \\rm -rf $FCAB/$CID/ ; curl -v -H "Content-Type: application/json" http://localhost:9091/nep-centcom-client/initCustomerSettings -d "$REQ" && sleep 120 && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.exe\\* -printf %f` | head -1 | strings | grep -q DOS\\ mode && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.lnx_\\* -printf %f` | head -c 4 | grep -q ELF && echo nep_sanity_has_passed # exit -1
+'''
+            writeFile file: 'lne_san.sh', text: cmdstr
+            
+            def remote = [:]
+            remote.name = 'test'
+            remote.host = "${HOST_IP}"
+            remote.user = "root"
+            remote.password = "trustwave"
+            remote.allowAnyHosts = true
 
-//             USERNAME = "${ "${env.USERNAME}" == "" ? "root"  :  "${env.USERNAME}" }"
-//             PASSWORD = "${ "${env.PASSWORD}" == "" ? "trustwave"  :  "${env.PASSWORD}" }"
+            output = sshScript remote: remote, script: 'lne_san.sh'
 
-//             def remote = [:]
-//             remote.name = 'test'
-//             remote.host = "${HOST_IP}"
-//             remote.user = "${USERNAME}"
-//             remote.password = "${PASSWORD}"
-//             remote.allowAnyHosts = true
-//             sshPut remote: remote, from: 'lne_san.sh', into: '/tmp'
+             if ( output.contains('nep_sanity_has_passed')) {
+                 echo "LNE sanity OK"
+             }
+             else {
+                 echo "ERROR: LNE sanity FAILED"
+                 currentBuild.result = "FAILURE"
+                 throw new Exception("ERROR: LNE sanity FAILED")
+             }
         }
 
         stage('Run Win tests') {
-            node('WinSmoke_10_85_24_247') {
+            // node('WinSmoke_10_85_24_247') {
+            node( WIN_NODE ) {
                 try {
                     if ( skip_win_test ) {
                         echo "DEBUG: skip stage Windows side tests"
@@ -149,8 +159,9 @@ node('nep-build-centos7') {
                            ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
                            More info at: ${env.BUILD_URL} and in attach.
                       """.trim(),
+                      from: 'ivalevich@trustwave.com',
                       to: 'ivalevich@trustwave.com',
-                      subject: "Win smoke test for {NEP_BRANCH}."
+                      subject: "Win smoke test for ${NEP_BRANCH}."
                     )
                 }
             }
