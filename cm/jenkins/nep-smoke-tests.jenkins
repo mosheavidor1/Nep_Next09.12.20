@@ -10,10 +10,6 @@ node('nep-build-centos7') {
         ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
         VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
-        skip_lne_install = true
-        skip_lin_test = true
-        skip_win_test = true
-
         node('master') {
             stage("Get modules versions") {
                 IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
@@ -28,10 +24,6 @@ node('nep-build-centos7') {
         }
 
         stage("LNE install part") {
-            if ( skip_lne_install ) {
-                echo "DEBUG: skip LNE install process"
-                return
-            }
             echo """
             IS_VERSION      = ${IS_VERSION}
             DS_VERSION      = ${DS_VERSION}
@@ -62,7 +54,7 @@ node('nep-build-centos7') {
         }
 
         stage('Run LNE side tests') {
-            if ( skip_lin_test ) {
+            if ( SKIP_TESTS_LNE ) {
                 echo "DEBUG: skip stage Run LNE side tests"
                 return
             }
@@ -99,7 +91,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
             // node('WinSmoke_10_85_24_247') {
             node( WIN_NODE ) {
                 try {
-                    if ( skip_win_test ) {
+                    if ( SKIP_TESTS_WIN ) {
                         echo "DEBUG: skip stage Windows side tests"
                         return
                     }
