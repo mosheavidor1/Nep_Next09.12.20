@@ -88,7 +88,6 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
         }
 
         stage('Run Win tests') {
-            // node('WinSmoke_10_85_24_247') {
             node( WIN_NODE ) {
                 try {
                     if ( SKIP_TESTS_WIN ) {
@@ -137,22 +136,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
                     throw exc
                 }
                 finally {
-                    // env.ForEmailPlugin = env.WORKSPACE
-                    // emailext attachmentsPattern: 'TestResults\\*.trx',
-                    emailext (
-                      attachLog: true,
-                      attachmentsPattern: "**\\emailable-report.html",
-                      body: """
-                           Windows smoke test for ${NEP_BRANCH}
-                           ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
-                           More info at: ${env.BUILD_URL} and in attach.
-                      """.trim(),
-                      from: 'ivalevich@trustwave.com',
-                      to: 'ivalevich@trustwave.com',
-                      mimeType: 'text/html',
-                      // to: "${NEPA_QA_GROUP}"
-                      subject: "Win smoke test for ${NEP_BRANCH}."
-                    )
+                    echo "WIN tests "
                 }
             }
         }
@@ -164,6 +148,21 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
     }
     finally {
         // sendEmail("Smoke run OK")
+                            // env.ForEmailPlugin = env.WORKSPACE
+                    // emailext attachmentsPattern: 'TestResults\\*.trx',
+        emailext (
+            attachLog: true,
+            attachmentsPattern: "**\\emailable-report.html",
+            body: """
+              smoke Results for ${NEP_BRANCH}
+              ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+              More info at: ${env.BUILD_URL} and in attach.
+            """.trim(),
+            from: 'ivalevich@trustwave.com',
+            to: "${SMOKE_EMAIL_LIST}"
+            mimeType: 'text/html',
+            subject: "Win smoke test for ${NEP_BRANCH}."
+        )
     }
 }
 
