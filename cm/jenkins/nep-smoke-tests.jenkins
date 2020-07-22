@@ -3,14 +3,16 @@
 node('nep-build-centos7') {
     try {
 
+        print_params()
+        
         HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
         WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
         ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
         VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
-        skip_lne_install = false
-        skip_lin_test = false
-        skip_win_test = false
+        skip_lne_install = true
+        skip_lin_test = true
+        skip_win_test = true
 
         node('master') {
             stage("Get modules versions") {
@@ -194,3 +196,13 @@ def sendEmail( bodyMsg ) {
         body: "Mail: " + bodyMsg + " +n\n Check console output at: $BUILD_URL/console" + "\n")
 }
 
+def print_params() {
+    echo """
+    Params passed: 
+    LNE_INSTALL_TYPE :  ${LNE_INSTALL_TYPE}
+    NEP_BRANCH       :  ${NEP_BRANCH}
+    SMOKE_EMAIL_LIST :  ${SMOKE_EMAIL_LIST}
+    SKIP_TESTS_LNE   :  ${SKIP_TESTS_LNE}
+    SKIP_TESTS_WIN   :  ${SKIP_TESTS_WIN}
+    """
+}
