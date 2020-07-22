@@ -10,10 +10,6 @@ node('nep-build-centos7') {
         ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
         VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20' 
 
-        skip_lne_install = true
-        skip_lin_test = true
-        skip_win_test = true
-
         node('master') {
             stage("Get modules versions") {
                 IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
@@ -28,10 +24,6 @@ node('nep-build-centos7') {
         }
 
         stage("LNE install part") {
-            if ( skip_lne_install ) {
-                echo "DEBUG: skip LNE install process"
-                return
-            }
             echo """
             IS_VERSION      = ${IS_VERSION}
             DS_VERSION      = ${DS_VERSION}
@@ -96,10 +88,9 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
         }
 
         stage('Run Win tests') {
-            // node('WinSmoke_10_85_24_247') {
             node( WIN_NODE ) {
                 try {
-                    if ( skip_win_test ) {
+                    if ( SKIP_TESTS_WIN ) {
                         echo "DEBUG: skip stage Windows side tests"
                         return
                     }
@@ -145,22 +136,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
                     throw exc
                 }
                 finally {
-                    // env.ForEmailPlugin = env.WORKSPACE
-                    // emailext attachmentsPattern: 'TestResults\\*.trx',
-                    emailext (
-                      attachLog: true,
-                      attachmentsPattern: "**\\emailable-report.html",
-                      body: """
-                           Windows smoke test for ${NEP_BRANCH}
-                           ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
-                           More info at: ${env.BUILD_URL} and in attach.
-                      """.trim(),
-                      from: 'ivalevich@trustwave.com',
-                      to: 'ivalevich@trustwave.com',
-                      mimeType: 'text/html',
-                      // to: "${NEPA_QA_GROUP}"
-                      subject: "Win smoke test for ${NEP_BRANCH}."
-                    )
+                    echo "WIN tests "
                 }
             }
         }
@@ -172,6 +148,21 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
     }
     finally {
         // sendEmail("Smoke run OK")
+                            // env.ForEmailPlugin = env.WORKSPACE
+                    // emailext attachmentsPattern: 'TestResults\\*.trx',
+        emailext (
+            attachLog: true,
+            attachmentsPattern: "**\\emailable-report.html",
+            body: """
+              smoke Results for ${NEP_BRANCH}
+              ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+              More info at: ${env.BUILD_URL} and in attach.
+            """.trim(),
+            from: 'ivalevich@trustwave.com',
+            to: "${SMOKE_EMAIL_LIST}",
+            mimeType: 'text/html',
+            subject: "Win smoke test for ${NEP_BRANCH}."
+        )
     }
 }
 
