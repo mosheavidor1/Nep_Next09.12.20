@@ -54,7 +54,7 @@ node('nep-build-centos7') {
         }
 
         stage('Run LNE side tests') {
-            if ( SKIP_TESTS_LNE ) {
+            if ( SKIP_TESTS_LNE.contains('true')) {
                 echo "DEBUG: skip stage Run LNE side tests"
                 return
             }
@@ -90,7 +90,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
         stage('Run Win tests') {
             node( WIN_NODE ) {
                 try {
-                    if ( SKIP_TESTS_WIN ) {
+                    if ( SKIP_TESTS_WIN.contains('true') ) {
                         echo "DEBUG: skip stage Windows side tests"
                         return
                     }
