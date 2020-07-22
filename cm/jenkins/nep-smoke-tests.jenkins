@@ -54,7 +54,7 @@ node('nep-build-centos7') {
         }
 
         stage('Run LNE side tests') {
-            if ( skip_lin_test ) {
+            if ( SKIP_TESTS_LNE ) {
                 echo "DEBUG: skip stage Run LNE side tests"
                 return
             }
