@@ -143,7 +143,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
     }
     catch (exc) {
         currentBuild.result = "FAILURE"
-        sendEmail("Failed")
+        // sendEmail("Failed")
         throw exc
     }
     finally {
@@ -161,7 +161,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
             from: 'ivalevich@trustwave.com',
             to: "${SMOKE_EMAIL_LIST}",
             mimeType: 'text/html',
-            subject: "Win smoke test for ${NEP_BRANCH}."
+            subject: "Smoke test results for ${NEP_BRANCH}."
         )
     }
 }
