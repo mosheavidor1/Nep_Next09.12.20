@@ -155,8 +155,11 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
             attachmentsPattern: "**\\emailable-report.html",
             body: """
               smoke Results for ${NEP_BRANCH}
+            
               ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+            
               More info at: ${env.BUILD_URL} and in attach.
+            
             """.trim(),
             from: 'ivalevich@trustwave.com',
             to: "${SMOKE_EMAIL_LIST}",
