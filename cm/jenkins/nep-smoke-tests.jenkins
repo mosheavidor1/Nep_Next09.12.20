@@ -159,7 +159,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
               More info at: ${env.BUILD_URL} and in attach.
             """.trim(),
             from: 'ivalevich@trustwave.com',
-            to: "${SMOKE_EMAIL_LIST}"
+            to: "${SMOKE_EMAIL_LIST}",
             mimeType: 'text/html',
             subject: "Win smoke test for ${NEP_BRANCH}."
         )
