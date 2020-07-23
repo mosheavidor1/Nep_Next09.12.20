@@ -49,7 +49,7 @@ node('nep-qa-nightly-25.187') {
 			                   string(name: 'NEP_BRANCH', value: "${env.NEP_BRANCH}" ),
                                string(name: 'SMOKE_EMAIL_LIST', value: 'ivalevich@trustwave.com acohen1@trustwave.com OSolomon@trustwave.com Moshe.Avidor@trustwave.com Uri.Hacohen@trustwave.com mzaytsev@trustwave.com RBuchnik@trustwave.com'),
                                booleanParam(name: 'SKIP_TESTS_LNE', value: false ),
-                               booleanParam(name: 'SKIP_TESTS_WIN', value: true )],
+                               booleanParam(name: 'SKIP_TESTS_WIN', value: false )],
 			      wait: false
             
 			bat """
