@@ -152,7 +152,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
                     // emailext attachmentsPattern: 'TestResults\\*.trx',
         emailext (
             attachLog: true,
-            attachmentsPattern: "**\\emailable-report.html",
+            // attachmentsPattern: "**\\emailable-report.html",
             body: """
               Smoke test results for ${NEP_BRANCH}
 
