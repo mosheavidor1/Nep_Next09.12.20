@@ -70,6 +70,9 @@ node('nep-build-centos7') {
             remote.password = "trustwave"
             remote.allowAnyHosts = true
 
+            // before running sanity give LNE service time to load
+            sleep time: 4, unit: 'MINUTES'
+
             output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
              if ( output.contains('nep_sanity_has_passed')) {
