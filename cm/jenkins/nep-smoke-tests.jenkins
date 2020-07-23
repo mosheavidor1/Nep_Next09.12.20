@@ -59,14 +59,9 @@ node('nep-build-centos7') {
                 return
             }
 
-            cmdstr = '''
-#!/bin/bash
-
-FCAB=/work/services/stub-srv/var/file_cabinet
-CID=14159
-REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version":"1.1.1"},"global_conf":{"log_level":"debug","conf_version":3},"agent":{"ds_host":"endpoint-protection-services.local.tw-test.net","ds_port":443,"ds_protocol":"https","check_update_period":62,"report_period":60,"ds_max_off_period":48,"modules":[{"name":"Windows Log Monitor","binary_name":"WLM.dll","enabled":true},{"name":"Log File Monitor","binary_name":"LFM.dll","enabled":true}],"transport":{"transport_type":2,"syslog":{"port":0},"scp":{"host":"siem-ingress.trustwave.com","dest_folder":"/var/siem/data/nep","port":9022,"user":"twsiem","ack":false,"max_send_folder_size":100}}},"wlm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[{"log_name":"Security","enabled":true,"advanced_filter":false,"filters":[]},{"log_name":"System","enabled":true,"advanced_filter":false,"filters":[]}]},"lfm":{"max_monitor_queue_size":10000,"queues_collector_idle_time":5,"monitor_items":[]}}}' | sed "s/\\\\$CID/$CID/"` ; \\rm -rf $FCAB/$CID/ ; curl -v -H "Content-Type: application/json" http://localhost:9091/nep-centcom-client/initCustomerSettings -d "$REQ" && sleep 120 && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.exe\\* -printf %f` | head -1 | strings | grep -q DOS\\ mode && curl -s http://localhost:9080/$CID/`find $FCAB/$CID/ -type f -name \\*.lnx_\\* -printf %f` | head -c 4 | grep -q ELF && echo nep_sanity_has_passed # exit -1
-'''
-            writeFile file: 'lne_san.sh', text: cmdstr
+            SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
+            deleteDir()
+            git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 
             def remote = [:]
             remote.name = 'test'
@@ -75,7 +70,7 @@ REQ=`echo '{"customerId":14159,"configuration":{"centcom_meta":{"schema_version"
             remote.password = "trustwave"
             remote.allowAnyHosts = true
 
-            output = sshScript remote: remote, script: 'lne_san.sh'
+            output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
              if ( output.contains('nep_sanity_has_passed')) {
                  echo "LNE sanity OK"
