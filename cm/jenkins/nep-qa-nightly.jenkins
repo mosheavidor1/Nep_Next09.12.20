@@ -43,8 +43,8 @@ node('nep-qa-nightly-25.187') {
 		}
 		
 		stage('Run Tests and Backup results') {
-               			// start smoke tests pipeline
-			build job: 'nep-smoke-test', 
+            // start smoke tests pipeline
+			build job: 'nep-qa-smoke', 
 			      parameters: [string(name: 'LNE_INSTALL_TYPE', value: 'install'), 
 			                   string(name: 'NEP_BRANCH', value: "${env.NEP_BRANCH}" ),
                                string(name: 'SMOKE_EMAIL_LIST', value: 'ivalevich@trustwave.com acohen1@trustwave.com OSolomon@trustwave.com Moshe.Avidor@trustwave.com Uri.Hacohen@trustwave.com mzaytsev@trustwave.com RBuchnik@trustwave.com'),
