@@ -2,33 +2,22 @@
 
 node('nep-build-centos7') {
     try {
+        stage("Get modules versions") {
 
-        print_params()
+            print_params()
 
-        HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
-        WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
-        ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
-        VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
+            HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
+            WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
+            ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
+            VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
 
-        node('master') {
-            stage("Get modules versions") {
-                IS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-IS-${NEP_BRANCH}.row"
-                DS_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-DS-${NEP_BRANCH}.row"
-                DS_MGMT_VERSION_FILE = "/var/jenkins_home/workspace/cm-last-released-builds/NEP-DS-Mgmt-${NEP_BRANCH}.row"
+            SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
+            deleteDir()
+            git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 
-                IS_VERSION = getProdVersionFromFile( IS_VERSION_FILE )
-                DS_VERSION = getProdVersionFromFile( DS_VERSION_FILE )
-                DS_MGMT_VERSION = getProdVersionFromFile( DS_MGMT_VERSION_FILE )
-
-            }
         }
 
         stage("LNE install part") {
-            echo """
-            IS_VERSION      = ${IS_VERSION}
-            DS_VERSION      = ${DS_VERSION}
-            DS_MGMT_VERSION = ${DS_MGMT_VERSION}
-            """
             switch (LNE_INSTALL_TYPE) {
             case "skip" :
                 echo "skip LNE installation part"
@@ -59,18 +48,14 @@ node('nep-build-centos7') {
                 return
             }
 
-            SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
-            deleteDir()
-            git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
-
             def remote = [:]
             remote.name = 'test'
             remote.host = "${HOST_IP}"
             remote.user = "root"
             remote.password = "trustwave"
             remote.allowAnyHosts = true
-
-            // before running sanity give LNE service time to load
+             
+            echo "sleep before running LNE nep_sanity to give LNE services time to load "
             sleep time: 4, unit: 'MINUTES'
 
             output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
@@ -150,7 +135,7 @@ node('nep-build-centos7') {
                     // emailext attachmentsPattern: 'TestResults\\*.trx',
         emailext (
             attachLog: true,
-            // attachmentsPattern: "**\\emailable-report.html",
+            //attachmentsPattern: "**/emailable-report.html",
             body: """
               Smoke test results for ${NEP_BRANCH}
 
