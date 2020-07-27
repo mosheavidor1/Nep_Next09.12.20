@@ -13,8 +13,7 @@ node('nep-build-centos7') {
 
             // this groovy code prohibited by default in Pipelines
             // tempstr = RES.inspect() Scripts not permitted to use staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object. Administrators can decide whether to approve or reject this signature.
-
-            echo "tempstr = ${tempstr}"
+            // echo "tempstr = ${tempstr}
             
             HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
             WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
@@ -154,11 +153,19 @@ node('nep-build-centos7') {
     catch (exc) {
         currentBuild.result = "FAILURE"
         // sendEmail("Failed")
+
+        echo "general Pipeline failure."
         throw exc
     }
     finally {
         echo "finally prepare mail to send"
-        unstash 'win_stash'
+
+        try {
+            unstash 'win_stash'
+        }
+        catch (exc) {
+            echo "no stash win_stash"
+        }
         
         emailext (
             attachLog: true,
