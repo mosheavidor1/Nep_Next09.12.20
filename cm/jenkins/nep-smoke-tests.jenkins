@@ -6,76 +6,100 @@ node('nep-build-centos7') {
 
             print_params()
 
+            RES = [:]
+            RES.INSTALL   = 'Not run'
+            RES.LNE_TESTS = 'Not run'
+            RES.WIN_TESTS = 'Not run'
+
+            tempstr = RES.inspect()
+
+            echo "tempstr = ${tempstr}"
+            
             HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
             WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
+            WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' : '10.85.24.250'
             ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
             VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
 
             SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
             deleteDir()
             git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
-
         }
 
         stage("LNE install part") {
-            switch (LNE_INSTALL_TYPE) {
-            case "skip" :
-                echo "skip LNE installation part"
-                break
-            case "install" :
-                echo "external LNE installation part"
+            try {
+                switch (LNE_INSTALL_TYPE) {
+                case "skip" :
+                    echo "skip LNE installation part"
+                    break
+                case "install" :
+                    echo "external LNE installation part"
 
-                build job: 'tools-tst-bin-deploy-local-env',
-                      parameters:  [
-                          string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
-                          string(name: 'HOST_IP', value: "${HOST_IP}" ),
-                          booleanParam(name: 'RESTORE_SNAPSHOT', value: true ),
-                          string(name: 'ESX_IP', value: "${ESX_IP}"),
-                          string(name: 'VM_NAME', value: "${VM_NAME}")
-                      ]
+                    build job: 'tools-tst-bin-deploy-local-env',
+                          parameters:  [
+                    string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
+                    string(name: 'HOST_IP', value: "${HOST_IP}" ),
+                    booleanParam(name: 'RESTORE_SNAPSHOT', value: true ),
+                    string(name: 'ESX_IP', value: "${ESX_IP}"),
+                     string(name: 'VM_NAME', value: "${VM_NAME}")
+                                       ]
+                    RES.INSTALL = 'OK'
+                    break
 
-                break
-
-            case "upgrade" :
-                echo "upgrade LNE"
-                break;
+                case "upgrade" :
+                    echo "upgrade LNE"
+                    RES.INSTALL = 'OK'
+                    break;
+                }
             }
+            catch (err) {
+                RES.INSTALL = 'NOT OK'
+                throw err 
+            }
+            
         }
 
         stage('Run LNE side tests') {
-            if ( SKIP_TESTS_LNE.contains('true')) {
-                echo "DEBUG: skip stage Run LNE side tests"
-                return
-            }
+            try {
+                
+                if ( SKIP_TESTS_LNE.contains('true')) {
+                    echo "DEBUG: skip stage Run LNE side tests"
+                    return
+                }
 
-            def remote = [:]
-            remote.name = 'test'
-            remote.host = "${HOST_IP}"
-            remote.user = "root"
-            remote.password = "trustwave"
-            remote.allowAnyHosts = true
+                def remote = [:]
+                remote.name = 'test'
+                remote.host = "${HOST_IP}"
+                remote.user = "root"
+                remote.password = "trustwave"
+                remote.allowAnyHosts = true
              
-            echo "sleep before running LNE nep_sanity to give LNE services time to load "
-            sleep time: 4, unit: 'MINUTES'
+                echo "sleep before running LNE nep_sanity to give LNE services time to load "
+                sleep time: 4, unit: 'MINUTES'
 
-            output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
+                output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
-             if ( output.contains('nep_sanity_has_passed')) {
-                 echo "LNE sanity OK"
-             }
-             else {
-                 echo "ERROR: LNE sanity FAILED"
-                 currentBuild.result = "FAILURE"
-                 throw new Exception("ERROR: LNE sanity FAILED")
-             }
+                if ( output.contains('nep_sanity_has_passed')) {
+                    echo "LNE sanity OK"
+                }
+                else {
+                    echo "ERROR: LNE sanity FAILED"
+                    currentBuild.result = "FAILURE"
+                    throw new Exception("ERROR: LNE sanity FAILED")
+                }
+                RES.LNE_TESTS = 'OK'
+            }
+            catch (err) {
+                RES.LNE_TESTS = 'NOT OK'
+            }
         }
 
         stage('Run Win tests') {
             node( WIN_NODE ) {
                 try {
-                    if ( SKIP_TESTS_WIN.contains('true') ) {
-                        echo "DEBUG: skip stage Windows side tests"
-                        return
+                   if ( SKIP_TESTS_WIN.contains('true') ) {
+                       echo "DEBUG: skip stage Windows side tests"
+                       return
                     }
 
                     SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
@@ -111,15 +135,17 @@ node('nep-build-centos7') {
                         """
                         //    }
                     }
-                    //art_str = '**/*.html'
-                    archiveArtifacts artifacts: "**/emailable-report.html" // ${art_str}
+                    RES.WIN_TESTS = 'OK'
+                    echo "BEFORE STASH"
+                    stash allowEmpty: true, includes: 'test-output/', name: 'win_stash'
+                    echo "AFTER STASH"
                 }
                 catch (exc) {
-	            	currentBuild.result = "FAILURE"
+                    RES.WIN_TESTS = 'NOT_OK'
+                    stash allowEmpty: true, includes: 'test-output/', name: 'win_stash'
                     throw exc
                 }
                 finally {
-                    echo "WIN tests "
                 }
             }
         }
@@ -130,23 +156,31 @@ node('nep-build-centos7') {
         throw exc
     }
     finally {
-        // sendEmail("Smoke run OK")
-                            // env.ForEmailPlugin = env.WORKSPACE
-                    // emailext attachmentsPattern: 'TestResults\\*.trx',
+        echo "finally prepare mail to send"
+        unstash 'win_stash'
+        
         emailext (
             attachLog: true,
-            //attachmentsPattern: "**/emailable-report.html",
+            attachmentsPattern: "**/emailable-report.html",
+            //attachmentsPattern: "",
             body: """
               Smoke test results for ${NEP_BRANCH}
 
-              ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+              LNE IP :     ${HOST_IP} 
+              Win IP :     ${WIN_IP}
+              ESX_IP :     ${ESX_IP}
+              VM_NAME :    ${VM_NAME}
+                          
+              Install LNE:        ${RES.INSTALL}
+              LNE Sanity :        ${RES.LNE_TESTS}
+              Win agent smoke:    ${RES.WIN_TESTS}
 
-              More info at: ${env.BUILD_URL} and in attach.
+            More info at: ${env.BUILD_URL} and in attach.
 
             """,
             from: 'ivalevich@trustwave.com',
             to: "${SMOKE_EMAIL_LIST}",
-            subject: "Smoke test results for ${NEP_BRANCH}."
+            subject: "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
         )
     }
 }
