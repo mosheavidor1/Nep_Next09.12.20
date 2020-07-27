@@ -11,7 +11,8 @@ node('nep-build-centos7') {
             RES.LNE_TESTS = 'Not run'
             RES.WIN_TESTS = 'Not run'
 
-            tempstr = RES.inspect()
+            // this groovy code prohibited by default in Pipelines
+            // tempstr = RES.inspect() Scripts not permitted to use staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object. Administrators can decide whether to approve or reject this signature.
 
             echo "tempstr = ${tempstr}"
             
