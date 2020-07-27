@@ -86,6 +86,7 @@ node('nep-build-centos7') {
                     echo "LNE sanity OK"
                 }
                 else {
+                    writeFile(file: 'nep_sanity.log', text: output)
                     echo "ERROR: LNE sanity FAILED"
                     currentBuild.result = "FAILURE"
                     throw new Exception("ERROR: LNE sanity FAILED")
@@ -172,7 +173,7 @@ node('nep-build-centos7') {
         
         emailext (
             attachLog: true,
-            attachmentsPattern: "**/emailable-report.html",
+            attachmentsPattern: "**/emailable-report.html, nep_sanity.log",
             //attachmentsPattern: "",
             body: """
               Smoke test results for ${NEP_BRANCH}
