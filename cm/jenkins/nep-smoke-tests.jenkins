@@ -2,151 +2,201 @@
 
 node('nep-build-centos7') {
     try {
-        stage("Get modules versions") {
+        LOCK_NAME = (NEP_BRANCH == 'master') ? 'master_smoke_lock' : 'next_smoke_lock'
+        lock (LOCK_NAME) {
+        
+            stage("Get modules versions") {
 
-            print_params()
+                print_params()
 
-            HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
-            WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
-            ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
-            VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
+                RES = [:]
+                RES.INSTALL   = 'Not run'
+                RES.LNE_TESTS = 'Not run'
+                RES.WIN_TESTS = 'Not run'
 
-            SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
-            deleteDir()
-            git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
+                // this groovy code prohibited by default in Pipelines
+                // tempstr = RES.inspect() Scripts not permitted to use staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object. Administrators can decide whether to approve or reject this signature.
+                // echo "tempstr = ${tempstr}
+            
+                HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
+                WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
+                WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' : '10.85.24.250'
+                ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
+                VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
 
-        }
-
-        stage("LNE install part") {
-            switch (LNE_INSTALL_TYPE) {
-            case "skip" :
-                echo "skip LNE installation part"
-                break
-            case "install" :
-                echo "external LNE installation part"
-
-                build job: 'tools-tst-bin-deploy-local-env',
-                      parameters:  [
-                          string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
-                          string(name: 'HOST_IP', value: "${HOST_IP}" ),
-                          booleanParam(name: 'RESTORE_SNAPSHOT', value: true ),
-                          string(name: 'ESX_IP', value: "${ESX_IP}"),
-                          string(name: 'VM_NAME', value: "${VM_NAME}")
-                      ]
-
-                break
-
-            case "upgrade" :
-                echo "upgrade LNE"
-                break;
-            }
-        }
-
-        stage('Run LNE side tests') {
-            if ( SKIP_TESTS_LNE.contains('true')) {
-                echo "DEBUG: skip stage Run LNE side tests"
-                return
+                SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
+                deleteDir()
+                git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
             }
 
-            def remote = [:]
-            remote.name = 'test'
-            remote.host = "${HOST_IP}"
-            remote.user = "root"
-            remote.password = "trustwave"
-            remote.allowAnyHosts = true
-             
-            echo "sleep before running LNE nep_sanity to give LNE services time to load "
-            sleep time: 4, unit: 'MINUTES'
-
-            output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
-
-             if ( output.contains('nep_sanity_has_passed')) {
-                 echo "LNE sanity OK"
-             }
-             else {
-                 echo "ERROR: LNE sanity FAILED"
-                 currentBuild.result = "FAILURE"
-                 throw new Exception("ERROR: LNE sanity FAILED")
-             }
-        }
-
-        stage('Run Win tests') {
-            node( WIN_NODE ) {
+            stage("LNE install part") {
                 try {
-                    if ( SKIP_TESTS_WIN.contains('true') ) {
-                        echo "DEBUG: skip stage Windows side tests"
+                    switch (LNE_INSTALL_TYPE) {
+                    case "skip" :
+                        echo "skip LNE installation part"
+                        break
+                    case "install" :
+                        echo "external LNE installation part"
+
+                        build job: 'tools-tst-bin-deploy-local-env',
+                    parameters:  [
+                        string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
+                        string(name: 'HOST_IP', value: "${HOST_IP}" ),
+                        booleanParam(name: 'RESTORE_SNAPSHOT', value: true ),
+                        string(name: 'ESX_IP', value: "${ESX_IP}"),
+                        string(name: 'VM_NAME', value: "${VM_NAME}")
+                    ]
+
+                        if ( SKIP_TESTS_LNE.contains('false')) {
+                            echo "sleep before running LNE nep_sanity to give LNE services time to load "
+                            sleep time: 4, unit: 'MINUTES'
+                        }
+                    
+                        RES.INSTALL = 'OK'
+                        break
+
+                    case "upgrade" :
+                            echo "upgrade LNE"
+                            RES.INSTALL = 'OK'
+                            break;
+                    }
+                }
+                catch (err) {
+                    RES.INSTALL = 'NOT OK'
+                    throw err 
+                }
+            
+            }
+
+            stage('Run LNE side tests') {
+                try {
+                
+                    if ( SKIP_TESTS_LNE.contains('true')) {
+                        echo "DEBUG: skip stage Run LNE side tests"
                         return
                     }
 
-                    SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
-                    DISPLAY_VERSION = "${BUILD_NUMBER}-${NEP_BRANCH}"
-                    MODULE_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
-                    MODULE_ARTIFACT_DST="${WORKSPACE}\\nep-qa-automation\\nep-qa-automation.jar"
-                    echo "RUN Windows smoke TESTS  ${MODULE_ARTIFACT_DST}"
-                    echo "1. checkout qa-tests automation folder"
-                    deleteDir()
-                    git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
+                    def remote = [:]
+                    remote.name = 'test'
+                    remote.host = "${HOST_IP}"
+                    remote.user = "root"
+                    remote.password = "trustwave"
+                    remote.allowAnyHosts = true
+             
+                    output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
-                    echo "2. download latest nep-qa-automation.jar from nexus"
-                    powershell """
-                    # Get-ChildItem env:
-
-                    echo "From: ${MODULE_ARTIFACT_SRC}"
-                    echo "To: 	${MODULE_ARTIFACT_DST}"
-
-                    ##### Download artifact from Nexus
-                    echo "curl -o ${MODULE_ARTIFACT_DST} ${MODULE_ARTIFACT_SRC}"
-                    curl -o "${MODULE_ARTIFACT_DST}" "$MODULE_ARTIFACT_SRC"
-
-                    if ( -Not (Test-Path "${MODULE_ARTIFACT_DST}")) {
-                        Write-host "${MODULE_ARTIFACT_DST} file can't be downloaded"
-                        exit 1
+                    if ( output.contains('nep_sanity_has_passed')) {
+                        echo "LNE sanity OK"
                     }
-                    """
-                    SETTINGS_XML = "LNE/WinInstall.xml"
-                    timeout(time: 20, unit: 'MINUTES') {
-                            //    retry(2) {
-                        bat """
-                        java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
-                        """
-                        //    }
+                    else {
+                        writeFile(file: 'nep_sanity.log', text: output)
+                        echo "ERROR: LNE sanity FAILED"
+                        currentBuild.result = "FAILURE"
+                        throw new Exception("ERROR: LNE sanity FAILED")
                     }
-                    //art_str = '**/*.html'
-                    archiveArtifacts artifacts: "**/emailable-report.html" // ${art_str}
+                    RES.LNE_TESTS = 'OK'
                 }
-                catch (exc) {
-	            	currentBuild.result = "FAILURE"
-                    throw exc
-                }
-                finally {
-                    echo "WIN tests "
+                catch (err) {
+                    RES.LNE_TESTS = 'NOT OK'
                 }
             }
-        }
-    }
+
+            stage('Run Win tests') {
+                node( WIN_NODE ) {
+                    try {
+                        if ( SKIP_TESTS_WIN.contains('true') ) {
+                            echo "DEBUG: skip stage Windows side tests"
+                            return
+                        }
+
+                        SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
+                        DISPLAY_VERSION = "${BUILD_NUMBER}-${NEP_BRANCH}"
+                        MODULE_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
+                        MODULE_ARTIFACT_DST="${WORKSPACE}\\nep-qa-automation\\nep-qa-automation.jar"
+                        echo "RUN Windows smoke TESTS  ${MODULE_ARTIFACT_DST}"
+                        echo "1. checkout qa-tests automation folder"
+                        deleteDir()
+                        git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
+
+                        echo "2. download latest nep-qa-automation.jar from nexus"
+                        powershell """
+                        # Get-ChildItem env:
+
+                        echo "From: ${MODULE_ARTIFACT_SRC}"
+                        echo "To: 	${MODULE_ARTIFACT_DST}"
+
+                        ##### Download artifact from Nexus
+                        echo "curl -o ${MODULE_ARTIFACT_DST} ${MODULE_ARTIFACT_SRC}"
+                        curl -o "${MODULE_ARTIFACT_DST}" "$MODULE_ARTIFACT_SRC"
+
+                        if ( -Not (Test-Path "${MODULE_ARTIFACT_DST}")) {
+                            Write-host "${MODULE_ARTIFACT_DST} file can't be downloaded"
+                            exit 1
+                        }
+                        """
+                        SETTINGS_XML = "LNE/WinInstall.xml"
+                        timeout(time: 20, unit: 'MINUTES') {
+                            //    retry(2) {
+                            bat """
+                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
+                            """
+                            //    }
+                        }
+                        RES.WIN_TESTS = 'OK'
+                        echo "BEFORE STASH"
+                        stash allowEmpty: true, includes: 'test-output/', name: 'win_stash'
+                        echo "AFTER STASH"
+                    }
+                    catch (exc) {
+                        RES.WIN_TESTS = 'NOT_OK'
+                        stash allowEmpty: true, includes: 'test-output/', name: 'win_stash'
+                        throw exc
+                    }
+                    finally {
+                    }
+                } // win node try
+            } // stage   
+        } // lock
+    } //global try
     catch (exc) {
         currentBuild.result = "FAILURE"
         // sendEmail("Failed")
+
+        echo "general Pipeline failure."
         throw exc
     }
     finally {
-        // sendEmail("Smoke run OK")
-                            // env.ForEmailPlugin = env.WORKSPACE
-                    // emailext attachmentsPattern: 'TestResults\\*.trx',
+        echo "finally prepare mail to send"
+
+        try {
+            unstash 'win_stash'
+        }
+        catch (exc) {
+            echo "no stash win_stash"
+        }
+        
         emailext (
-            attachLog: true,
-            //attachmentsPattern: "**/emailable-report.html",
-            body: """
-              Smoke test results for ${NEP_BRANCH}
+        attachLog: true,
+        attachmentsPattern: "**/emailable-report.html, nep_sanity.log",
+        //attachmentsPattern: "",
+        body: """
+        Smoke test results for ${NEP_BRANCH}
 
-              ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+        LNE IP :     ${HOST_IP} 
+        Win IP :     ${WIN_IP}
+        ESX_IP :     ${ESX_IP}
+        VM_NAME :    ${VM_NAME}
+                          
+        Install LNE:        ${RES.INSTALL}
+        LNE Sanity :        ${RES.LNE_TESTS}
+        Win agent smoke:    ${RES.WIN_TESTS}
 
-              More info at: ${env.BUILD_URL} and in attach.
+        More info at: ${env.BUILD_URL} and in attach.
 
-            """,
-            from: 'ivalevich@trustwave.com',
-            to: "${SMOKE_EMAIL_LIST}",
-            subject: "Smoke test results for ${NEP_BRANCH}."
+        """,
+        from: 'ivalevich@trustwave.com',
+        to: "${SMOKE_EMAIL_LIST}",
+        subject: "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
         )
     }
 }
@@ -166,19 +216,19 @@ def getProdVersionFromFile( versionFile ) {
 
 def sendEmail( bodyMsg ) {
 	mail (
-		to: "ivalevich@trustwave.com",
-		subject: "Build $BUILD_NUMBER -($JOB_NAME)",
-		//// body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n")
-        body: "Mail: " + bodyMsg + " +n\n Check console output at: $BUILD_URL/console" + "\n")
+    to: "ivalevich@trustwave.com",
+    subject: "Build $BUILD_NUMBER -($JOB_NAME)",
+    //// body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n")
+    body: "Mail: " + bodyMsg + " +n\n Check console output at: $BUILD_URL/console" + "\n")
 }
 
 def print_params() {
     echo """
     Params passed:
     LNE_INSTALL_TYPE :  ${LNE_INSTALL_TYPE}
-    NEP_BRANCH       :  ${NEP_BRANCH}
-    SMOKE_EMAIL_LIST :  ${SMOKE_EMAIL_LIST}
-    SKIP_TESTS_LNE   :  ${SKIP_TESTS_LNE}
-    SKIP_TESTS_WIN   :  ${SKIP_TESTS_WIN}
+NEP_BRANCH       :  ${NEP_BRANCH}
+SMOKE_EMAIL_LIST :  ${SMOKE_EMAIL_LIST}
+SKIP_TESTS_LNE   :  ${SKIP_TESTS_LNE}
+SKIP_TESTS_WIN   :  ${SKIP_TESTS_WIN}
     """
 }
