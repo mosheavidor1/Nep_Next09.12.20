@@ -43,6 +43,12 @@ node('nep-build-centos7') {
                     string(name: 'ESX_IP', value: "${ESX_IP}"),
                      string(name: 'VM_NAME', value: "${VM_NAME}")
                                        ]
+
+                    if ( SKIP_TESTS_LNE.contains('false')) {
+                        echo "sleep before running LNE nep_sanity to give LNE services time to load "
+                        sleep time: 4, unit: 'MINUTES'
+                    }
+                    
                     RES.INSTALL = 'OK'
                     break
 
@@ -74,9 +80,6 @@ node('nep-build-centos7') {
                 remote.password = "trustwave"
                 remote.allowAnyHosts = true
              
-                echo "sleep before running LNE nep_sanity to give LNE services time to load "
-                sleep time: 4, unit: 'MINUTES'
-
                 output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
                 if ( output.contains('nep_sanity_has_passed')) {
