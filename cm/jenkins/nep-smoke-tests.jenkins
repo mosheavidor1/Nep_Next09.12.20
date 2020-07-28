@@ -160,9 +160,9 @@ node('nep-build-centos7') {
                         """
                         SETTINGS_XML = "LNE/WinInstall.xml"
                         timeout(time: 20, unit: 'MINUTES') {
-                            //    retry(2) {
+                            // '10.85.24.247' : '10.85.24.250'
                             bat """
-                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}"
+                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP} win]10.85.24.247]QA-NEP]finjan!"
                             """
                             //    }
                         }
