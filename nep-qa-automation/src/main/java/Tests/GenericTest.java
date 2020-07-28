@@ -1,11 +1,11 @@
 package Tests;
 
+import java.awt.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import Actions.WikiActions;
 import Applications.SeleniumBrowser;
 import Utils.Main.RunTest;
 import Utils.Capture.VideoCapture;
@@ -26,7 +26,6 @@ public class GenericTest {
 	protected static HashMap<String, String> general=null;
 	protected VideoCapture video;
 	private String screenShot;
-	protected WikiActions wikiAction;
 	public static final String generalSettingsIdentifier = "General Settings";
 
 	@SuppressWarnings("unchecked")
@@ -75,35 +74,36 @@ public class GenericTest {
 	}
 
 	@BeforeMethod
-	public void BeforeMethod()  {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss");
-		Date date = new Date();
-		video = new VideoCapture(".\\test-output\\Capture", this.getClass().getSimpleName() + " " + dateFormat.format(date));
+	public void BeforeMethod() {
+		if (!GraphicsEnvironment.isHeadless()) {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss");
+			Date date = new Date();
+			video = new VideoCapture(".\\test-output\\Capture", this.getClass().getSimpleName() + " " + dateFormat.format(date));
 
-		try {
-			video.startRecording();
-		} catch (Exception e) {
-			JLog.logger.warn("Could not start video recording. If multiple screens are used do not change the browser location to avoid this issue.");
+			try {
+				video.startRecording();
+			} catch (Exception e) {
+				JLog.logger.warn("Could not start video recording. If multiple screens are used do not change the browser location to avoid this issue.");
+			}
+			String captureFilesPrefix = System.getProperty("user.dir") + "\\test-output\\Capture\\" + this.getClass().getSimpleName() + " " + dateFormat.format(date);
+			screenShot = captureFilesPrefix + ".png";
+			InvokedMethodListener.screenShot = screenShot;
+			InvokedMethodListener.video = captureFilesPrefix + ".avi";
+
 		}
-		String captureFilesPrefix = System.getProperty("user.dir") + "\\test-output\\Capture\\" + this.getClass().getSimpleName() + " " + dateFormat.format(date);
-		screenShot = captureFilesPrefix + ".png";
-		InvokedMethodListener.screenShot = screenShot;
-		InvokedMethodListener.video = captureFilesPrefix + ".avi";
-
 	}
 
 
 	@AfterMethod
 	public void afterMethod() throws Exception {
-		video.stopRecording();
+		if (!GraphicsEnvironment.isHeadless()) {
 
-		if (SeleniumBrowser.InstanceExist()) {
+			video.stopRecording();
 
-			File scrFile = ((TakesScreenshot) SeleniumBrowser.GetDriver()).getScreenshotAs(OutputType.FILE);
-
-			FileUtils.copyFile(scrFile, new File(screenShot));
-
-
+			if (SeleniumBrowser.InstanceExist()) {
+				File scrFile = ((TakesScreenshot) SeleniumBrowser.GetDriver()).getScreenshotAs(OutputType.FILE);
+				FileUtils.copyFile(scrFile, new File(screenShot));
+			}
 		}
 
 

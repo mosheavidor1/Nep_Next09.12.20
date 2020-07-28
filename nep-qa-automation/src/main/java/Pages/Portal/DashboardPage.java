@@ -9,15 +9,15 @@ import Pages.GenericPage;
 import WebElements.Button;
 
 
-public class DashboardPage extends GenericPage {	
+public class DashboardPage extends GenericPage {
 	public static final By dashboradByID = By.id("dashboard");
-	
-	 @FindBy(how=How.ID,using="dashboard")
-	 	private WebElement dashboard_element;
-	 	public Button dashboard;
-	 	
-		 public DashboardPage () {
-			dashboard = new Button(dashboard_element);
-		 }
+
+	@FindBy(how=How.ID,using="dashboard")
+	private WebElement dashboard_element;
+	public Button dashboard;
+
+	public DashboardPage () {
+		dashboard = new Button(dashboard_element);
+	}
 
 }

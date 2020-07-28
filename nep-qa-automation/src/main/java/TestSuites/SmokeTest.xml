@@ -1,0 +1,23 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Smoke Test" configfailurepolicy="skip">
+
+    <test name = "Download installer, install End Point and verify configuration change" >
+
+        <groups>
+            <dependencies>
+                <group  name= "VerifyInstallation" depends-on="InitCustomer" ></group>
+                <group  name= "ChangeConfiguration" depends-on="VerifyInstallation" ></group>
+            </dependencies>
+        </groups>
+
+        <classes>
+            <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>
+            <class name = "Tests.LNE.InstallEP" />
+            <class name = "Tests.LNE.ChangeCustomerConfiguration" />
+        </classes>
+    </test>
+
+
+</suite>
