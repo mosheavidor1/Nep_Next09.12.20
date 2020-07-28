@@ -2,19 +2,11 @@ package Actions;
 
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
-import Utils.SSH.SSHManager;
-import Utils.TestFiles;
+import Utils.Remote.SSHManager;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -22,17 +14,15 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
-public class LNEActions extends NepActions {
+public class LNEActions extends ManagerActions  {
+
     public static final String basePrefix = "http://";
     public static final String baseSuffix = ":9091/nep-centcom-client/";
-    public static final String winInstallerName = "TrustwaveEndpoint.exe";
     public static final String backupIdentifier = "backup";
-    public static final String windowsHostsFile = "C:\\Windows\\System32\\drivers\\etc\\hosts";
-    public static final String hostsFileRedirection = "endpoint-protection-services.local.tw-test.net";
-    public static final String nepa_caDotPemPath = "C:\\Program Files\\Trustwave\\NEPAgent\\certs\\nepa_ca.pem";
-    private static final String copyWinInstallerLocation = "C:\\SeleniumDownloads\\TrustwaveEndpoint.exe";
+    public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/nepa_ca.pem";
     public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
-    public static final char hostsFileCommentChar = '#';
+    public static final String caCertificateFileName = "cacertificate.txt";
+
 
     private String LNE_IP, userNameLNE, passwordLNE;
     int LNE_SSH_port;
@@ -62,7 +52,7 @@ public class LNEActions extends NepActions {
 
     }
 
-    public void DeleteCurrentInstaller(long  customerId) {
+    public void DeleteCurrentInstallerFromLNE(long  customerId) {
         SSHManager ssh=null;
         try {
 
@@ -76,7 +66,7 @@ public class LNEActions extends NepActions {
             if (ssh.IsFileExists(clientFolder)) {
                 List<String> list = ssh.ListOfFiles(clientFolder);
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).contains(winInstallerName) && !list.get(i).contains(backupIdentifier)) {
+                    if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
                         String currentInstaller = clientFolder + "/" + list.get(i);
                         ssh.DeleteFile(currentInstaller);
                         break;
@@ -85,10 +75,11 @@ public class LNEActions extends NepActions {
             }
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not delete current installer contains: " + winInstallerName + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
+            org.testng.Assert.fail("Could not delete current installer contains: " + windowsInstallationFile + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
         }
         finally {
-            ssh.Close();
+            if (ssh!=null)
+                ssh.Close();
         }
     }
 
@@ -159,10 +150,12 @@ public class LNEActions extends NepActions {
 
             JLog.logger.info("Waiting for installer file to be ready... LNE machine:" + LNE_IP);
 
+            String copyWinInstallerLocation = PropertiesFile.getManagerDownloadFolder()+ "/" + windowsInstallationFile;
+
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).contains(winInstallerName) && !list.get(i).contains(backupIdentifier)) {
+                    if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
                         String source = clientFolder + "/" + list.get(i);
                         String destination = copyWinInstallerLocation;
                         ssh.CopyToLocal(source, destination);
@@ -180,41 +173,35 @@ public class LNEActions extends NepActions {
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could find file contains: " + winInstallerName + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could find file contains: " + windowsInstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not download installer contains: " + winInstallerName + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
+            org.testng.Assert.fail("Could not download installer contains: " + windowsInstallationFile + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
         }
         finally{
-            ssh.Close();
+            if (ssh!=null)
+                ssh.Close();
         }
 
 
     }
 
-    public void AppendToHostsFile () {
+    public void WriteCACertificateToFile(){
         try {
-            TestFiles.RemoveLines(windowsHostsFile, hostsFileRedirection, hostsFileCommentChar);
-            String toAppend = "\n" + LNE_IP + " " + hostsFileRedirection;
-            TestFiles.AppendToFile(windowsHostsFile, toAppend, true);
-        }
-        catch (Exception e) {
-            org.testng.Assert.fail("Could not change endpoint machine hosts file: " + windowsHostsFile  + "\n" + e.toString());
-        }
-
-    }
-
-    public void AddCACertificate(){
-        try {
+            String caFilePath = PropertiesFile.getManagerDownloadFolder() + "/" + caCertificateFileName;
             String certificate = GetCACertificate();
-            TestFiles.AppendToFile(nepa_caDotPemPath, "\n\n" + certificate, false);
+
+            PrintWriter out = new PrintWriter(caFilePath);
+            out.print(certificate);
+            out.close();
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not add CA certificate to file: " + nepa_caDotPemPath  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not write CA certificate to file. "  + "\n" + e.toString());
         }
 
     }
+
 
     public void InitCustomerSettings (String configJson, int fromLNEStartUntilLNEResponseOKTimeout) {
         try {
@@ -275,7 +262,6 @@ public class LNEActions extends NepActions {
     }
 
 
-
     public void SetCustomerConfiguration (String configJson) {
         try {
             Response r = given()
@@ -294,40 +280,6 @@ public class LNEActions extends NepActions {
         catch (Exception e) {
             org.testng.Assert.fail("Could not set customer configuration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
         }
-
-    }
-
-    public void CompareConfigurationToEPConfiguration (String sentConfiguration){
-        String configJson=null;
-        try {
-            FileInputStream inputStream = new FileInputStream(configJsonPath);
-            configJson = IOUtils.toString(inputStream, Charset.defaultCharset());
-            inputStream.close();
-
-            JSONObject configSent = new JSONObject(sentConfiguration);
-            long sentCustomerID = configSent.getLong("customerId");
-
-            //compare only the configuration part of the json sent. Customer ID is checked separately
-            JSONObject configurationObjectSent = configSent.getJSONObject("configuration");
-
-            //add schema version to corresponds config.json schema version location at the json checked
-            String schemaVersionSent = configurationObjectSent.getJSONObject("centcom_meta").getString("schema_version");
-            configurationObjectSent.optJSONObject("global_conf").put("schema_version", schemaVersionSent);
-
-            //remove centcom_meta from compared json as it is not part of client's config.json
-            configurationObjectSent.remove("centcom_meta");
-
-            JSONObject configReceived = new JSONObject(configJson);
-            String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
-
-            org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
-            JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configurationObjectSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
-        }
-        catch ( Exception e){
-            org.testng.Assert.fail("Could not compare configuration sent to configuration received by endpoint:\n" + e.toString() + "\n Configuration sent:  " + sentConfiguration.replaceAll("\n", "") + "\nConfiguration received: " + configJson );
-
-        }
-
 
     }
 
@@ -378,7 +330,5 @@ public class LNEActions extends NepActions {
             return null;
         }
     }
-
-
 
 }

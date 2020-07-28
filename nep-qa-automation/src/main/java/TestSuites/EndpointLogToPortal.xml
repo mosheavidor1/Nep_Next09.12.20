@@ -1,0 +1,14 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Endpoint logs appear at portal" configfailurepolicy="skip">
+
+    <test name = "Endpoints send logs to portal and verify it appear at portal" >
+
+        <classes>
+            <class name = "Tests.Environments.ClientLogToPortalTest" />
+        </classes>
+
+    </test>
+
+</suite>

@@ -1,10 +1,12 @@
 package Utils;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
-
-import org.apache.commons.io.FileUtils;
 
 public class TestFiles {
 
@@ -15,6 +17,29 @@ public class TestFiles {
                 boolean result = file.delete();
                 if(result == false || file.exists())
                     org.testng.Assert.fail("Could not delete file: " + path);
+            }
+        }
+        catch (Exception e){
+            org.testng.Assert.fail("Could not delete file: " + path + "\n" + e.toString());
+        }
+
+    }
+
+
+    //Delete all files of a folder not including sub folder content
+    public static void DeleteAllFiles(String path) {
+        try {
+            File file = new File(path);
+            Path nioPath = Paths.get(path);
+            if (file.exists()){
+                Files.walk(nioPath,1)
+                        .filter(Files::isRegularFile)
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+
+            }
+            else {
+                org.testng.Assert.fail("Could not delete all files under: " + path + " could not find such folder");
             }
         }
         catch (Exception e){

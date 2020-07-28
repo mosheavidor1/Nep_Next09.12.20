@@ -12,10 +12,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-//import org.openqa.selenium.ie.InternetExplorerDriver;
-//import org.openqa.selenium.ie.InternetExplorerOptions;
-//import org.openqa.selenium.remote.CapabilityType;
-//import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class SeleniumBrowser implements Application {
 
@@ -80,8 +76,10 @@ public class SeleniumBrowser implements Application {
 						// This Chrome Preference is needed to not block download of exe files
 						chromePrefs.put("safebrowsing.enabled", "false");
 
-						String downloadFilepath = PropertiesFile.readProperty("DownloadFolder");
-						JLog.logger.debug("Selenium browser Launch - After reading DownloadFolder property: " + downloadFilepath);
+						String downloadFilepath = PropertiesFile.getManagerDownloadFolder();
+						//Chrome does not accept / delimiter. Therefore replacing it with \ delimiter
+						downloadFilepath = downloadFilepath.replace("/","\\");
+						JLog.logger.debug("Selenium browser Launch - After reading MasterDownloadFolder property: " + downloadFilepath);
 
 						chromePrefs.put("download.default_directory", downloadFilepath);
 						JLog.logger.debug("Selenium browser Launch - After put to hash" );
