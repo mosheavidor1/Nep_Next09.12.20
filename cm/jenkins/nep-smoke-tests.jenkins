@@ -4,11 +4,11 @@ node('nep-build-centos7') {
     try {
         LOCK_NAME = (NEP_BRANCH == 'master') ? 'master_smoke_lock' : 'next_smoke_lock'
         lock (LOCK_NAME) {
-        
+
             stage("Get modules versions") {
 
                 print_params()
-                
+
                 RES = [:]
                 RES.INSTALL   = 'Not run'
                 RES.LNE_TESTS = 'Not run'
@@ -17,7 +17,7 @@ node('nep-build-centos7') {
                 // this groovy code prohibited by default in Pipelines
                 // tempstr = RES.inspect() Scripts not permitted to use staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object. Administrators can decide whether to approve or reject this signature.
                 // echo "tempstr = ${tempstr}
-            
+
                 HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
                 WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
                 WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' : '10.85.24.250'
@@ -38,11 +38,11 @@ node('nep-build-centos7') {
                     case "install" :
                         echo "external LNE installation part"
 
-                        /********* 
+                        /*********
                          call LNE install :
-                          - if all particular build numbers for IS/DE/DS_MGMT defined 
+                          - if all particular build numbers for IS/DE/DS_MGMT defined
                             call job with that numbers
-                          - otherwise do not pass any number - and system will take latest 
+                          - otherwise do not pass any number - and system will take latest
                             relevant for master/next
                         **********************/
                         if (DS_VERSION.isEmpty() || DS_MGMT_VERSION.isEmpty() || IS_VERSION.isEmpty() ) {
@@ -75,7 +75,7 @@ node('nep-build-centos7') {
                             echo "sleep before running LNE nep_sanity to give LNE services time to load "
                             sleep time: 4, unit: 'MINUTES'
                         }
-                    
+
                         RES.INSTALL = 'OK'
                         break
 
@@ -87,14 +87,14 @@ node('nep-build-centos7') {
                 }
                 catch (err) {
                     RES.INSTALL = 'NOT OK'
-                    throw err 
+                    throw err
                 }
-            
+
             }
 
             stage('Run LNE side tests') {
                 try {
-                
+
                     if ( SKIP_TESTS_LNE.contains('true')) {
                         echo "DEBUG: skip stage Run LNE side tests"
                         return
@@ -106,7 +106,7 @@ node('nep-build-centos7') {
                     remote.user = "root"
                     remote.password = "trustwave"
                     remote.allowAnyHosts = true
-             
+
                     output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
                     if ( output.contains('nep_sanity_has_passed')) {
@@ -179,7 +179,7 @@ node('nep-build-centos7') {
                     finally {
                     }
                 } // win node try
-            } // stage   
+            } // stage
         } // lock
     } //global try
     catch (exc) {
@@ -191,39 +191,149 @@ node('nep-build-centos7') {
     }
     finally {
         echo "finally prepare mail to send"
-
-        try {
-            unstash 'win_stash'
-        }
-        catch (exc) {
-            echo "no stash win_stash"
-        }
-        
-        emailext (
-        attachLog: true,
-        attachmentsPattern: "**/emailable-report.html, nep_sanity.log",
-        //attachmentsPattern: "",
-        body: """
-        Smoke test results for ${NEP_BRANCH}
-
-        LNE IP :     ${HOST_IP} 
-        Win IP :     ${WIN_IP}
-        ESX_IP :     ${ESX_IP}
-        VM_NAME :    ${VM_NAME}
-                          
-        Install LNE:        ${RES.INSTALL}
-        LNE Sanity :        ${RES.LNE_TESTS}
-        Win agent smoke:    ${RES.WIN_TESTS}
-
-        More info at: ${env.BUILD_URL} and in attach.
-
-        """,
-        from: 'ivalevich@trustwave.com',
-        to: "${SMOKE_EMAIL_LIST}",
-        subject: "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
-        )
+        sendEmailExt()
     }
 }
+
+def sendEmailExt()
+{
+    try {
+        unstash 'win_stash'
+    }
+    catch (exc) {
+        echo "no stash win_stash"
+    }
+
+    prepareMailBody()
+    sh 'ls -latr'
+
+    emailext (
+       attachLog: true,
+       attachmentsPattern: "mail_body.html, **/emailable-report.html, nep_sanity.log",
+       // body: '${FILE,path="mail_body.html"} ${SCRIPT, template="groovy-html.template"}',
+       body: '${FILE,path="mail_body.html"}',
+       from: 'ivalevich@trustwave.com',
+       to: "${SMOKE_EMAIL_LIST}",
+       mimeType: 'text/html',
+       subject: "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
+    )
+}
+
+def prepareMailBody() {
+        writeFile(file: 'mail_body.html', text:  """
+<html>
+    <header><title> HTML HEADER title</title></heade>
+        <body>
+           <style>
+               BODY, TABLE, TD, TH, P {
+                   font-family: Calibri, Verdana, Helvetica, sans serif;
+                   font-size: 12px;
+                   color: black;
+               }
+               .console {
+                   font-family: Courier New;
+               }
+               .filesChanged {
+                   width: 10%;
+                   padding-left: 10px;
+               }
+               .section {
+                   width: 100%;
+                   border: thin black dotted;
+               }
+               .td-title-main {
+                   color: white;
+                   font-size: 200%;
+                   padding-left: 5px;
+                   font-weight: bold;
+               }
+               .td-title {
+                   color: white;
+                   font-size: 120%;
+                   font-weight: bold;
+                   padding-left: 5px;
+                   text-transform: uppercase;
+               }
+               .td-title-tests {
+                   font-weight: bold;
+                   font-size: 120%;
+               }
+               .td-header-maven-module {
+                   font-weight: bold;
+                   font-size: 120%;   =20
+               }
+
+               .td-maven-artifact {
+                   padding-left: 5px;
+               }
+
+               .tr-title {
+                   background-color: #27AE60;
+               }
+
+               .test {
+                   padding-left: 20px;
+               }
+
+               .test-fixed {
+                   color: #27AE60;
+               }
+
+               .test-failed {
+                   color: #E74C3C;
+               }
+        </style>
+
+         <table class="section">
+            <tbody>
+                <tr class="tr-title">
+                    <td class="td-title-main" colspan="2">
+                       Smoke test results for ${NEP_BRANCH}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Install LNE:</td>
+                    <td><b>${RES.INSTALL}</b></td>
+                </tr>
+                <tr>
+                    <td>LNE Sanity :</td>
+                    <td><b>${RES.LNE_TESTS}</b></td>
+                </tr>
+                <tr>
+                    <td>Win agent smoke:</td>
+                    <td><b> ${RES.WIN_TESTS} </b></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                       More info at: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a> and in attach.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>LNE IP :</td>
+                    <td><b>${HOST_IP}</b></td>
+                </tr>
+                <tr>
+                    <td>Win IP :</td>
+                    <td><b>${WIN_IP}</b></td>
+                </tr>
+                <tr>
+                    <td>ESX_IP :</td>
+                  <td><b>${ESX_IP} </b></td>
+                </tr>
+                <tr>
+                    <td>VM_NAME :</td>
+                    <td><b>${VM_NAME}</b></td>
+                </tr>
+                 </tbody>
+        </table>
+        <br>
+        </body>
+        </html>
+
+    """)
+}
+
 
 def getProdVersionFromFile( versionFile ) {
     verString = sh (
