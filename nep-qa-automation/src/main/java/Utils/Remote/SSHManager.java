@@ -12,7 +12,7 @@ import java.util.Scanner;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
-public class SSHManager implements EndPointConnection {
+public class SSHManager  {
     private String userName, password, hostName;
     private int port;
     private ChannelSftp sftpChannel;
