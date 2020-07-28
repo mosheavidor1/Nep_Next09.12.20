@@ -158,7 +158,7 @@ node('nep-build-centos7') {
                             exit 1
                         }
                         """
-                        SETTINGS_XML = "LNE/WinInstall.xml"
+                        SETTINGS_XML = "SmokeTest.xml"
                         timeout(time: 20, unit: 'MINUTES') {
                             // '10.85.24.247' : '10.85.24.250'
                             bat """
