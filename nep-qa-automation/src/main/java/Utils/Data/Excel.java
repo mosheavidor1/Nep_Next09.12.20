@@ -5,8 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,19 +19,29 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Excel  {
 
-     private String fileNameAndPath;
-	 private XSSFSheet ExcelWSheet;
-     private XSSFWorkbook ExcelWBook;
+	 private HSSFSheet ExcelWSheet;
+     private HSSFWorkbook ExcelWBook;
 	 public static final String parameterPerEnvironmentIdentifier = "Parameters Per Environment";
 	 public static final String productionIdentifier = "Production";
 	 public static final String defaultIdentifier = "Default";
+	 public static final String populateMethod = "EP_Values_Populate_Method";
+	 public static final String rowForEveryEP = "Row_For_Every_EP";
+	 public static final String allEPInOneRow = "All_EP_In_One_Row";
+	 public static final String keepSheetData = "Keep_Excel_Data";
+	 public static final String hostNameKey = "EP_HostName_";
+	 public static final String userNameKey = "EP_UserName_";
+	 public static final String passwordKey = "EP_Password_";
+	 public static final String typeKey = "EP_Type_";
+	 public static List<Endpoint> epList;
+
 
  	 public boolean setExcelFileAndSheet(String PathAndName,String SheetName)  {
  	 	try {
 			// Open the Excel file
 			FileInputStream ExcelFile = new FileInputStream(PathAndName);
 			// Access the required test data sheet
-			ExcelWBook = new XSSFWorkbook(ExcelFile);
+			ExcelWBook = new HSSFWorkbook(ExcelFile);
+
 			if (ExcelWBook != null) {
 				ExcelWSheet = ExcelWBook.getSheet(SheetName);
 			}
@@ -61,7 +76,7 @@ public class Excel  {
 			String[] data = new String[numOfColumn];
 
 			for (int j = 0; j < numOfColumn; j++) {
-				XSSFCell currentCell = ExcelWSheet.getRow(RowNum).getCell(j);
+				HSSFCell currentCell = ExcelWSheet.getRow(RowNum).getCell(j);
 				if (currentCell != null)
 					data[j] = currentCell.getStringCellValue();
 				else
@@ -148,6 +163,9 @@ public class Excel  {
 				}
 				testData.add(currentMap);
 			}
+
+
+			PopulateEpData(testData);
 			return testData.toArray();
 		}
 		catch (Exception e) {
@@ -155,6 +173,49 @@ public class Excel  {
 			return null;
 		}
 
+	}
+
+	private void PopulateEpData (ArrayList<HashMap<String, String>> list){
+ 	 	for(int i = 0; i<list.size();i++) {
+			if (! list.get(i).containsKey(populateMethod)) {
+				continue;
+			}
+			String method = list.get(i).get(populateMethod);
+			if(method.compareToIgnoreCase(keepSheetData)==0) {
+				continue;
+			}
+			//if ep data not found keep excel values
+			if (epList==null || epList.isEmpty()) {
+				JLog.logger.error("Could not populate ep data as no EP data found. Keeping Excel values.");
+				continue;
+			}
+
+			if (method.compareToIgnoreCase(rowForEveryEP)==0){
+				ArrayList<HashMap<String, String>> addedRows = new ArrayList<HashMap<String, String>>();
+				for(int j=0; j<epList.size();j++){
+					HashMap<String, String> newLine = (HashMap<String, String>) list.get(i).clone();
+					newLine.put(hostNameKey+"1",epList.get(j).hostName);
+					newLine.put(userNameKey+"1",epList.get(j).userName);
+					newLine.put(passwordKey+"1",epList.get(j).password);
+					newLine.put(typeKey+"1",epList.get(j).type);
+					addedRows.add(newLine);
+				}
+				list.remove(i);
+				list.addAll(addedRows);
+				//skip newly added lines
+				i+=addedRows.size()-1;
+			}
+
+			if (method.compareToIgnoreCase(allEPInOneRow)==0){
+				for(int j=0; j<epList.size();j++){
+					list.get(i).put(hostNameKey+ (j+1),epList.get(j).hostName);
+					list.get(i).put(userNameKey+ (j+1),epList.get(j).userName);
+					list.get(i).put(passwordKey+ (j+1),epList.get(j).password);
+					list.get(i).put(typeKey+ (j+1),epList.get(j).type);
+				}
+			}
+
+ 	 	}
 
 	}
 

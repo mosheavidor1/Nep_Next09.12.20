@@ -4,8 +4,8 @@ package Utils.PropertiesFile;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Properties;
-
 import Utils.Main.RunTest;
+import org.apache.commons.lang3.SystemUtils;
 
 public  class PropertiesFile {
 	//reads test properties from config.properties file
@@ -13,7 +13,7 @@ public  class PropertiesFile {
 	    private static Properties properties;
 	    private static InputStream inputStream = null;
 	    private static PropertiesFile file=null;
-	    private static String filePath = "src/main/java/utils/PropertiesFile/config.properties";
+	    private static String filePath = "src/main/java/Utils/PropertiesFile/config.properties";
 	    public static final String [] environmentsNamesArray = {"qa","inc","stg","ams","apj","emea"};
 	    
 
@@ -45,7 +45,6 @@ public  class PropertiesFile {
 				return null;
 			}
 
-
 		}
 
 	    public static void writeProperty(String key, String value) {
@@ -68,22 +67,17 @@ public  class PropertiesFile {
 			}
 		}
 
-		public static String getCurrentClusterLB () {
-			try {
-				String current = readProperty("ClusterToTest");
-				if (isEnvironments() || isProduction())
-					return readProperty(current);
-				else
-					return current;
+		public static String getManagerDownloadFolder(){
+			String folder = readProperty("ManagerDownloadFolder");
+			if(SystemUtils.IS_OS_WINDOWS) {
+				folder= "C:" +folder;
 
 			}
-			catch (Exception e) {
-				org.testng.Assert.fail("Could not get current cluster LB: " + filePath + "\n" + e.toString());
-				return  null;
+			else if(SystemUtils.IS_OS_LINUX) {
 			}
+			return folder;
 
-
-		}
+	    }
 
 		public static boolean isProduction()  {
 	    	try {
@@ -124,71 +118,6 @@ public  class PropertiesFile {
 			}
 
 		}
-
-
-
-	//legacy function should be replaced for SWG tests with Excel general data
-		public static String getCurrentClusterLink () throws IOException {
-			String current = readProperty("ClusterToTest");
-			if(isProduction())
-				return readProperty("productionLink");
-			else
-				return readProperty(current+"Link");
-		}
-
-		//legacy function
-		public static String getCurrentClusterNepHost () throws IOException {
-			String hostName = readProperty("NepEnvironmentsHostName");
-			String cluster = readProperty("ClusterToTest");
-
-			if(! isProduction()) {
-				hostName = hostName.replace("XXX", cluster);
-				return hostName;
-			}
-			else
-				return "";
-		}
-
-	//legacy function should be replaced for SWG tests with Excel general data
-
-	public static String getUserName() throws IOException {
-		if(isProduction())
-			return readProperty("UserName-Production");
-		else
-			return readProperty("UserName-Environments");
-
-	}
-
-	//legacy function should be replaced for SWG tests with Excel general data
-	public static String getPassword() throws IOException {
-		if(isProduction())
-			return readProperty("Password-Production");
-		else
-			return readProperty("Password-Environments");
-
-	}
-
-	//legacy function
-	public static String getCustomerName() throws IOException {
-		if(isProduction())
-			return readProperty("CustomerName-Production");
-		else
-			return readProperty("CustomerName-Environments");
-
-	}
-
-	//legacy function should be replaced for SWG tests with Excel general data
-	public static String getCustomerNameOrID() throws IOException {
-		if(isProduction())
-			return readProperty("CustomerID-Production");
-		else
-			return readProperty("CustomerName-Environments");
-
-	}
-
-
-
-
 
 
 }
