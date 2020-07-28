@@ -209,7 +209,7 @@ def sendEmailExt()
 
     emailext (
        attachLog: true,
-       attachmentsPattern: "mail_body.html, **/emailable-report.html, nep_sanity.log",
+       attachmentsPattern: "**/emailable-report.html, nep_sanity.log",
        // body: '${FILE,path="mail_body.html"} ${SCRIPT, template="groovy-html.template"}',
        body: '${FILE,path="mail_body.html"}',
        from: 'ivalevich@trustwave.com',
