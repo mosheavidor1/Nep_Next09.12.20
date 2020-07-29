@@ -97,6 +97,7 @@ def sendEmail(status) {
 		body: '${SCRIPT, template="groovy-html.template"}',
 		subject: "${env.JOB_NAME} - Build # ${DISPLAY_VERSION} - " + status,
 		mimeType: 'text/html',
+		from: 'svc_wafbuild@trustwave.com',
 		to: "${NEPA_QA_GROUP}"
 }
 
