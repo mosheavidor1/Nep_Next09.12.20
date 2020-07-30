@@ -45,7 +45,7 @@ public class BrowserActions extends ManagerActions {
         application.Close();
     }
 
-    public void LaunchApplication(String ApplicationType) throws IOException {
+    public void LaunchApplication(String ApplicationType) {
         application.Launch(ApplicationType);
     }
 
