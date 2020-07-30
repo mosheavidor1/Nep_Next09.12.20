@@ -50,8 +50,19 @@ public class AgentActions  {
         }
     }
 
+    public void InstallEPIncludingRequisites(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
+        UnInstallEndPoint(installationTimeout);
+        CopyInstaller();
+        AppendToHostsFile();
+        InstallEndPointWithoutAdditions(installationTimeout);
+        StopEPService(epServiceTimeout);
+        AddCaCertificate();
+        StartEPService(epServiceTimeout);
+        CheckEndPointActiveByDbJson(dbJsonToShowActiveTimeout);
+    }
 
-    public void InstallEndPoint(int timeout) {
+
+    public void InstallEndPointWithoutAdditions(int timeout) {
         try {
             JLog.logger.info("Installing EP...");
             String installerLocation = PropertiesFile.readProperty("EPDownloadFolder");
@@ -316,8 +327,6 @@ public class AgentActions  {
             org.testng.Assert.fail("Could not compare configuration sent to configuration received by endpoint:\n" + e.toString() + "\n Configuration sent:  " + sentConfiguration.replaceAll("\n", "") + "\nConfiguration received: " + configJson );
 
         }
-
-
     }
 
     public void AppendToHostsFile () {
