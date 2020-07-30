@@ -17,14 +17,15 @@ do
     echo "Sleeping ${sleep_time} secs ..." && sleep $sleep_time
     err=0
     rm -f $temp_file
-    echo -n "Checking port $i ... "
     for i in $apps_ports
     do
+        echo -n "Checking port $i ... "
         curl -s http://localhost:$i/healthcheck/quick | grep -sq '"appStatus":"OK"' \
             && echo PASS \
             && echo "port $i PASSED" >> $temp_file \
             && continue
-        echo FAILED
+        echo 'FAILED'
+        err=1
         echo "port $i FAILED" >> $temp_file
     done
     ((++retries))

@@ -70,12 +70,6 @@ node('nep-build-centos7') {
                                       string(name: 'IS_VERSION', value: "${IS_VERSION}")
                                   ]
                         }
-                        // if next step not skipped, take a sleep to give services time to start up.
-                        if ( SKIP_TESTS_LNE.contains('false')) {
-                            echo "sleep before running LNE nep_sanity to give LNE services time to load "
-                            sleep time: 4, unit: 'MINUTES'
-                        }
-
                         RES.INSTALL = 'OK'
                         break
 
@@ -89,8 +83,7 @@ node('nep-build-centos7') {
                     RES.INSTALL = 'NOT OK'
                     throw err
                 }
-
-            }
+            } // stage
 
             stage('Run LNE side tests') {
                 try {
@@ -107,6 +100,18 @@ node('nep-build-centos7') {
                     remote.password = "trustwave"
                     remote.allowAnyHosts = true
 
+                    output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/test_java_apps.sh'
+                    echo "after TEST_JAVA_APPS: ${output}"
+                    if ( output.contains(' OK')) {
+                        echo "test java apps after install OK"
+                    }
+                    else {
+                        writeFile(file: 'check_ports.log', text: output)
+                        echo "test java apps after install OK"
+                        currentBuild.result = "FAILURE"
+                        throw new Exception("ERROR: LNE sanity FAILED")
+                    }
+                    
                     output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
                     if ( output.contains('nep_sanity_has_passed')) {
@@ -122,8 +127,9 @@ node('nep-build-centos7') {
                 }
                 catch (err) {
                     RES.LNE_TESTS = 'NOT OK'
+                    throw err
                 }
-            }
+            } // stage
 
             stage('Run Win tests') {
                 node( WIN_NODE ) {
@@ -209,7 +215,7 @@ def sendEmailExt()
 
     emailext (
        attachLog: true,
-       attachmentsPattern: "**/emailable-report.html, nep_sanity.log",
+       attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log",
        // body: '${FILE,path="mail_body.html"} ${SCRIPT, template="groovy-html.template"}',
        body: '${FILE,path="mail_body.html"}',
        from: 'ivalevich@trustwave.com',
