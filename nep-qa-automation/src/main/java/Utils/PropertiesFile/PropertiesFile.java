@@ -73,8 +73,6 @@ public  class PropertiesFile {
 				folder= "C:" +folder;
 
 			}
-			else if(SystemUtils.IS_OS_LINUX) {
-			}
 			return folder;
 
 	    }
