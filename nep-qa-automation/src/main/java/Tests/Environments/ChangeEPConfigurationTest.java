@@ -2,13 +2,14 @@ package Tests.Environments;
 
 import Actions.BrowserActions;
 import Tests.GenericTest;
+import Tests.RecordedTest;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 
-public class ChangeEPConfigurationTest extends GenericTest {
+public class ChangeEPConfigurationTest extends RecordedTest {
     private BrowserActions action;
 
     @Factory(dataProvider = "getData")
@@ -20,7 +21,7 @@ public class ChangeEPConfigurationTest extends GenericTest {
 
     // This is just preparation for a test the will change configuration at the environments and verify it is accepted successfully
     @Test(groups = { "download" } )
-    public void DownloadTest () throws IOException {
+    public void DownloadTest () {
 
         action.LaunchApplication(general.get("Browser"));
         action.SetApplicationUrl(general.get("Fusion Link"));

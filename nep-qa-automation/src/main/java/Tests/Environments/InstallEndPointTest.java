@@ -3,10 +3,11 @@ package Tests.Environments;
 import Actions.BrowserActions;
 import Actions.ManagerActions;
 import Tests.GenericTest;
+import Tests.RecordedTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class InstallEndPointTest extends GenericTest {
+public class InstallEndPointTest extends RecordedTest {
     private BrowserActions action;
 
     @Factory(dataProvider = "getData")

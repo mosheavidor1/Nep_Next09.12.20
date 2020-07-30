@@ -2,6 +2,7 @@ package Tests.Environments;
 
 import Actions.BrowserActions;
 import Tests.GenericTest;
+import Tests.RecordedTest;
 import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
@@ -11,7 +12,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 
-public class ClientLogToPortalTest extends GenericTest {
+public class ClientLogToPortalTest extends RecordedTest {
     private BrowserActions action;
 
     @Factory(dataProvider = "getData")
@@ -22,7 +23,7 @@ public class ClientLogToPortalTest extends GenericTest {
     }
 
     @Test( groups = { "logs" } )
-    public void SendLogsAndVerify () throws IOException {
+    public void SendLogsAndVerify () {
         JLog.logger.debug("Test Started. log entry to appear at portal timeout: " + data.get("Log To Appear Timeout"));
         action.ChangeReportInterval(data.get("Report Interval"));
 

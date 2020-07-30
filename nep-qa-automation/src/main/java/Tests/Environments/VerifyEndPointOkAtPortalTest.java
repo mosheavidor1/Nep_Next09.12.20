@@ -2,11 +2,12 @@ package Tests.Environments;
 
 import Actions.BrowserActions;
 import Tests.GenericTest;
+import Tests.RecordedTest;
 import org.testng.annotations.*;
 
 import java.io.IOException;
 
-public class VerifyEndPointOkAtPortalTest extends GenericTest {
+public class VerifyEndPointOkAtPortalTest extends RecordedTest {
     private BrowserActions action;
 
     @Factory(dataProvider = "getData")
@@ -17,7 +18,7 @@ public class VerifyEndPointOkAtPortalTest extends GenericTest {
     }
 
     @Test( groups = { "verify" } )
-    public void VerifyEndPointStatusAtPortalTest () throws IOException {
+    public void VerifyEndPointStatusAtPortalTest () {
 
 
         action.LaunchApplication(general.get("Browser"));
