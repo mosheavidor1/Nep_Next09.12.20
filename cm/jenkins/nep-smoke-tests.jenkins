@@ -214,7 +214,7 @@ def sendEmailExt()
     sh 'ls -latr'
 
     emailext (
-       attachLog: true,
+       attachLog: currentBuild.result=='SUCCESS', // don't attach log when SUCCESS
        attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log",
        // body: '${FILE,path="mail_body.html"} ${SCRIPT, template="groovy-html.template"}',
        body: '${FILE,path="mail_body.html"}',
