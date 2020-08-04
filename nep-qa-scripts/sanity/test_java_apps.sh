@@ -31,9 +31,10 @@ do
     ((++retries))
 done
 
-echo "\n\n"
+echo ""
 echo "==============================================="
 echo "Summary:"
+
 if grep -sq 'FAILED' $temp_file; then
     echo "test java apps port availability NOTOK"
     cat $temp_file

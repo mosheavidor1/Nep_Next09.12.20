@@ -19,14 +19,22 @@ node('nep-build-centos7') {
                 // echo "tempstr = ${tempstr}
 
                 HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
-                WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' : 'WinSmoke_10_85_24_250'
-                WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' : '10.85.24.250'
+                WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' :  'WinSmoke_10_85_25_159' //  'WinSmoke_10_85_24_250'
+                WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' :  '10.85.25.159' // '10.85.24.250' 
                 ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
                 VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
 
                 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
                 deleteDir()
                 git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
+
+
+                remote_LNE = [:]
+                    remote_LNE.name = 'test'
+                    remote_LNE.host = "${HOST_IP}"
+                    remote_LNE.user = "root"
+                    remote_LNE.password = "trustwave"
+                    remote_LNE.allowAnyHosts = true
             }
 
             stage("LNE install part") {
@@ -93,14 +101,7 @@ node('nep-build-centos7') {
                         return
                     }
 
-                    def remote = [:]
-                    remote.name = 'test'
-                    remote.host = "${HOST_IP}"
-                    remote.user = "root"
-                    remote.password = "trustwave"
-                    remote.allowAnyHosts = true
-
-                    output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/test_java_apps.sh'
+                    output = sshScript remote: remote_LNE, script: 'nep-qa-scripts/sanity/test_java_apps.sh'
                     echo "after TEST_JAVA_APPS: ${output}"
                     if ( output.contains(' OK')) {
                         echo "test java apps after install OK"
@@ -111,8 +112,8 @@ node('nep-build-centos7') {
                         currentBuild.result = "FAILURE"
                         throw new Exception("ERROR: LNE sanity FAILED")
                     }
-                    
-                    output = sshScript remote: remote, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
+
+                    output = sshScript remote: remote_LNE, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
 
                     if ( output.contains('nep_sanity_has_passed')) {
                         echo "LNE sanity OK"
@@ -129,6 +130,7 @@ node('nep-build-centos7') {
                     RES.LNE_TESTS = 'NOT OK'
                     throw err
                 }
+
             } // stage
 
             stage('Run Win tests') {
@@ -166,11 +168,9 @@ node('nep-build-centos7') {
                         """
                         SETTINGS_XML = "SmokeTest.xml"
                         timeout(time: 20, unit: 'MINUTES') {
-                            // '10.85.24.247' : '10.85.24.250'
                             bat """
                             java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
                             """
-                            //    }
                         }
                         RES.WIN_TESTS = 'OK'
                         echo "BEFORE STASH"
@@ -196,9 +196,50 @@ node('nep-build-centos7') {
         throw exc
     }
     finally {
+        fileOperations([folderCreateOperation('lne_logs')])
+
+        /* cut logs that are attached only to 1000 last lines
+        sshGet remote: remote_LNE,
+               from: '/work/services/stub-srv/var/log/nep/nep_centcom_client.log',
+               into: 'lne_logs',
+               override: true
+
+        sshGet remote: remote_LNE,
+               from: '/work/services/nepa-services/ds/var/log/nepa-dserver/nepa-dserver.log',
+               into: 'lne_logs',
+               override: true
+
+        */
+
+        getLastLogs (remote_LNE,
+                     '/work/services/stub-srv/var/log/nep/nep_centcom_client.log',
+                     '1000',
+                      'lne_logs/tail_1K_nep_centcom_client.log'
+                      )
+
+        getLastLogs (remote_LNE,
+                     '/work/services/nepa-services/ds/var/log/nepa-dserver/nepa-dserver.log',
+                     '1000',
+                      'lne_logs/tail_1K_nepa-dserver.log'
+                      )
+
         echo "finally prepare mail to send"
         sendEmailExt()
     }
+}
+
+
+def getLastLogs( remoteObj, logToGet, lastNLines, destName)
+{
+
+    sshCommand remote: remoteObj,
+               command: "tail -n ${lastNLines} ${logToGet}  > /tmp/temp.log"
+    
+    sshGet remote: remoteObj,
+           from: '/tmp/temp.log',
+           into: destName,
+           override: true
+    
 }
 
 def sendEmailExt()
@@ -211,11 +252,10 @@ def sendEmailExt()
     }
 
     prepareMailBody()
-    sh 'ls -latr'
-
+    
     emailext (
        attachLog: currentBuild.result=='SUCCESS', // don't attach log when SUCCESS
-       attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log",
+       attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log, lne_logs/*",
        // body: '${FILE,path="mail_body.html"} ${SCRIPT, template="groovy-html.template"}',
        body: '${FILE,path="mail_body.html"}',
        from: 'ivalevich@trustwave.com',
@@ -296,6 +336,10 @@ def prepareMailBody() {
                     <td class="td-title-main" colspan="2">
                        Smoke test results for ${NEP_BRANCH}
                     </td>
+                </tr>
+                <tr>
+                    <td>Environment:</td>
+                    <td><b>LNE</b></td>
                 </tr>
                 <tr>
                     <td>Install LNE:</td>
