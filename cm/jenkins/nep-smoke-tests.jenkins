@@ -338,6 +338,10 @@ def prepareMailBody() {
                     </td>
                 </tr>
                 <tr>
+                    <td>Environment:</td>
+                    <td><b>LNE</b></td>
+                </tr>
+                <tr>
                     <td>Install LNE:</td>
                     <td><b>${RES.INSTALL}</b></td>
                 </tr>
