@@ -69,7 +69,7 @@ public class RunTest {
 				}
 			}
 			else {
-				String error = "could not find delimiter | at the following endpoint details parameter: " + epDetails ;
+				String error = "could not find delimiter ] at the following endpoint details parameter: " + epDetails ;
 				JLog.logger.error(error);
 				throw new IllegalStateException(error);
 			}

@@ -3,11 +3,12 @@ package Tests.Environments;
 import Actions.BrowserActions;
 import Actions.ManagerActions;
 import Tests.GenericTest;
+import Tests.RecordedTest;
 import org.testng.annotations.*;
 
 import java.io.IOException;
 
-public class DownloadFromPortalTest extends GenericTest {
+public class DownloadFromPortalTest extends RecordedTest {
     private BrowserActions action;
     private ManagerActions manager;
 
@@ -19,7 +20,7 @@ public class DownloadFromPortalTest extends GenericTest {
     }
 
     @Test(groups = { "download" } )
-    public void DownloadTest () throws IOException {
+    public void DownloadTest () {
 
         action.CreateAndCleanDownloadFolder();
 

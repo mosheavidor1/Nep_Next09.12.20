@@ -22,14 +22,12 @@ public class SetConfigAndDownloadInstaller extends GenericTest {
     public void InitConfigAndDownloadInstaller () {
 
         manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-        manager.CreateAndCleanDownloadFolder();
         String confJson =data.get("Settings Json");
         long customerId = JsonUtil.GetCustomerIDFromSentConfiguration(confJson);
         manager.DeleteCurrentInstallerFromLNE(customerId);
         manager.InitCustomerSettings(confJson,Integer.parseInt(data.get("From LNE up until response OK timeout")));
-        manager.DownloadInstaller(customerId , Integer.parseInt(data.get("Download timeout")));
-        manager.VerifyInstallerSignature();
-        manager.WriteCACertificateToFile();
+        manager.DownloadInstallerIncludingRequisites(customerId , Integer.parseInt(data.get("Download timeout")));
+
     }
 
 }

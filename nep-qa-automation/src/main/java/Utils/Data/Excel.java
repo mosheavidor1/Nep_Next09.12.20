@@ -201,18 +201,23 @@ public class Excel  {
 					addedRows.add(newLine);
 				}
 				list.remove(i);
-				list.addAll(addedRows);
+				list.addAll(0,addedRows);
 				//skip newly added lines
 				i+=addedRows.size()-1;
 			}
 
-			if (method.compareToIgnoreCase(allEPInOneRow)==0){
+			else if (method.compareToIgnoreCase(allEPInOneRow)==0){
 				for(int j=0; j<epList.size();j++){
 					list.get(i).put(hostNameKey+ (j+1),epList.get(j).hostName);
 					list.get(i).put(userNameKey+ (j+1),epList.get(j).userName);
 					list.get(i).put(passwordKey+ (j+1),epList.get(j).password);
 					list.get(i).put(typeKey+ (j+1),epList.get(j).type);
 				}
+			}
+
+			else {
+				JLog.logger.error("Could not find legal value at column: " + populateMethod + " Keeping Excel defaults");
+
 			}
 
  	 	}
