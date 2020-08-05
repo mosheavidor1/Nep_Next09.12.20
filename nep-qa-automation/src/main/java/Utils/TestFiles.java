@@ -68,7 +68,7 @@ public class TestFiles {
         try {
             File file = new File(folder);
             if (!file.exists() || !file.isDirectory()) {
-                boolean bool = file.mkdir();
+                boolean bool = file.mkdirs();
                 if (!bool)
                     org.testng.Assert.fail("Could not create directory: " + folder);
             }
