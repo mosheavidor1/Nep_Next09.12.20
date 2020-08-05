@@ -23,8 +23,7 @@ public class ManagerActions {
     private static final String  elevateFile = "Elevate.exe";
     private static final String  utilsFolderLocation = "C:/home/NepManagerDownloads/Utils/";
 
-
-
+    
     public static final int checkInterval = 5000;
 
     public static String execCmd(String cmd, boolean runAsAdmin) throws java.io.IOException {
