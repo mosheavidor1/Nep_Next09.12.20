@@ -6,21 +6,29 @@ import Utils.TestFiles;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 
 public class ManagerActions {
 
     public static final String windowsInstallationFile = "TrustwaveEndpoint.exe";
     public static final String archiveFolderName = "archive";
+    public static final String utilsFolderName = "utils";
     private static final String uninstallFolderName = "uninstall";
+    private static final String  sigcheckFile = "sigcheck.exe";
+    private static final String  elevateFile = "Elevate.exe";
+    private static final String  utilsFolderLocation = "C:/home/NepManagerDownloads/Utils/";
+
+
 
     public static final int checkInterval = 5000;
 
     public static String execCmd(String cmd, boolean runAsAdmin) throws java.io.IOException {
-        final String elevatePath = "C:\\Selenium\\Utils\\Elevate.exe";
+        final String elevatePath = utilsFolderLocation + elevateFile;
 
         if (runAsAdmin) {
             File file = new File(elevatePath);
@@ -46,7 +54,7 @@ public class ManagerActions {
             final String expectedVerified1 = "Verified:\tA certificate chain processed, but terminated in a root certificate which is not trusted by the trust provider";
             final String expectedVerified2 = "Verified:\tSigned ";
 
-            String sigcheckPath = "c:\\Selenium\\Utils\\sigcheck.exe";
+            String sigcheckPath = utilsFolderLocation + sigcheckFile;
 
             File file = new File(sigcheckPath);
             if (!file.exists())
@@ -54,7 +62,7 @@ public class ManagerActions {
 
             String command = sigcheckPath + " -nobanner -a ";
             String installerLocation = PropertiesFile.getManagerDownloadFolder();
-            installerLocation += "\\" + windowsInstallationFile;
+            installerLocation += "/" + windowsInstallationFile;
             command += installerLocation;
             String result = execCmd(command, false);
             if (!(result.contains(expectedVerified1) || result.contains(expectedVerified2)))
@@ -78,8 +86,8 @@ public class ManagerActions {
         try {
 
             File nepFolder = new File(PropertiesFile.getManagerDownloadFolder());
-            //String [] expected = {"client.pem" , "client_key.pem" , "TrustwaveEndpoint.exe"};
-            String[] expected = {archiveFolderName, windowsInstallationFile, uninstallFolderName};
+            String[] expectedArr = {archiveFolderName, windowsInstallationFile, uninstallFolderName,utilsFolderName};
+            List expectedList = Arrays.asList(expectedArr);
 
             boolean foundFiles = false;
             String[] filesArr = nepFolder.list();
@@ -91,14 +99,14 @@ public class ManagerActions {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
                 filesArr = nepFolder.list();
-                if (Arrays.equals(nepFolder.list(), expected)) {
+                if (expectedList.containsAll(Arrays.asList(filesArr))) {
                     foundFiles = true;
                     break;
                 }
             }
             if (foundFiles == false)
                 org.testng.Assert.fail("Could not find expected installation files at folder: " + nepFolder + "\n" + "Found files:   " + Arrays.toString(filesArr)
-                        + "\n" + "Expected files:" + Arrays.toString(expected));
+                        + "\n" + "Expected files:" + Arrays.toString(expectedArr));
 
         }
         catch (Exception e) {
@@ -119,9 +127,6 @@ public class ManagerActions {
 
             String oldInstallerLocation = oldLocation + "/" + windowsInstallationFile.substring(0, windowsInstallationFile.indexOf(".")) + LocalDateTime.now().format(formatter) + windowsInstallationFile.substring(windowsInstallationFile.indexOf("."));
 
-            if ( SystemUtils.IS_OS_WINDOWS) {
-                TestFiles.CreateFolder("C:/home");
-            }
             TestFiles.CreateFolder(managerDownloadFolder);
             TestFiles.CreateFolder(oldLocation);
             TestFiles.CreateFolder(uninstallFolder);
