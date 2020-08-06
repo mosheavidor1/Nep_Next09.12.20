@@ -46,12 +46,13 @@ node('nep-qa-nightly-25.187') {
             
 			bat """
 				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENVIRONMENT_NAME}"
-				
-				if ERRORLEVEL 1  EXIT 1
+				if ERRORLEVEL 1  set test_result=false
 				
 				xcopy ${WORKSPACE}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K /Y
 				mkdir ${WORKSPACE}\\test-output\\tmp\\pics
 				xcopy ${WORKSPACE}\\test-output\\capture\\*.png ${WORKSPACE}\\test-output\\tmp\\pics\\  /O /X /E /H /K /Y
+				
+				if "%test_result%" == "false" EXIT 1
 			"""
 		}
 		
