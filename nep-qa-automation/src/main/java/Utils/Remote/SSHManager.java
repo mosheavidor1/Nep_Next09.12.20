@@ -120,7 +120,6 @@ public class SSHManager  {
     public void DeleteFile (String path) {
         try {
             sftpChannel.rm(path);
-            sftpChannel.rmdir(path);
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not delete the file:  " + path +  " at machine: " + hostName + "\n" + e.toString());
