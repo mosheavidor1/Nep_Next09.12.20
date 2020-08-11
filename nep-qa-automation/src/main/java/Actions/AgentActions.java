@@ -1,5 +1,6 @@
 package Actions;
 
+import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
@@ -30,6 +31,9 @@ public class AgentActions  {
 
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
     public static final String configJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
+
+    private static final String configJsonReportInterval = "\"report_period\":";
+
     protected static final int checkInterval = 5000;
 
 
@@ -403,6 +407,57 @@ public class AgentActions  {
             return false;
         }
     }
+
+
+    //Example "EventCreate /t INFORMATION /id 123 /l APPLICATION /so AutomationTest /d \"Hello!! this is the test info\""
+    public void WriteEvent(LogEntry entry) {
+        try {
+            if (entry.addedTimeToDescription)
+                entry.AddTimeToDescription(LocalDateTime.now().toString());
+            entry.eventDescription = "\"" + entry.eventDescription + "\"";
+            String eventCommand = "EventCreate /t " + entry.eventType + " /id " + entry.eventID + " /l " + entry.eventLog + " /so " + entry.eventSource + " /d " + entry.eventDescription;
+            String result = connection.Execute(eventCommand);
+            if (!result.contains("SUCCESS: An event of type"))
+                org.testng.Assert.fail("Could no add log event.\nAdd event result: " + result + "\nCommand sent: " + eventCommand);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not write event to windows log." + "\n" + e.toString());
+        }
+
+    }
+
+    public void ChangeReportInterval(String interval, int serviceStartStopTimeout) {
+        try {
+
+            StopEPService(serviceStartStopTimeout);
+            if (!connection.IsFileExists(configJsonPath)) {
+                org.testng.Assert.fail("Could not find config.json; file was not found at: " + configJsonPath);
+            }
+
+            String text = connection.GetTextFromFile(configJsonPath);
+
+            if (!text.contains(configJsonReportInterval)) {
+                StartEPService(serviceStartStopTimeout);
+                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonPath);
+            }
+
+            int start = text.indexOf(configJsonReportInterval) + configJsonReportInterval.length();
+            int end = text.indexOf(",", start);
+            StringBuilder builder = new StringBuilder(text);
+            builder.replace(start, end, interval);
+
+            connection.WriteTextToFile(builder.toString(),configJsonPath);
+
+            StartEPService(serviceStartStopTimeout);
+        }
+
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not change endpoint report interval." + "\n" + e.toString());
+        }
+
+
+    }
+
 
 
 }
