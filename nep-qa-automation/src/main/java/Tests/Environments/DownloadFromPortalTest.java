@@ -53,7 +53,9 @@ public class DownloadFromPortalTest extends RecordedTest {
     @AfterMethod
     public void Close() throws Exception {
         afterMethod();
-        action.CloseApplication();
+        if (action != null) {
+            action.CloseApplication();
+        }
 
     }
 

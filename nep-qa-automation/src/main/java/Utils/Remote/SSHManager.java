@@ -1,11 +1,10 @@
 package Utils.Remote;
 
 import Utils.Logs.JLog;
+import Utils.TestFiles;
 import com.jcraft.jsch.*;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -121,6 +120,7 @@ public class SSHManager  {
     public void DeleteFile (String path) {
         try {
             sftpChannel.rm(path);
+            sftpChannel.rmdir(path);
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not delete the file:  " + path +  " at machine: " + hostName + "\n" + e.toString());
@@ -190,6 +190,22 @@ public class SSHManager  {
             return null;
         }
     }
+
+    public void WriteTextToFile(String text, String filePath){
+        try {
+            File file = File.createTempFile("AutomationTemp", null);
+            file.deleteOnExit();
+            PrintWriter out = new PrintWriter(file.getAbsolutePath());
+            out.print(text);
+            out.close();
+            sftpChannel.put(file.getAbsolutePath(),filePath);
+        }
+
+        catch(Exception e){
+            org.testng.Assert.fail("Could not write text to file: " + filePath  + "\n" + e.toString() +"\n" + "text to write: " + text);
+        }
+    }
+
 
 
 }
