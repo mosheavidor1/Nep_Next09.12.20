@@ -3,6 +3,7 @@ package Tests.LNE;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;
+import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
@@ -28,6 +29,14 @@ public class SetConfigAndDownloadInstaller extends GenericTest {
         manager.InitCustomerSettings(confJson,Integer.parseInt(data.get("From LNE up until response OK timeout")));
         manager.DownloadInstallerIncludingRequisites(customerId , Integer.parseInt(data.get("Download timeout")));
 
+    }
+
+    @AfterMethod
+    public void Close(){
+        JLog.logger.info("Closing...");
+        if(manager!=null){
+            manager.Close();
+        }
     }
 
 }

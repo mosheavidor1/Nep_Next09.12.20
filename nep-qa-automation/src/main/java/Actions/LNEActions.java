@@ -27,15 +27,24 @@ public class LNEActions extends ManagerActions  {
 
     private String LNE_IP, userNameLNE, passwordLNE;
     int LNE_SSH_port;
+    private SSHManager connection;
+
 
     public LNEActions (String LNE_IP, String userNameLNE, String passwordLNE, int LNE_SSH_port) {
         this.LNE_IP = LNE_IP;
         this.userNameLNE = userNameLNE;
         this.passwordLNE = passwordLNE;
         this.LNE_SSH_port =LNE_SSH_port;
-
         SetLNEBaseURI(LNE_IP);
+        connection = new SSHManager(userNameLNE,passwordLNE,LNE_IP, 22 );
     }
+
+    public void Close(){
+        if (connection!=null) {
+            connection.Close();
+        }
+    }
+
 
     public LNEActions ()
     {
@@ -62,10 +71,7 @@ public class LNEActions extends ManagerActions  {
     }
 
     public void DownloadInstallerWithoutAdditions(long  customerId, int timeout){
-        SSHManager ssh=null;
         try {
-            ssh = new SSHManager(userNameLNE, passwordLNE, LNE_IP, LNE_SSH_port);
-
             String clientFolder = lneFileCabinetPath + customerId;
 
             JLog.logger.info("Waiting file cabinet folder tp appear... LNE machine:" + LNE_IP);
@@ -75,7 +81,7 @@ public class LNEActions extends ManagerActions  {
             boolean found = false;
 
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                if (ssh.IsFileExists(lneFileCabinetPath)) {
+                if (connection.IsFileExists(lneFileCabinetPath)) {
                     found = true;
                     break;
                 }
@@ -90,7 +96,7 @@ public class LNEActions extends ManagerActions  {
             JLog.logger.info("Waiting for customer folder tp appear at file cabinet... LNE machine:" + LNE_IP);
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                if (ssh.IsFileExists(clientFolder)) {
+                if (connection.IsFileExists(clientFolder)) {
                     found = true;
                     break;
                 }
@@ -106,7 +112,7 @@ public class LNEActions extends ManagerActions  {
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 try {
-                    list = ssh.ListOfFilesWithoutExceptionProtection(clientFolder);
+                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder);
                     if(list!=null) {
                         found=true;
                         break;
@@ -136,7 +142,7 @@ public class LNEActions extends ManagerActions  {
                     if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
                         String source = clientFolder + "/" + list.get(i);
                         String destination = copyWinInstallerLocation;
-                        ssh.CopyToLocal(source, destination);
+                        connection.CopyToLocal(source, destination);
                         found = true;
                         break;
                     }
@@ -146,7 +152,7 @@ public class LNEActions extends ManagerActions  {
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                list = ssh.ListOfFiles(clientFolder);
+                list = connection.ListOfFiles(clientFolder);
 
             }
 
@@ -157,32 +163,23 @@ public class LNEActions extends ManagerActions  {
         catch (Exception e) {
             org.testng.Assert.fail("Could not download installer contains: " + windowsInstallationFile + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
         }
-        finally{
-            if (ssh!=null)
-                ssh.Close();
-        }
-
 
     }
 
 
     public void DeleteCurrentInstallerFromLNE(long  customerId) {
-        SSHManager ssh=null;
         try {
-
             JLog.logger.info("Checking if current installer exist. If yes deleting it... LNE machine:" + LNE_IP);
-
-            ssh = new SSHManager(userNameLNE, passwordLNE, LNE_IP, LNE_SSH_port);
 
             //deleting previous installer
             String clientFolder = lneFileCabinetPath + customerId;
 
-            if (ssh.IsFileExists(clientFolder)) {
-                List<String> list = ssh.ListOfFiles(clientFolder);
+            if (connection.IsFileExists(clientFolder)) {
+                List<String> list = connection.ListOfFiles(clientFolder);
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
                         String currentInstaller = clientFolder + "/" + list.get(i);
-                        ssh.DeleteFile(currentInstaller);
+                        connection.DeleteFile(currentInstaller);
                         break;
                     }
                 }
@@ -190,10 +187,6 @@ public class LNEActions extends ManagerActions  {
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not delete current installer contains: " + windowsInstallationFile + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
-        }
-        finally {
-            if (ssh!=null)
-                ssh.Close();
         }
     }
 
