@@ -7,6 +7,7 @@ import Utils.Remote.SSHManager;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -36,7 +37,43 @@ public class LNEActions extends ManagerActions  {
         this.passwordLNE = passwordLNE;
         this.LNE_SSH_port =LNE_SSH_port;
         SetLNEBaseURI(LNE_IP);
-        connection = new SSHManager(userNameLNE,passwordLNE,LNE_IP, 22 );
+        connection = new SSHManager(userNameLNE,passwordLNE,LNE_IP, LNE_SSH_port );
+    }
+
+    public String numLinesinFile(String fileName) {
+        String gz = "";
+        String res = null;
+        try {
+            if (!connection.IsFileExists(fileName)) {
+                org.testng.Assert.fail("SIEM file is not found on LNE: " + fileName + " LNE: " + LNE_IP + "\n");
+            }
+            if (fileName.contains((".zip"))) {
+                String unzip = "unzip -o " + fileName + " -d /tmp";
+                String res_unzip = connection.Execute(unzip);
+                JLog.logger.info("res_unzip: " + res_unzip);
+                if (!res_unzip.contains("extracting:"))
+                    return null;
+                int start = fileName.indexOf("dla_");
+                int suffix = fileName.indexOf(".zip");
+                JLog.logger.info("suffix: " + suffix + " start: " + start);
+                gz = "/tmp/" + fileName.substring(start, suffix) + ".gz";
+                JLog.logger.info("gz: " + gz);
+                String gz_comm = "cat " + gz + " | gzip -d | wc -l";
+                res = connection.Execute(gz_comm);
+            }
+            else {
+                String wc_comm = "cat " + fileName + " | wc -l";
+                res = connection.Execute(wc_comm);
+            }
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not check SIEM logs on LNE: " + LNE_IP + "\n" + e.toString());
+        }
+        finally {
+            if (!gz.isEmpty())
+                connection.DeleteFile(gz);
+        }
+        return res;
     }
 
     public void Close(){
