@@ -18,19 +18,30 @@ import java.time.LocalDateTime;
 
 public class AgentActions  {
 
+    public enum EP_OS {
+        WINDOWS,
+        LINUX,
+        UNKNOWN
+    }
 
     public static final String windowsInstallationFile = ManagerActions.windowsInstallationFile;
+    public static final String linuxInstallationFile = ManagerActions.linuxInstallationFile;
     public static final String installationFolder = "/C:/Program Files/Trustwave/NEPAgent";
     public static final String nepa_caDotPemFileName = "nepa_ca.pem";
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/";
+    public static final String nepa_caLinuxDotPemPath = "/opt/tw-endpoint/bin/certs/nepa_ca.pem";
 
     public static final String windowsHostsFile = "/C:/Windows/System32/drivers/etc/hosts";
+    public static final String linuxHostsFile = "/etc/hosts";
     public static final String hostsFileRedirection = "endpoint-protection-services.local.tw-test.net";
+    public static final String hostsFileIngressRedirection = "siem-ingress.trustwave.com";
     public static final char hostsFileCommentChar = '#';
 
 
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
-    public static final String configJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
+    public static final String dbJsonLinuxPath = "/opt/tw-endpoint/data/db.json";
+    public static final String configJsonWindowsPath = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
+    public static final String configJsonLinuxPath = "/opt/tw-endpoint/data/config.json";
 
     private static final String configJsonReportInterval = "\"report_period\":";
 
@@ -54,30 +65,47 @@ public class AgentActions  {
         }
     }
 
-    public void InstallEPIncludingRequisites(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
-        UnInstallEndPoint(installationTimeout);
-        CopyInstaller();
-        AppendToHostsFile();
-        InstallEndPointWithoutAdditions(installationTimeout);
-        StopEPService(epServiceTimeout);
-        AddCaCertificate();
-        StartEPService(epServiceTimeout);
-        CheckEndPointActiveByDbJson(dbJsonToShowActiveTimeout);
+    public void InstallEPIncludingRequisites(EP_OS epOs, int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
+        if ((epOs == EP_OS.WINDOWS)) {
+            UnInstallEndPoint(installationTimeout);
+        } else {
+            UnInstallLinuxEndPoint(installationTimeout);
+        }
+        CopyInstaller(epOs);
+        AppendToHostsFile(epOs);
+        InstallEndPointWithoutAdditions(epOs, installationTimeout);
+        StopEPService(epServiceTimeout, epOs);
+        AddCaCertificate(epOs);
+        StartEPService(epServiceTimeout, epOs);
+        CheckEndPointActiveByDbJson(dbJsonToShowActiveTimeout, epOs);
     }
 
 
-    public void InstallEndPointWithoutAdditions(int timeout) {
+    public void InstallEndPointWithoutAdditions(EP_OS epOs, int timeout) {
         try {
             JLog.logger.info("Installing EP...");
             String installerLocation = PropertiesFile.readProperty("EPDownloadFolder");
-            installerLocation +=  "/" + windowsInstallationFile;
+
+            installerLocation += (epOs == EP_OS.WINDOWS) ? "/" + windowsInstallationFile : "/" + linuxInstallationFile;
 
             if (! connection.IsFileExists(installerLocation)){
                 org.testng.Assert.fail("Could not find installation file at the following path: " + installerLocation + " At machine: "+ epIp);
             }
 
-            installerLocation = installerLocation.substring(1);
-            String command = installerLocation + " /q ";//+ host;
+            if(epOs == EP_OS.WINDOWS) {
+                // if windows remove the leading "/"
+                installerLocation = installerLocation.substring(1);
+            }
+
+            JLog.logger.debug("installer location: " + installerLocation);
+
+            if(epOs == EP_OS.LINUX){
+                // if linux set to executable
+                String permCommand = "chmod +x " + installerLocation;
+                connection.Execute(permCommand);
+            }
+
+            String command = (epOs == EP_OS.WINDOWS) ? installerLocation + " /q "/*+ host*/ : installerLocation;
             connection.Execute(command);
 
             LocalDateTime start = LocalDateTime.now();
@@ -88,7 +116,7 @@ public class AgentActions  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                if (EndPointServiceExist()) {
+                if (EndPointServiceExist(epOs)) {
                     found = true;
                     break;
                 }
@@ -130,7 +158,7 @@ public class AgentActions  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                if (!EndPointServiceExist()) {
+                if (!EndPointServiceExist(EP_OS.WINDOWS)) {
                     found = false;
                     break;
                 }
@@ -186,11 +214,52 @@ public class AgentActions  {
 
     }
 
+    public void UnInstallLinuxEndPoint(int timeout) {
+        try {
+            JLog.logger.info("Uninstalling EP if exists...");
 
-    public void StopEPService(int timeout) {
+            String linuxServiceFile = "/opt/tw-endpoint/bin/service_ctl";
+
+            if (! connection.IsFileExists(linuxServiceFile)) {
+                JLog.logger.info("Endpoint not installed, no need to remove");
+                return;
+            }
+
+            String command = linuxServiceFile + " remove";
+
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
+
+            connection.Execute(command);
+            boolean found = true;
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (!EndPointServiceExist(EP_OS.LINUX)) {
+                    found = false;
+                    break;
+                }
+            }
+
+            if (found)
+                org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint Agent Service still found after timeout(sec): " + Integer.toString(timeout));
+
+            JLog.logger.info("Linux EP uninstalled successfully...");
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not uninstall linux end point" + "\n" + e.toString());
+        }
+
+    }
+    public void StopEPService(int timeout, EP_OS epOs) {
         try {
 
-            connection.Execute("Net stop NepaService");
+            JLog.logger.info("Stopping EP service...");
+
+            String stopCommand = (epOs == EP_OS.WINDOWS) ? "Net stop NepaService" : "systemctl stop tw-endpoint";
+
+            connection.Execute(stopCommand);
 
             boolean active = true;
             String result = "";
@@ -202,8 +271,15 @@ public class AgentActions  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                result = connection.Execute("sc query \"NepaService\"");
-                if (result.contains("STOPPED")) {
+
+                String statusCommand = (epOs == EP_OS.WINDOWS) ? "sc query \"NepaService\"" : "systemctl status tw-endpoint";
+                result = connection.Execute(statusCommand);
+
+                //JLog.logger.debug("Status command result: " + result);
+
+                String proofStr = (epOs == EP_OS.WINDOWS) ? "STOPPED" : "Stopped";
+
+                if (result.contains(proofStr)) {
                     active = false;
                     break;
                 }
@@ -218,9 +294,12 @@ public class AgentActions  {
 
     }
 
-    public void StartEPService(int timeout) {
+    public void StartEPService(int timeout, EP_OS epOs) {
         try {
-            connection.Execute("Net start NepaService");
+            JLog.logger.info("Starting EP service...");
+
+            String startCommand = (epOs == EP_OS.WINDOWS) ? "Net start NepaService" : "systemctl start tw-endpoint";
+            connection.Execute(startCommand);
 
             LocalDateTime start = LocalDateTime.now();
             LocalDateTime current = start;
@@ -232,8 +311,14 @@ public class AgentActions  {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
 
-                String result = connection.Execute("sc query \"NepaService\"");
-                if (result.contains("RUNNING")) {
+                String statusCommand = (epOs == EP_OS.WINDOWS) ? "sc query \"NepaService\"" : "systemctl status tw-endpoint";
+                String result = connection.Execute(statusCommand);
+
+                //JLog.logger.debug("StartEPService: Status command result: " + result);
+
+                String proofStr = (epOs == EP_OS.WINDOWS) ? "RUNNING" : "running";
+
+                if (result.contains(proofStr)) {
                     active = true;
                     break;
                 }
@@ -249,36 +334,53 @@ public class AgentActions  {
     }
 
 
-    public void CopyInstaller(){
+    public void CopyInstaller(EP_OS epOs){
+
+        JLog.logger.info("Copying installer to the EP...");
+
         String installerDestination=null;
+        String installerSource = null;
         try {
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
             String epDownloadDirectory = PropertiesFile.readProperty("EPDownloadFolder");
+
+            JLog.logger.debug("masterDownloadDirectory: " + masterDownloadDirectory);
+            JLog.logger.debug("epDownloadDirectory: " + epDownloadDirectory);
+
             if(! connection.IsFileExists(epDownloadDirectory)) {
                 if (SystemUtils.IS_OS_WINDOWS && !connection.IsFileExists("/C:/home")) {
                     connection.CreateDirectory("/C:/home");
                 }
                 connection.CreateDirectory(epDownloadDirectory);
             }
-            installerDestination =  epDownloadDirectory + "/" + windowsInstallationFile;
-            String installerSource = masterDownloadDirectory + "/" + windowsInstallationFile;
+
+            installerDestination = (epOs == EP_OS.WINDOWS) ? epDownloadDirectory + "/" + windowsInstallationFile : epDownloadDirectory + "/" + linuxInstallationFile;
+            installerSource = (epOs == EP_OS.WINDOWS) ? masterDownloadDirectory + "/" + windowsInstallationFile : masterDownloadDirectory + "/" + linuxInstallationFile;
+
+            JLog.logger.debug("installerDestination: " + installerDestination);
+            JLog.logger.debug("installerSource: " + installerSource);
+
             connection.CopyToRemote(installerSource, installerDestination);
 
         }
         catch ( Exception e) {
-            org.testng.Assert.fail("Could not add ca certificate to file: " + installerDestination +" EP machine: " + epIp + "\n" + e.toString());
+            org.testng.Assert.fail("Could not copy installer from: " + installerSource + " to " + installerDestination +" EP machine: " + epIp + "\n" + e.toString(), e);
         }
 
     }
 
 
-    public void AddCaCertificate()  {
+    public void AddCaCertificate(EP_OS epOs)  {
+
+        JLog.logger.info("Adding certificate on the EP...");
+
         String remoteCaFile=null;
+
         try {
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
-
-            remoteCaFile = "/" + nepa_caDotPemPath + nepa_caDotPemFileName;
             String localCaFile = masterDownloadDirectory + "/" + nepa_caDotPemFileName;
+
+            remoteCaFile = (epOs == EP_OS.WINDOWS) ? "/" + nepa_caDotPemPath + nepa_caDotPemFileName : nepa_caLinuxDotPemPath;
             String localCertificateDonwloadedFromLNE = masterDownloadDirectory + "/" + LNEActions.caCertificateFileName;
             connection.CopyToLocal(remoteCaFile, masterDownloadDirectory);
 
@@ -296,13 +398,14 @@ public class AgentActions  {
 
     }
 
-    public void CompareConfigurationToEPConfiguration (String sentConfiguration){
+    public void CompareConfigurationToEPConfiguration (String sentConfiguration, EP_OS epOs){
         String configJson=null;
         try {
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
 
             String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";
-            connection.CopyToLocal(configJsonPath,localFilePath);
+            String configJsonRemotePath = (epOs == EP_OS.WINDOWS) ? configJsonWindowsPath : configJsonLinuxPath;
+            connection.CopyToLocal(configJsonRemotePath,localFilePath);
 
             FileInputStream inputStream = new FileInputStream(localFilePath);
             configJson = IOUtils.toString(inputStream, Charset.defaultCharset());
@@ -333,40 +436,53 @@ public class AgentActions  {
         }
     }
 
-    public void AppendToHostsFile () {
+    public void AppendToHostsFile (EP_OS epOs) {
+
+        String pathToEPHostsFile = null;
+
         try {
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
-
             String localHostsCopy = masterDownloadDirectory + "/" + "HostsCopy";
-            connection.CopyToLocal(windowsHostsFile,localHostsCopy);
+
+            pathToEPHostsFile = (epOs == EP_OS.WINDOWS) ? windowsHostsFile : linuxHostsFile;
+
+            connection.CopyToLocal(pathToEPHostsFile,localHostsCopy);
             TestFiles.RemoveLines(localHostsCopy, hostsFileRedirection, hostsFileCommentChar);
-            String toAppend = "\n" + PropertiesFile.readProperty("ClusterToTest") + " " + hostsFileRedirection;
+            TestFiles.RemoveLines(localHostsCopy, hostsFileIngressRedirection, hostsFileCommentChar);
+            String toAppend = PropertiesFile.readProperty("ClusterToTest") + " " + hostsFileRedirection;
+            toAppend += "\n" + PropertiesFile.readProperty("ClusterToTest") + " " + hostsFileIngressRedirection;
+
             //To check why this not failed
             //TestFiles.AppendToFile(windowsHostsFile, toAppend, true);
             TestFiles.AppendToFile(localHostsCopy, toAppend, true);
-            connection.CopyToRemote(localHostsCopy,windowsHostsFile);
+            connection.CopyToRemote(localHostsCopy,pathToEPHostsFile);
+
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not change endpoint machine hosts file: " + windowsHostsFile  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not change endpoint machine hosts file: " + pathToEPHostsFile  + "\n" + e.toString());
         }
 
     }
 
-
-
-    public void CheckEndPointActiveByDbJson(int timeout) {
+    public void CheckEndPointActiveByDbJson(int timeout, EP_OS epOs) {
         try {
+
+            JLog.logger.info("Checking if db.json file is present...");
 
             String text = "";
             boolean active = false;
             //File file = new File(dbJsonPath);
 
+            String dbJsonRemoteFile = null;
+
+            dbJsonRemoteFile = (epOs == EP_OS.WINDOWS) ? dbJsonPath : dbJsonLinuxPath;
+
             LocalDateTime start = LocalDateTime.now();
             LocalDateTime current = start;
             Duration durationTimeout = Duration.ofSeconds(timeout);
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                if (connection.IsFileExists(dbJsonPath)) {
-                    text =connection.GetTextFromFile(dbJsonPath);
+                if (connection.IsFileExists(dbJsonRemoteFile)) {
+                    text =connection.GetTextFromFile(dbJsonRemoteFile);
                     if (text.contains("\"EndpointId\": \"") && text.contains("\"DsInitialHost\": ")) {
                         active = true;
                         break;
@@ -378,32 +494,35 @@ public class AgentActions  {
 
             }
 
-            if (! connection.IsFileExists(dbJsonPath))
-                org.testng.Assert.fail("Endpoint is not connected - db.json file was not found at: " + dbJsonPath + " after timeout(sec): " + timeout);
+            if (! connection.IsFileExists(dbJsonRemoteFile))
+                org.testng.Assert.fail("Endpoint is not connected - db.json file was not found at: " + dbJsonRemoteFile + " after timeout(sec): " + timeout);
 
             if (!active)
-                org.testng.Assert.fail("Endpoint is not connected according to db.json file after timeout(sec): " + timeout + ". Failed to find End Point ID  Or Host in db.json: " + dbJsonPath + "\ndb.json file content:\n" + text);
+                org.testng.Assert.fail("Endpoint is not connected according to db.json file after timeout(sec): " + timeout + ". Failed to find End Point ID  Or Host in db.json: " + dbJsonRemoteFile + "\ndb.json file content:\n" + text);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not check if endpoint is active by db.json file." + "\n" + e.toString());
+            org.testng.Assert.fail("Could not check if endpoint is active by db.json file." + "\n" + e.toString(), e);
         }
 
 
     }
 
 
-    public boolean EndPointServiceExist() {
+    public boolean EndPointServiceExist(EP_OS epOs) {
         try {
-            //String result = execCmd("net start | find \"Trustwave Endpoint Agent Service\"");
-            String result = connection.Execute("net start");
-            if (result.contains("Trustwave Endpoint Agent Service"))
+            String command = (epOs == EP_OS.WINDOWS) ? "net start" : "systemctl status tw-endpoint";
+            String result = connection.Execute(command);
+
+            String proofStr = (epOs == EP_OS.WINDOWS) ? "Trustwave Endpoint Agent Service" : "tw-endpoint.service - Trustwave endpoint";
+
+            if (result.contains(proofStr))
                 return true;
             else
                 return false;
 
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not check if endpoint service exist." + "\n" + e.toString());
+            org.testng.Assert.fail("Could not check if endpoint service exist." + "\n" + e.toString(), e);
             return false;
         }
     }
@@ -429,16 +548,16 @@ public class AgentActions  {
     public void ChangeReportInterval(String interval, int serviceStartStopTimeout) {
         try {
 
-            StopEPService(serviceStartStopTimeout);
-            if (!connection.IsFileExists(configJsonPath)) {
-                org.testng.Assert.fail("Could not find config.json; file was not found at: " + configJsonPath);
+            StopEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
+            if (!connection.IsFileExists(configJsonWindowsPath)) {
+                org.testng.Assert.fail("Could not find config.json; file was not found at: " + configJsonWindowsPath);
             }
 
-            String text = connection.GetTextFromFile(configJsonPath);
+            String text = connection.GetTextFromFile(configJsonWindowsPath);
 
             if (!text.contains(configJsonReportInterval)) {
-                StartEPService(serviceStartStopTimeout);
-                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonPath);
+                StartEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
+                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonWindowsPath);
             }
 
             int start = text.indexOf(configJsonReportInterval) + configJsonReportInterval.length();
@@ -446,9 +565,9 @@ public class AgentActions  {
             StringBuilder builder = new StringBuilder(text);
             builder.replace(start, end, interval);
 
-            connection.WriteTextToFile(builder.toString(),configJsonPath);
+            connection.WriteTextToFile(builder.toString(), configJsonWindowsPath);
 
-            StartEPService(serviceStartStopTimeout);
+            StartEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
         }
 
         catch (Exception e) {
@@ -457,8 +576,5 @@ public class AgentActions  {
 
 
     }
-
-
-
 }
 

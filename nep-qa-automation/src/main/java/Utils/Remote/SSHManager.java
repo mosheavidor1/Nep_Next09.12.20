@@ -76,7 +76,7 @@ public class SSHManager  {
             }
             System.out.println(response);
 
-            System.out.println("Done!");
+            System.out.println("Execute " + command + " done!");
             return response;
         } catch (Exception e) {
             org.testng.Assert.fail("Could not execute command: " + command +  ". At machine: " + hostName + "\n" + e.toString());
