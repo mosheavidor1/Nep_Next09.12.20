@@ -20,23 +20,16 @@ public class ManagerActions {
     public static final String utilsFolderName = "utils";
     private static final String uninstallFolderName = "uninstall";
     private static final String  sigcheckFile = "sigcheck.exe";
-    private static final String  elevateFile = "Elevate.exe";
     private static final String  utilsFolderLocation = "C:/home/NepManagerDownloads/Utils/";
 
     
     public static final int checkInterval = 5000;
 
-    public static String execCmd(String cmd, boolean runAsAdmin) throws java.io.IOException {
-        final String elevatePath = utilsFolderLocation + elevateFile;
 
-        if (runAsAdmin) {
-            File file = new File(elevatePath);
-            if( ! file.exists())
-                org.testng.Assert.fail("Could not run commands as administrator. Please copy missing file: " + elevatePath);
-        }
 
-        if (runAsAdmin)
-            cmd = elevatePath + " " + cmd;
+    //This method execute commands on the manager locally. This is needed for sigcheck operation
+    //For running commands on the agent use AgentActions -> connection.Execute
+    public static String execCmd(String cmd) throws java.io.IOException {
 
         java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
@@ -63,7 +56,7 @@ public class ManagerActions {
             String installerLocation = PropertiesFile.getManagerDownloadFolder();
             installerLocation += "/" + windowsInstallationFile;
             command += installerLocation;
-            String result = execCmd(command, false);
+            String result = execCmd(command);
             if (!(result.contains(expectedVerified1) || result.contains(expectedVerified2)))
                 org.testng.Assert.fail("Failed to verify siganture of file: " + installerLocation + "\nCheck Signature output:\n" + result
                         + "\nExpected check signature result could be one of the following:\n" + expectedVerified1 + "\nOr:\n" + expectedVerified2);

@@ -41,6 +41,9 @@ public class ChangeCustomerConfiguration extends GenericTest {
         if (endpoint!=null) {
             endpoint.Close();
         }
+        if(manager!=null){
+            manager.Close();
+        }
     }
 
 
