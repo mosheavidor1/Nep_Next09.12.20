@@ -40,6 +40,11 @@ public class LNEActions extends ManagerActions  {
         connection = new SSHManager(userNameLNE,passwordLNE,LNE_IP, LNE_SSH_port );
     }
 
+    public void clearFile(String fileName) {
+        String ClearSyslogCmd = "> " + fileName;
+        connection.Execute(ClearSyslogCmd);
+    }
+
     public String numLinesinFile(String fileName) {
         String gz = "";
         String res = null;

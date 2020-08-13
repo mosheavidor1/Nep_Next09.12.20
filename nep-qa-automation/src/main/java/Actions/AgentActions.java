@@ -27,6 +27,7 @@ public class AgentActions  {
     public static final String windowsInstallationFile = ManagerActions.windowsInstallationFile;
     public static final String linuxInstallationFile = ManagerActions.linuxInstallationFile;
     public static final String installationFolder = "/C:/Program Files/Trustwave/NEPAgent";
+    public static final String LinuxinstallationFolder = "/opt/tw-endpoint/";
     public static final String nepa_caDotPemFileName = "nepa_ca.pem";
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/";
     public static final String nepa_caLinuxDotPemPath = "/opt/tw-endpoint/bin/certs/nepa_ca.pem";
@@ -36,7 +37,7 @@ public class AgentActions  {
     public static final String hostsFileRedirection = "endpoint-protection-services.local.tw-test.net";
     public static final String hostsFileIngressRedirection = "siem-ingress.trustwave.com";
     public static final char hostsFileCommentChar = '#';
-
+    public static final String exexInstPath = "C:\\Program Files\\Trustwave\\NEPAgent";
 
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
     public static final String dbJsonLinuxPath = "/opt/tw-endpoint/data/db.json";
@@ -575,6 +576,34 @@ public class AgentActions  {
         }
 
 
+    }
+
+    public void writeAndExecute(String text, EP_OS os) {
+        String remoteFilePath;
+        String execPath = exexInstPath + "\\createFoldersAndLogs.bat";
+        if (os == EP_OS.WINDOWS) {
+            remoteFilePath = installationFolder + "/createFoldersAndLogs.bat";
+            connection.WriteTextToFile(text, remoteFilePath);
+            execPath = exexInstPath + "\\createFoldersAndLogs.bat";
+        } else {
+            remoteFilePath = LinuxinstallationFolder + "/createFoldersAndLogs.sh";
+            connection.WriteTextToFile(text, remoteFilePath);
+            String chmod = "chmod 755 " + remoteFilePath;
+            connection.Execute(chmod);
+            execPath = remoteFilePath;
+        }
+        connection.Execute(execPath);
+        connection.DeleteFile(remoteFilePath);
+    }
+
+    public String findPattern(String comm, String pattern) {
+        String result = connection.Execute(comm);
+        if (result.contains(pattern)) {
+            return result;
+        }
+        else {
+            return null;
+        }
     }
 }
 
