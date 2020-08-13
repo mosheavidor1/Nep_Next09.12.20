@@ -3,10 +3,12 @@ package Actions;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.TestFiles;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +18,8 @@ import java.util.List;
 public class ManagerActions {
 
     public static final String windowsInstallationFile = "TrustwaveEndpoint.exe";
+    public static final String linuxInstallationFile = "TrustwaveEndpoint.lnx";
+    public static final String linuxSha256InstallationFile = "TrustwaveEndpoint.lnx.sha256";
     public static final String archiveFolderName = "archive";
     public static final String utilsFolderName = "utils";
     private static final String uninstallFolderName = "uninstall";
@@ -35,6 +39,38 @@ public class ManagerActions {
         return s.hasNext() ? s.next() : "";
     }
 
+    public void VerifyLinuxInstallerHash() {
+        try {
+            if (! SystemUtils.IS_OS_WINDOWS) {
+                JLog.logger.warn("Signature of the linux installer is currently not checked under linux manager");
+                return;
+            }
+
+            JLog.logger.info("Verifying linux installer...");
+
+            String pathToLinuxInstaller = PropertiesFile.getManagerDownloadFolder()+ "/" + linuxInstallationFile;
+            String pathToSHA256File = PropertiesFile.getManagerDownloadFolder()+ "/" + linuxSha256InstallationFile;
+            String fileContent = FileUtils.readFileToString(new File(pathToSHA256File), StandardCharsets.UTF_8).replaceAll("\n", "");
+            JLog.logger.debug("Hash is: " + fileContent);
+
+            String command = "certutil -hashfile ";
+            command += pathToLinuxInstaller;
+            command += " SHA256";
+
+            String result = execCmd(command);
+
+            if (!(result.contains(fileContent))) {
+                org.testng.Assert.fail("Failed to verify hash of file: " + pathToLinuxInstaller + "\nCertutil output:\n" + result
+                        + "\nExpected check hash result should have included:\n" + fileContent);
+            }
+
+            JLog.logger.info("Linux installer hash verified successfully.");
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not verify linux installer hash." + "\n" + e.toString(), e);
+        }
+    }
 
     public void VerifyInstallerSignature() {
         try {
