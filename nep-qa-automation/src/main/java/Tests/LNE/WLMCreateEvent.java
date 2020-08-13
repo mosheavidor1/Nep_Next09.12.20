@@ -29,6 +29,9 @@ public class WLMCreateEvent extends GenericTest {
     public static final int connection_port =22;
     String scp_path = "/work/services/siem/var/siem/data/nep/";
     String syslog_path = "/work/services/siem/var/log/";
+    // result depends on filter settings in relevant config.json and on number of created events per config.json
+    // currently, number of lines detected by ep is 2.
+    String right_result = "2";
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
@@ -49,7 +52,7 @@ public class WLMCreateEvent extends GenericTest {
             manager.SetCustomerConfiguration(confJson);
             endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
-//            endpoint.CompareConfigurationToEPConfiguration(confJson);
+            endpoint.CompareConfigurationToEPConfiguration(confJson, AgentActions.EP_OS.WINDOWS);
 
             connection = new SSHManager(data.get("EP_UserName_1"),data.get("EP_Password_1"),data.get("EP_HostName_1"), connection_port );
             createEvents();
@@ -67,10 +70,10 @@ public class WLMCreateEvent extends GenericTest {
             }
             connection.Close();
             if (!res)
-                org.testng.Assert.fail("Could not find in Agent.log: " +log_type);
+                org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: " +right_result);
         }
         catch (Exception e) {
-                org.testng.Assert.fail("Could not WriteEvent ." + "\n" + e.toString());
+                org.testng.Assert.fail("WLMCreateEventAndVerify ." + "\n" + e.toString());
             }
 
     }
@@ -95,7 +98,7 @@ public class WLMCreateEvent extends GenericTest {
 
         res = manager.numLinesinFile(scp_path + zipFileMane);
         JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains("2")))
+        if ((null != res) && (res.contains(right_result)))
             return true;
         return false;
     }
@@ -119,14 +122,14 @@ public class WLMCreateEvent extends GenericTest {
         JLog.logger.info("txt file Name: " + txtFileMane);
         res = manager.numLinesinFile(scp_path + txtFileMane);
         JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains("2")))
+        if ((null != res) && (res.contains(right_result)))
             return true;
         return false;
     }
 
     public boolean handleLCA_SYSLOG() {
-        String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \"SecureSyslogCollector: sent 2 events\"";
-        String patt = "SecureSyslogCollector: sent 2 events";
+        String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \"SecureSyslogCollector: sent " + right_result + " events\"";
+        String patt = "SecureSyslogCollector: sent " + right_result + " events";
         String res = findPattern(command, patt);
         if (res == null)
             return false;
@@ -135,7 +138,7 @@ public class WLMCreateEvent extends GenericTest {
         JLog.logger.info("txt file Name: " + txtFileMane);
         res = manager.numLinesinFile(txtFileMane);
         JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains("2")))
+        if ((null != res) && (res.contains(right_result)))
             return true;
         return false;
     }
