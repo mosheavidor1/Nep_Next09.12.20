@@ -56,12 +56,12 @@ public class LNEActions extends ManagerActions  {
                 String unzip = "unzip -o " + fileName + " -d /tmp";
                 String res_unzip = connection.Execute(unzip);
                 JLog.logger.info("res_unzip: " + res_unzip);
-                if (!res_unzip.contains("extracting:"))
+                if ((!res_unzip.contains("extracting:")) && (!res_unzip.contains("inflating:")))
                     return null;
-                int start = fileName.indexOf("dla_");
-                int suffix = fileName.indexOf(".zip");
+                int start = res_unzip.lastIndexOf("/tmp/");
+                int suffix = res_unzip.lastIndexOf(".gz");
                 JLog.logger.info("suffix: " + suffix + " start: " + start);
-                gz = "/tmp/" + fileName.substring(start, suffix) + ".gz";
+                gz = res_unzip.substring(start, suffix) + ".gz";
                 JLog.logger.info("gz: " + gz);
                 String gz_comm = "cat " + gz + " | gzip -d | wc -l";
                 res = connection.Execute(gz_comm);
