@@ -605,5 +605,15 @@ public class AgentActions  {
             return null;
         }
     }
+
+    public String findInText(String filePath, String pattern) {
+        String result = connection.GetTextFromFile(filePath);
+        if (result.contains(pattern)) {
+            return result;
+        }
+        else {
+            return null;
+        }
+    }
 }
 
