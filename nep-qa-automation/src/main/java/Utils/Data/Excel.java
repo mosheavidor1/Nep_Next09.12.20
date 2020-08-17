@@ -56,7 +56,6 @@ public class Excel  {
     public Object [] getTestData()  {
  	 	try {
 
- 	 		int ggg=0/0;
 			String fileContent = FileUtils.readFileToString(xmlFile, Charset.defaultCharset());
 
 			//remove 2 first lines of the XML - currently not needed
