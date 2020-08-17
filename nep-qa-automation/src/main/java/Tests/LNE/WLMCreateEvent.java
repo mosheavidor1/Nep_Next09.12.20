@@ -32,6 +32,7 @@ public class WLMCreateEvent extends GenericTest {
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
     String right_result = "2";
+    static final int schedule_report_timeout = 60000; //ms
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
@@ -41,7 +42,6 @@ public class WLMCreateEvent extends GenericTest {
     public void WLMCreateEventAndVerify()  {
         try {
             String ret;
-
 
             JLog.logger.info("Opening...");
             String log_type = data.get("Log_Type");
@@ -55,8 +55,11 @@ public class WLMCreateEvent extends GenericTest {
             endpoint.CompareConfigurationToEPConfiguration(confJson, AgentActions.EP_OS.WINDOWS);
 
             connection = new SSHManager(data.get("EP_UserName_1"),data.get("EP_Password_1"),data.get("EP_HostName_1"), connection_port );
+            if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
+                manager.clearFile(syslog_path + data.get("EP_HostName_1") + "/user.log");
+            }
             createEvents();
-            Thread.sleep(60000);
+            Thread.sleep(schedule_report_timeout);
             boolean res = false;
 
             if (log_type.equalsIgnoreCase( "SIEM")) {
@@ -81,7 +84,7 @@ public class WLMCreateEvent extends GenericTest {
     public boolean handleSIEM() {
         String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".zip was sent successfully\"";
         String patt = ".zip was sent successfully";
-        String res = findPattern(command, patt);
+        String res = endpoint.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -106,7 +109,7 @@ public class WLMCreateEvent extends GenericTest {
     public boolean handleLCA() {
         String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".txt was sent successfully\"";
         String patt = ".txt was sent successfully";
-        String res = findPattern(command, patt);
+        String res = endpoint.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -130,7 +133,7 @@ public class WLMCreateEvent extends GenericTest {
     public boolean handleLCA_SYSLOG() {
         String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \"SecureSyslogCollector: sent " + right_result + " events\"";
         String patt = "SecureSyslogCollector: sent " + right_result + " events";
-        String res = findPattern(command, patt);
+        String res = endpoint.findPattern(command, patt);
         if (res == null)
             return false;
 
@@ -143,20 +146,7 @@ public class WLMCreateEvent extends GenericTest {
         return false;
     }
 
-    public String findPattern(String comm, String pattern) {
-        String result = connection.Execute(comm);
-        JLog.logger.info(result);
-        if (result.contains(pattern)) {
-            JLog.logger.info("Success");
-            return result;
-        }
-        else {
-            JLog.logger.info("Failed");
-            return null;
-        }
-    }
-
-    public void createEvents() {
+     public void createEvents() {
         String[] events = {"eventcreate  /Id 111  /D \"WLM test log included - application error\" /T error /so wlm_test_source /L Application",
         "eventcreate  /Id 333  /D \"WLM test log included - application warning\" /T warning /so wlm_test_source /L Application",
         "eventcreate  /Id 110  /D \"WLM test log included - application error\" /T error /so wlm_test_source /L Application",

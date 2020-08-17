@@ -58,6 +58,7 @@ public class ManagerActions {
             command += " SHA256";
 
             String result = execCmd(command);
+            result = result.replaceAll("\\s+",""); //some operating systems include spaces
 
             if (!(result.contains(fileContent))) {
                 org.testng.Assert.fail("Failed to verify hash of file: " + pathToLinuxInstaller + "\nCertutil output:\n" + result

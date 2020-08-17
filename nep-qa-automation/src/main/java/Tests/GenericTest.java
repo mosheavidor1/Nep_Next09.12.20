@@ -1,18 +1,10 @@
 package Tests;
 
-import java.awt.*;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 
-import Applications.SeleniumBrowser;
 import Utils.Main.RunTest;
 import Utils.Capture.VideoCapture;
 import Utils.TestNG.InvokedMethodListener;
-import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.*;
 import Utils.Data.Excel;
@@ -36,35 +28,30 @@ public class GenericTest {
 	}
 
 	@DataProvider(name = "getData")
-	public static Object[] getDataForInstances(ITestNGMethod m)  {
+	public static Object[] getDataForInstances(ITestNGMethod m) throws Exception {
 
 		String fullTestName = m.getConstructorOrMethod().getName(); //m.getMethodName();
 		String[] arr = fullTestName.split("\\.");
 		String sheetName = arr[arr.length - 1];
 		String fileName = PropertiesFile.readProperty("Excel.fileLocation");
 		fileName = RunTest.runAtDirectory + fileName;
-		Excel testData = new Excel();
-		boolean excelFileStatus = testData.setExcelFileAndSheet(fileName, sheetName);
-		Object[] getTestData = null;
-		if (excelFileStatus)
-			getTestData = testData.getTestData();
+		Excel testData = new Excel(fileName,sheetName);
+		Object[] getTestData = testData.getTestData();
 
 		if (getTestData == null)
-			JLog.logger.error("Could not find Excel sheet for this test.");
+			JLog.logger.error("Could not find Excel sheet for this test: " +sheetName);
 
 		//if it is the first time general settings were not been read. read it now.
 		if (general == null ) {
 
-			Excel generalSettings = new Excel();
+			Excel generalSettings = new Excel(fileName, generalSettingsIdentifier);
 
-			excelFileStatus = generalSettings.setExcelFileAndSheet(fileName, generalSettingsIdentifier);
-			Object[] getGenericSettings = null;
-			if (excelFileStatus) {
-				getGenericSettings = generalSettings.getTestData();
-				general = (HashMap<String, String>) getGenericSettings[0];
-			}
-			else
+			Object[] getGenericSettings = generalSettings.getTestData();
+			if (getGenericSettings == null)
 				JLog.logger.error("Could not find General Settings Excel sheet");//as there is an exception when error occurs at Excel class this code currently unreachable. Leave it if future design will allow no General settings
+
+			general = (HashMap<String, String>) getGenericSettings[0];
+
 
 		}
 
