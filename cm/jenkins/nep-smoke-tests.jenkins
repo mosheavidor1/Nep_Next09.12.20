@@ -28,7 +28,6 @@ node('nep-build-centos7') {
                 deleteDir()
                 git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 
-
                 remote_LNE = [:]
                     remote_LNE.name = 'test'
                     remote_LNE.host = "${HOST_IP}"
@@ -97,8 +96,8 @@ node('nep-build-centos7') {
                 try {
 
                     if ( SKIP_TESTS_LNE.contains('true')) {
-                        echo "DEBUG: skip stage Run LNE side tests"
-                        return
+                       echo "DEBUG: skip stage Run LNE side tests"
+                       return
                     }
 
                     output = sshScript remote: remote_LNE, script: 'nep-qa-scripts/sanity/test_java_apps.sh'
@@ -118,7 +117,7 @@ node('nep-build-centos7') {
                     }
 
                     if ( output.contains('nep_sanity_has_passed')) {
-                        echo "LNE sanity OK"
+                    echo "LNE sanity OK"
                     }
                     else {
                         writeFile(file: 'nep_sanity.log', text: output)
@@ -271,7 +270,13 @@ def sendEmailExt()
 }
 
 def prepareMailBody() {
-        writeFile(file: 'mail_body.html', text:  """
+
+    def errorColor = '#E74C3C'
+    def normalColor = '#27AE60'
+    def titleBgColor = (currentBuild.result=='FAILURE' ? errorColor : normalColor)
+    echo "currentBuild.result: ${currentBuild.result}  titleBgColor : ${titleBgColor}"
+
+    writeFile(file: 'mail_body.html', text:  """
 <html>
     <header><title> HTML HEADER title</title></heade>
         <body>
@@ -318,8 +323,8 @@ def prepareMailBody() {
                    padding-left: 5px;
                }
 
-               .tr-title {
-                   background-color: #27AE60;
+              .tr-title {
+                  background-color: ${titleBgColor}
                }
 
                .test {
