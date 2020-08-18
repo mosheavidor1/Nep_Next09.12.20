@@ -1,0 +1,19 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Create a standalone EP configuration and verify" configfailurepolicy="skip">
+
+    <test name = "StandaloneEPconfigurationVerify" >
+
+        <groups>
+            <dependencies>
+            </dependencies>
+        </groups>
+
+        <classes>
+            <class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
+        </classes>
+    </test>
+
+
+</suite>
