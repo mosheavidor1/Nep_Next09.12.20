@@ -20,7 +20,7 @@ node('nep-build-centos7') {
 
                 HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
                 WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' :  'WinSmoke_10_85_25_159' //  'WinSmoke_10_85_24_250'
-                WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' :  '10.85.25.159' // '10.85.24.250' 
+                WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' :  '10.85.25.159' // '10.85.24.250'
                 ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
                 VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
 
@@ -113,7 +113,9 @@ node('nep-build-centos7') {
                         throw new Exception("ERROR: LNE sanity FAILED")
                     }
 
-                    output = sshScript remote: remote_LNE, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
+                    timeout(time: 5, unit: 'MINUTES') {
+                        output = sshScript remote: remote_LNE, script: 'nep-qa-scripts/sanity/nep_sanity.sh'
+                    }
 
                     if ( output.contains('nep_sanity_has_passed')) {
                         echo "LNE sanity OK"
@@ -237,12 +239,12 @@ def getLastLogs( remoteObj, logToGet, lastNLines, destName)
 
     sshCommand remote: remoteObj,
                command: "tail -n ${lastNLines} ${logToGet}  > /tmp/temp.log"
-    
+
     sshGet remote: remoteObj,
            from: '/tmp/temp.log',
            into: destName,
            override: true
-    
+
 }
 
 def sendEmailExt()
@@ -255,7 +257,7 @@ def sendEmailExt()
     }
 
     prepareMailBody()
-    
+
     emailext (
        attachLog: currentBuild.result=='SUCCESS', // don't attach log when SUCCESS
        attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log, lne_logs/*",
