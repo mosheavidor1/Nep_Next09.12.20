@@ -9,55 +9,48 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import javax.swing.*;
 import java.util.Vector;
 
 
-public class SimulateLFMandVerify extends GenericTest {
+public class SimulateLLMandVerify extends GenericTest {
 
     private LNEActions manager;
     private AgentActions endpoint;
-    String scp_path = "/work/services/siem/var/siem/data/nep/";
-    static final String command_winSIEM = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".zip was sent successfully\"";
+    public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
+    public static final String syslog_path = "/work/services/siem/var/log/";
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
-    static final String command_winLCA = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".log-tag.log was sent\"";
-    static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".log-tag.log was sent\"";
+    static final String LLM_Syslog_path = "/opt/tw-endpoint/data/llm/monitor_dir/syslogs";
+    static final String EP_Syslog_pattern = "LLM Test message #";
+    static final String EP_LCA_SYSLOG_log_pattern = "SecureSyslogCollector: sent 30 events";
+    static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
+    static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"SecureSyslogCollector: sent 30 events\"";
     static final int schedule_report_timeout = 65000; //ms
-    static final String expected_SIEM_win = "3";
-    static final String expected_LCA_win = "3";
-    static final String expected_SIEM_lnx = "3";
-    static final String expected_LCA_lnx = "4";
+    static final String expected_SIEM_lnx = "29";
+    static final String expected_LCA_lnx = "29";
     String right_result_SIEM;
     String right_result_LCA;
     @Factory(dataProvider = "getData")
-    public SimulateLFMandVerify(Object dataToSet) {
+    public SimulateLLMandVerify(Object dataToSet) {
         super(dataToSet);
     }
 
     @Test()
-    public void SimulateLFMandVerifyDelivery()  {
+    public void SimulateLLMandVerifyDelivery()  {
     try {
     JLog.logger.info("Opening...");
     String log_type = data.get("Log_Type");
     JLog.logger.info("log_type: " + log_type);
+        if (!log_type.equalsIgnoreCase( "SIEM"))
+            org.testng.Assert.fail("not doing for " + log_type);
     String commandSIEM;
     String commandLCA;
     endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-    AgentActions.EP_OS epOs = data.get("EP_Type_1").contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
-    if (epOs == AgentActions.EP_OS.WINDOWS) {
-        commandSIEM = command_winSIEM;
-        commandLCA = command_winLCA;
-        right_result_SIEM = expected_SIEM_win;
-        right_result_LCA = expected_LCA_win;
-    } else {
-        commandSIEM = command_linuxSIEM;
-        commandLCA = command_linuxLCA;
-        right_result_SIEM = expected_SIEM_lnx;
-        right_result_LCA = expected_LCA_lnx;
-    }
+    AgentActions.EP_OS epOs = AgentActions.EP_OS.LINUX;
 
-    prepareDirectories(epOs);
-
+    commandSIEM = command_linuxSIEM;
+    commandLCA = command_linuxLCA;
+    right_result_SIEM = expected_SIEM_lnx;
+    right_result_LCA = expected_LCA_lnx;
 
     manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
@@ -68,7 +61,12 @@ public class SimulateLFMandVerify extends GenericTest {
     endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
 
-    createLogs(epOs);
+    endpoint.clearFile(LLM_Syslog_path);
+    createLLM_input();
+    if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {
+        JLog.logger.info("pattern " + EP_Syslog_pattern + " was not found in " + LLM_Syslog_path);
+        org.testng.Assert.fail("Test LLM for " + log_type + "failed");
+    }
     Thread.sleep(schedule_report_timeout);
 
         boolean res = false;
@@ -77,7 +75,9 @@ public class SimulateLFMandVerify extends GenericTest {
             res = handleSIEM(commandSIEM);
         } else if (log_type.equalsIgnoreCase("LCA")) {
             res = handleLCA(commandLCA);
-        } else {
+        } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
+            res = handleLCA_SYSLOG(command_linuxLCA_SYSLOG);
+        }else {
             org.testng.Assert.fail("Unknown server log_type: " +  log_type);
         }
 
@@ -85,28 +85,14 @@ public class SimulateLFMandVerify extends GenericTest {
             org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: ");
 
     } catch (Exception e) {
-        org.testng.Assert.fail("SimulateLFMandVerifyDelivery failed" + "\n" + e.toString());
+        org.testng.Assert.fail("SimulateLLMandVerifyDelivery failed" + "\n" + e.toString());
      }
     }
 
-     private void prepareDirectories(AgentActions.EP_OS os) {
+     private void createLLM_input() {
          String script;
-         if (os == AgentActions.EP_OS.WINDOWS)
-             script = data.get("WinDirscript");
-         else
-             script = data.get("linuxDirscript"); //TBD
-         endpoint.writeAndExecute(script, os);
-     }
-
-
-     private void createLogs(AgentActions.EP_OS os) {
-         String script;
-         if (os == AgentActions.EP_OS.WINDOWS)
-                script = data.get("WIncreateLogs");
-         else
-                script = data.get("LinuxcreateLogs"); //TBD
-
-         endpoint.writeAndExecute(script, os);
+         script = data.get("LLMScript");
+         endpoint.writeAndExecute(script, AgentActions.EP_OS.LINUX);
      }
 
     public boolean handleSIEM(String command) {
@@ -120,7 +106,7 @@ public class SimulateLFMandVerify extends GenericTest {
         Vector<String> zipFiles = extractFileNames(res, "dla_", ".zip");
 
         for (int i = 0; i < zipFiles.size(); i++) {
-            res = manager.numLinesinFile(scp_path + zipFiles.elementAt(i), null);
+            res = manager.numLinesinFile(scp_path + zipFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
             if ((null != res) && (res.contains(right_result_SIEM) || res.contains((expected_LCA_lnx))))
                 result = true;
@@ -152,18 +138,29 @@ public class SimulateLFMandVerify extends GenericTest {
         return fileNames;
     }
 
+    private boolean checkEPSyslog(String filename, String pattern) {
+        boolean result = false;
+        String res = endpoint.findInText(filename, pattern);
+        if (res != null) {
+            int num_of_patterns = res.split(pattern,-1).length - 1;
+            JLog.logger.info("Found " + num_of_patterns + " patterns: " + pattern);
+            result = true;
+        }
+        return result;
+    }
+
     public boolean handleLCA(String command) {
         // Here we have 2 log files sent to LNE
         boolean result = false;
 
-        String patt = ".log-tag.log was sent successfully";
+        String patt = ".txt was sent successfully";
         String res = endpoint.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
-        Vector<String> logFiles = extractFileNames(res, "log-src.", ".log-tag.log");
+        Vector<String> logFiles = extractFileNames(res, "dla_", ".txt");
         for (int i = 0; i < logFiles.size(); i++) {
-            res = manager.numLinesinFile(scp_path + logFiles.elementAt(i), null);
+            res = manager.numLinesinFile(scp_path + logFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
             if ((null != res) && (res.contains(right_result_LCA)))
                 result = true;
@@ -172,25 +169,25 @@ public class SimulateLFMandVerify extends GenericTest {
                 break;
             }
         }
-        if (!result)
-            return result;
-        // now searching for .txt.tag-log
-        command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".txt-tag.log was sent\"";
-        patt = ".txt-tag.log was sent successfully";
-        res = endpoint.findPattern(command, patt);
+        return result;
+    }
+
+    public boolean handleLCA_SYSLOG(String command) {
+        boolean result = true;
+
+        String patt = EP_LCA_SYSLOG_log_pattern;
+        String res = endpoint.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
-        logFiles = extractFileNames(res, "txt-src.", ".txt-tag.log");
-        for (int i = 0; i < logFiles.size(); i++) {
-            res = manager.numLinesinFile(scp_path + logFiles.elementAt(i), null);
-            JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result_LCA)))
-                result = true;
-            else {
-                result = true;
-                break;
-            }
+        // now check on LNE
+        String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/user.log";
+        res = manager.numLinesinFile(txtFileMane, EP_Syslog_pattern);
+        JLog.logger.info("res: " + res);
+        if ((null != res) && (res.contains(right_result_LCA)))
+            result = true;
+        else {
+            result = false;
         }
         return result;
     }

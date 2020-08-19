@@ -45,9 +45,10 @@ public class LNEActions extends ManagerActions  {
         connection.Execute(ClearSyslogCmd);
     }
 
-    public String numLinesinFile(String fileName) {
+    public String numLinesinFile(String fileName, String pattern) {
         String gz = "";
         String res = null;
+        String gz_comm;
         try {
             if (!connection.IsFileExists(fileName)) {
                 org.testng.Assert.fail("SIEM file is not found on LNE: " + fileName + " LNE: " + LNE_IP + "\n");
@@ -63,12 +64,28 @@ public class LNEActions extends ManagerActions  {
                 JLog.logger.info("suffix: " + suffix + " start: " + start);
                 gz = res_unzip.substring(start, suffix) + ".gz";
                 JLog.logger.info("gz: " + gz);
-                String gz_comm = "cat " + gz + " | gzip -d | wc -l";
-                res = connection.Execute(gz_comm);
+                if (null == pattern) {
+                    gz_comm = "cat " + gz + " | gzip -d | wc -l";
+                    res = connection.Execute(gz_comm);
+                }
+                else {
+                    gz_comm = "cat " + gz + " | gzip -d";
+                    res = connection.Execute(gz_comm);
+                    int num_of_patterns = res.split(pattern,-1).length - 1;
+                    res = Integer.toString(num_of_patterns);
+                }
             }
             else {
-                String wc_comm = "cat " + fileName + " | wc -l";
-                res = connection.Execute(wc_comm);
+                if (null == pattern) {
+                    String wc_comm = "cat " + fileName + " | wc -l";
+                    res = connection.Execute(wc_comm);
+                }
+                else {
+                    String wc_comm = "cat " + fileName;
+                    res = connection.Execute(wc_comm);
+                    int num_of_patterns = res.split(pattern,-1).length - 1;
+                    res = Integer.toString(num_of_patterns);
+                }
             }
         }
         catch (Exception e) {
