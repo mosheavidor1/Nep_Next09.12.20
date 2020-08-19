@@ -40,8 +40,6 @@ public class SimulateLLMandVerify extends GenericTest {
     JLog.logger.info("Opening...");
     String log_type = data.get("Log_Type");
     JLog.logger.info("log_type: " + log_type);
-        if (!log_type.equalsIgnoreCase( "SIEM"))
-            org.testng.Assert.fail("not doing for " + log_type);
     String commandSIEM;
     String commandLCA;
     endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
