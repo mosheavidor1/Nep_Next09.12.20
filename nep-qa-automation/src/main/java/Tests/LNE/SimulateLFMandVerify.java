@@ -23,7 +23,12 @@ public class SimulateLFMandVerify extends GenericTest {
     static final String command_winLCA = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".log-tag.log was sent\"";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".log-tag.log was sent\"";
     static final int schedule_report_timeout = 65000; //ms
-    String right_result = "3";
+    static final String expected_SIEM_win = "3";
+    static final String expected_LCA_win = "3";
+    static final String expected_SIEM_lnx = "5";
+    static final String expected_LCA_lnx = "5";
+    String right_result_SIEM;
+    String right_result_LCA;
     @Factory(dataProvider = "getData")
     public SimulateLFMandVerify(Object dataToSet) {
         super(dataToSet);
@@ -42,10 +47,15 @@ public class SimulateLFMandVerify extends GenericTest {
     if (epOs == AgentActions.EP_OS.WINDOWS) {
         commandSIEM = command_winSIEM;
         commandLCA = command_winLCA;
+        right_result_SIEM = expected_SIEM_win;
+        right_result_LCA = expected_LCA_win;
     } else {
         commandSIEM = command_linuxSIEM;
         commandLCA = command_linuxLCA;
+        right_result_SIEM = expected_SIEM_lnx;
+        right_result_LCA = expected_LCA_lnx;
     }
+
     prepareDirectories(epOs);
 
 
@@ -72,7 +82,7 @@ public class SimulateLFMandVerify extends GenericTest {
         }
 
         if (!res)
-            org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: " +right_result);
+            org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: ");
 
     } catch (Exception e) {
         org.testng.Assert.fail("SimulateLFMandVerifyDelivery failed" + "\n" + e.toString());
@@ -112,7 +122,7 @@ public class SimulateLFMandVerify extends GenericTest {
         for (int i = 0; i < zipFiles.size(); i++) {
             res = manager.numLinesinFile(scp_path + zipFiles.elementAt(i));
             JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result)))
+            if ((null != res) && (res.contains(right_result_SIEM) || res.contains((expected_LCA_lnx))))
                 result = true;
             else {
                 result = false;
@@ -155,7 +165,7 @@ public class SimulateLFMandVerify extends GenericTest {
         for (int i = 0; i < logFiles.size(); i++) {
             res = manager.numLinesinFile(scp_path + logFiles.elementAt(i));
             JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result)))
+            if ((null != res) && (res.contains(right_result_LCA)))
                 result = true;
             else {
                 result = false;
@@ -175,10 +185,10 @@ public class SimulateLFMandVerify extends GenericTest {
         for (int i = 0; i < logFiles.size(); i++) {
             res = manager.numLinesinFile(scp_path + logFiles.elementAt(i));
             JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result)))
+            if ((null != res) && (res.contains(right_result_LCA)))
                 result = true;
             else {
-                result = false;
+                result = true;
                 break;
             }
         }

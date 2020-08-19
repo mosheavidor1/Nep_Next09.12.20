@@ -2,11 +2,7 @@ package Utils.Data;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +10,6 @@ import java.util.List;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -77,8 +68,10 @@ public class Excel  {
 			parser.parse(bis, handler);
 
 			int numOfRows = handler.xmlRowList.size();
-			if (numOfRows < 2)
-				return null;
+			if (numOfRows < 2){
+				JLog.logger.error("Could not get valid data from sheet: " + sheetName + " Number of valid rows found: " + numOfRows);
+				//org.testng.Assert.fail("Could not get valid data from sheet: " + sheetName + " Number of valid rows found: " + numOfRows);
+			}
 			ArrayList<HashMap<String, String>> testData = new ArrayList<HashMap<String, String>>();
 			HashMap<String, String> keysMap = new HashMap<String, String>();
 			XmlRow columnsNames = handler.xmlRowList.get(0);
