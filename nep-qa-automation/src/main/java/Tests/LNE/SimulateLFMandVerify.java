@@ -22,7 +22,7 @@ public class SimulateLFMandVerify extends GenericTest {
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
     static final String command_winLCA = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".log-tag.log was sent\"";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".log-tag.log was sent\"";
-    static final int schedule_report_timeout = 65000; //ms
+    static final int schedule_report_timeout = 120000; //ms
     static final String expected_SIEM_win = "3";
     static final String expected_LCA_win = "3";
     static final String expected_SIEM_lnx = "3";
@@ -64,10 +64,11 @@ public class SimulateLFMandVerify extends GenericTest {
     String confJson = data.get("Settings Json");
 
     manager.SetCustomerConfiguration(confJson);
+    Thread.sleep(10000);
     endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
-
+    Thread.sleep(10000);
     createLogs(epOs);
     Thread.sleep(schedule_report_timeout);
 

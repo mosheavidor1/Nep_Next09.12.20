@@ -32,7 +32,7 @@ public class WLMCreateEvent extends GenericTest {
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
     String right_result = "4";
-    static final int schedule_report_timeout = 62000; //ms
+    static final int schedule_report_timeout = 120000; //ms
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
@@ -53,6 +53,7 @@ public class WLMCreateEvent extends GenericTest {
             manager.SetCustomerConfiguration(confJson);
             endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
+            Thread.sleep(10000);
             endpoint.CompareConfigurationToEPConfiguration(confJson, AgentActions.EP_OS.WINDOWS);
 
             connection = new SSHManager(data.get("EP_UserName_1"),data.get("EP_Password_1"),data.get("EP_HostName_1"), connection_port );

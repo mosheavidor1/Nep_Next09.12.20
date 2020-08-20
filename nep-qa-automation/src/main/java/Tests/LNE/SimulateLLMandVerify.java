@@ -24,7 +24,7 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String EP_LCA_SYSLOG_log_pattern = "SecureSyslogCollector: sent 30 events";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent 30 events.\"";
-    static final int schedule_report_timeout = 65000; //ms
+    static final int schedule_report_timeout = 120000; //ms
     static final String expected_SIEM_lnx = "29";
     static final String expected_LCA_lnx = "29";
     String right_result_SIEM;
@@ -60,6 +60,7 @@ public class SimulateLLMandVerify extends GenericTest {
     endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
 
     endpoint.clearFile(LLM_Syslog_path);
+    Thread.sleep(10000);
     createLLM_input();
     if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {
         JLog.logger.info("pattern " + EP_Syslog_pattern + " was not found in " + LLM_Syslog_path);
@@ -182,7 +183,7 @@ public class SimulateLLMandVerify extends GenericTest {
         String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/user.log";
         res = manager.numLinesinFile(txtFileMane, EP_Syslog_pattern);
         JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains(right_result_LCA)))
+        if ((null != res) && (res.contains(EP_LCA_SYSLOG_log_pattern)))
             result = true;
         else {
             result = false;
