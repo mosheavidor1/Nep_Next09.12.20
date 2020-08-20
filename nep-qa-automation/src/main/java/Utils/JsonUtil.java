@@ -14,4 +14,16 @@ public class JsonUtil {
             return (long)-1;
         }
     }
+
+    public static String ChangeEpNameConfiguration(String configurationJson, String nameToSet) {
+        try {
+            JSONObject json = new JSONObject(configurationJson);
+            json = json.put("name", nameToSet);
+            return json.toString();
+        } catch (Exception e) {
+            org.testng.Assert.fail("Could not .... Json sent: " + configurationJson + "\n" + e.toString());
+            return null;
+        }
+    }
 }
+

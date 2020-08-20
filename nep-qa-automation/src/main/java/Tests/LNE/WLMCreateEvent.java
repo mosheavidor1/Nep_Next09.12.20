@@ -31,8 +31,8 @@ public class WLMCreateEvent extends GenericTest {
     public static final String syslog_path = "/work/services/siem/var/log/";
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
-    String right_result = "2";
-    static final int schedule_report_timeout = 60000; //ms
+    String right_result = "4";
+    static final int schedule_report_timeout = 62000; //ms
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
@@ -46,6 +46,7 @@ public class WLMCreateEvent extends GenericTest {
             JLog.logger.info("Opening...");
             String log_type = data.get("Log_Type");
             JLog.logger.info("log_type: " + log_type);
+
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             endpoint = new AgentActions(data.get("EP_HostName_1"),data.get("EP_UserName_1"), data.get("EP_Password_1"));
             String confJson =data.get("Settings Json");
@@ -55,9 +56,7 @@ public class WLMCreateEvent extends GenericTest {
             endpoint.CompareConfigurationToEPConfiguration(confJson, AgentActions.EP_OS.WINDOWS);
 
             connection = new SSHManager(data.get("EP_UserName_1"),data.get("EP_Password_1"),data.get("EP_HostName_1"), connection_port );
-            if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
-                manager.clearFile(syslog_path + data.get("EP_HostName_1") + "/user.log");
-            }
+
             createEvents();
             Thread.sleep(schedule_report_timeout);
             boolean res = false;
@@ -146,7 +145,7 @@ public class WLMCreateEvent extends GenericTest {
         return false;
     }
 
-     public void createEvents() {
+     public void createEvents_old() {
         String[] events = {"eventcreate  /Id 111  /D \"WLM test log included - application error\" /T error /so wlm_test_source /L Application",
         "eventcreate  /Id 333  /D \"WLM test log included - application warning\" /T warning /so wlm_test_source /L Application",
         "eventcreate  /Id 110  /D \"WLM test log included - application error\" /T error /so wlm_test_source /L Application",
@@ -160,8 +159,13 @@ public class WLMCreateEvent extends GenericTest {
             if (!evt_res.contains("SUCCESS: An event of type"))
                 org.testng.Assert.fail("Could no add log event.\nAdd event result: " + evt_res + "\nCommand sent: " + events[i]);
         }
+
     }
 
+    public void createEvents() {
+        String createEvents_bat = data.get("WLMcreateEvent");
+        endpoint.writeAndExecute(createEvents_bat, AgentActions.EP_OS.WINDOWS);
+    }
 
     @AfterMethod
     public void Close(){
