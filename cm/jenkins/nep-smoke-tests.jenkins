@@ -3,6 +3,10 @@
 node('nep-build-centos7') {
     try {
         LOCK_NAME = (NEP_BRANCH == 'master') ? 'master_smoke_lock' : 'next_smoke_lock'
+
+        echo "buildCauses:  ${currentBuild.buildCauses}"
+        isStartedByNEPSET = "${currentBuild.buildCauses}".contains('nepset-multijob')
+        
         lock (LOCK_NAME) {
 
             stage("Get modules versions") {
@@ -228,7 +232,13 @@ node('nep-build-centos7') {
                       )
 
         echo "finally prepare mail to send"
-        sendEmailExt()
+
+        if( isStartedByNEPSET &&  currentBuild.result == 'SUCCESS') {
+            echo "do not sent email if called by upstream nepset multijob and result is SUCCESS"
+        }
+        else {
+            sendEmailExt()
+        }
     }
 }
 
