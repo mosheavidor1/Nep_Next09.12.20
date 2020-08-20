@@ -615,5 +615,10 @@ public class AgentActions  {
             return null;
         }
     }
+
+    public void clearFile(String fileName) {
+        String ClearSyslogCmd = "> " + fileName;
+        connection.Execute(ClearSyslogCmd);
+    }
 }
 

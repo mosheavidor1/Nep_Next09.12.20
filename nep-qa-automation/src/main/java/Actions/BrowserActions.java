@@ -358,7 +358,15 @@ public class BrowserActions extends ManagerActions {
     public void DeleteAllDownloads() {
         try {
             FileCabinet fc = new FileCabinet();
-            fc.TrustwaveEndpointFolder_element.click();
+            fc.WaitUntilObjectDisappear(fc.spinnerBy);
+            fc.WaitUntilPageLoad();
+            fc.WaitUntilObjectClickable(fc.trustwaveEndpointFolderBy);
+
+            fc.WaitUntilObjectDisappear(fc.spinnerBy);
+            fc.WaitUntilPageLoad();
+            fc.WaitUntilObjectClickable(fc.trustwaveEndpointFolderBy);
+
+            fc.trustwaveEndpointFolder_element.click();
 
             fc.WaitUntilObjectDisappear(fc.spinnerBy);
             fc.WaitUntilObjectClickable(fc.refreshButtonBy);
@@ -392,7 +400,16 @@ public class BrowserActions extends ManagerActions {
 
             FileCabinet fc = new FileCabinet();
 
-            fc.TrustwaveEndpointFolder_element.click();
+            fc.WaitUntilObjectDisappear(fc.spinnerBy);
+            fc.WaitUntilPageLoad();
+            fc.WaitUntilObjectClickable(fc.trustwaveEndpointFolderBy);
+
+            fc.WaitUntilObjectDisappear(fc.spinnerBy);
+            fc.WaitUntilPageLoad();
+            fc.WaitUntilObjectClickable(fc.trustwaveEndpointFolderBy);
+
+
+            fc.trustwaveEndpointFolder_element.click();
 
             boolean found = false;
 

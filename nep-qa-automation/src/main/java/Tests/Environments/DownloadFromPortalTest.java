@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public class DownloadFromPortalTest extends RecordedTest {
     private BrowserActions action;
-    private ManagerActions manager;
 
     @Factory(dataProvider = "getData")
     public DownloadFromPortalTest(Object dataToSet) {

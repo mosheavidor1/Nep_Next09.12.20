@@ -27,8 +27,8 @@ public class WLMCreateEvent extends GenericTest {
     private BrowserActions action;
     private SSHManager connection;
     public static final int connection_port =22;
-    String scp_path = "/work/services/siem/var/siem/data/nep/";
-    String syslog_path = "/work/services/siem/var/log/";
+    public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
+    public static final String syslog_path = "/work/services/siem/var/log/";
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
     String right_result = "2";
@@ -99,7 +99,7 @@ public class WLMCreateEvent extends GenericTest {
         String zipFileMane = res.substring(start, stop + 4);
         JLog.logger.info("zip file Name: " + zipFileMane);
 
-        res = manager.numLinesinFile(scp_path + zipFileMane);
+        res = manager.numLinesinFile(scp_path + zipFileMane, null);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(right_result)))
             return true;
@@ -123,7 +123,7 @@ public class WLMCreateEvent extends GenericTest {
             return false;
         String txtFileMane = res.substring(start, stop + 4);
         JLog.logger.info("txt file Name: " + txtFileMane);
-        res = manager.numLinesinFile(scp_path + txtFileMane);
+        res = manager.numLinesinFile(scp_path + txtFileMane, null);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(right_result)))
             return true;
@@ -139,7 +139,7 @@ public class WLMCreateEvent extends GenericTest {
 
         String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/user.log";
         JLog.logger.info("txt file Name: " + txtFileMane);
-        res = manager.numLinesinFile(txtFileMane);
+        res = manager.numLinesinFile(txtFileMane, null);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(right_result)))
             return true;

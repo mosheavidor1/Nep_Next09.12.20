@@ -47,10 +47,12 @@ public class GenericTest {
 			Excel generalSettings = new Excel(fileName, generalSettingsIdentifier);
 
 			Object[] getGenericSettings = generalSettings.getTestData();
-			if (getGenericSettings == null)
+			if (getGenericSettings == null) {
 				JLog.logger.error("Could not find General Settings Excel sheet");//as there is an exception when error occurs at Excel class this code currently unreachable. Leave it if future design will allow no General settings
-
-			general = (HashMap<String, String>) getGenericSettings[0];
+			}
+			else {
+				general = (HashMap<String, String>) getGenericSettings[0];
+			}
 
 
 		}

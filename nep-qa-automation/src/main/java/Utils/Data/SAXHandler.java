@@ -31,16 +31,9 @@ class SAXHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes)  {
         if(! sheetWasParsed) {
             if (!parse && qName.equals("Worksheet")) {
-                int len = attributes.getLength();
                 String currentSheetName="";
-                for (int i=0; i<len;i++ ){
-                    String attName = attributes.getQName(0);
-                    if(attName.equals("ss:Name")) {
-                        currentSheetName = attributes.getValue(0);
-                        break;
-                    }
-                }
-                if (currentSheetName.compareToIgnoreCase(worksheet) == 0) {
+                currentSheetName=attributes.getValue("ss:Name");
+                if (currentSheetName!= null && currentSheetName.compareToIgnoreCase(worksheet) == 0) {
                     parse = true;
                 }
 
@@ -53,6 +46,15 @@ class SAXHandler extends DefaultHandler {
                         break;
                      //if it is a new cell delete current value of content
                     case "Cell":
+                        String index = null;
+                        index = attributes.getValue("ss:Index");
+                        //if cell contains ss:Index attribute that means there empty cells before it - creating a loop to fill it
+                        if(index!=null){
+                            int num = Integer.parseInt(index);
+                            for(int i=xmlRow.cellList.size(); i<num-1;i++){
+                                xmlRow.cellList.add("");
+                            }
+                        }
                         content.setLength(0);
                         break;
                 }
