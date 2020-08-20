@@ -1,0 +1,19 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Simulate LLM and Verify - Linux only" configfailurepolicy="skip">
+
+    <test name = "SimulateLLMandVerify" >
+
+        <groups>
+            <dependencies>
+            </dependencies>
+        </groups>
+
+        <classes>
+            <class name = "Tests.LNE.SimulateLLMandVerify"/>
+        </classes>
+    </test>
+
+
+</suite>
