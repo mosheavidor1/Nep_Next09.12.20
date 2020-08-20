@@ -128,7 +128,7 @@ public class ManagerActions {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
                 filesArr = nepFolder.list();
-                if (expectedList.containsAll(Arrays.asList(filesArr))) {
+                if (Arrays.asList(filesArr).containsAll(expectedList)) {
                     foundFiles = true;
                     break;
                 }
