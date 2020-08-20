@@ -12,9 +12,10 @@ import java.util.List;
 public class FileCabinet extends GenericPage {
     public static final By spinnerBy =By.xpath("//span/twa-spinner");
 
-
+    private static final String trustwaveEndpointFolderID = "endpointprotection";
+    public static final By trustwaveEndpointFolderBy = By.id(trustwaveEndpointFolderID);
     @FindBy(how= How.ID,using="endpointprotection")
-    public WebElement TrustwaveEndpointFolder_element;
+    public WebElement trustwaveEndpointFolder_element;
 
     private static final String endPointExeXpath = "//span[contains(text(),'TrustwaveEndpoint.exe')]";
     public static final By endPointExeBy = By.xpath(endPointExeXpath);
