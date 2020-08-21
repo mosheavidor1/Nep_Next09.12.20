@@ -620,5 +620,11 @@ public class AgentActions  {
         String ClearSyslogCmd = "> " + fileName;
         connection.Execute(ClearSyslogCmd);
     }
+
+    public String getEPName() {
+        String comm = "hostname";
+        String result = connection.Execute(comm);
+        return result;
+    }
 }
 

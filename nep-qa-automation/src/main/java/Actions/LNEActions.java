@@ -401,6 +401,27 @@ public class LNEActions extends ManagerActions  {
 
     }
 
+    public void revokeEpConfiguration (String configJson) {
+        try {
+            Response r = given()
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("revokeEpConfiguration");
+
+            int response = r.getStatusCode();
+
+            if (response == 200)
+                JLog.logger.info("Success. LNE revokeEpConfiguration response: " + response);
+            else
+                org.testng.Assert.fail("Could not revokeEpConfiguration  . LNE response status code received is: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not revokeEpConfiguration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
+
     public String GetCACertificate () {
         try {
             RestAssured.baseURI = basePrefix + LNE_IP + ":8000/ca/CA_get.sh?ca";

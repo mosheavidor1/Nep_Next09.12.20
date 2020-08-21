@@ -21,8 +21,10 @@ public class SimulateLFMandVerify extends GenericTest {
     static final String command_winSIEM = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".zip was sent successfully\"";
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
     static final String command_winLCA = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".log-tag.log was sent\"";
+    static final String command_winLCA2 = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".txt-tag.log was sent\"";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".log-tag.log was sent\"";
-    static final int schedule_report_timeout = 65000; //ms
+    static final String command_linuxLCA2 = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt-tag.log was sent\"";
+    static final int schedule_report_timeout = 120000; //ms
     static final String expected_SIEM_win = "3";
     static final String expected_LCA_win = "3";
     static final String expected_SIEM_lnx = "3";
@@ -41,17 +43,19 @@ public class SimulateLFMandVerify extends GenericTest {
     String log_type = data.get("Log_Type");
     JLog.logger.info("log_type: " + log_type);
     String commandSIEM;
-    String commandLCA;
+    String commandLCA,commandLCA2;
     endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
     AgentActions.EP_OS epOs = data.get("EP_Type_1").contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
     if (epOs == AgentActions.EP_OS.WINDOWS) {
         commandSIEM = command_winSIEM;
         commandLCA = command_winLCA;
+        commandLCA2 = command_winLCA2;
         right_result_SIEM = expected_SIEM_win;
         right_result_LCA = expected_LCA_win;
     } else {
         commandSIEM = command_linuxSIEM;
         commandLCA = command_linuxLCA;
+        commandLCA2 = command_linuxLCA2;
         right_result_SIEM = expected_SIEM_lnx;
         right_result_LCA = expected_LCA_lnx;
     }
@@ -64,10 +68,11 @@ public class SimulateLFMandVerify extends GenericTest {
     String confJson = data.get("Settings Json");
 
     manager.SetCustomerConfiguration(confJson);
+    Thread.sleep(10000);
     endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
-
+    Thread.sleep(10000);
     createLogs(epOs);
     Thread.sleep(schedule_report_timeout);
 
@@ -76,7 +81,7 @@ public class SimulateLFMandVerify extends GenericTest {
         if (log_type.equalsIgnoreCase( "SIEM")) {
             res = handleSIEM(commandSIEM);
         } else if (log_type.equalsIgnoreCase("LCA")) {
-            res = handleLCA(commandLCA);
+            res = handleLCA(commandLCA, commandLCA2);
         } else {
             org.testng.Assert.fail("Unknown server log_type: " +  log_type);
         }
@@ -152,12 +157,12 @@ public class SimulateLFMandVerify extends GenericTest {
         return fileNames;
     }
 
-    public boolean handleLCA(String command) {
+    public boolean handleLCA(String command1, String command2) {
         // Here we have 2 log files sent to LNE
         boolean result = false;
 
         String patt = ".log-tag.log was sent successfully";
-        String res = endpoint.findPattern(command, patt);
+        String res = endpoint.findPattern(command1, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -175,7 +180,7 @@ public class SimulateLFMandVerify extends GenericTest {
         if (!result)
             return result;
         // now searching for .txt.tag-log
-        command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".txt-tag.log was sent\"";
+        String command = command2;
         patt = ".txt-tag.log was sent successfully";
         res = endpoint.findPattern(command, patt);
         JLog.logger.info("res: " + res);

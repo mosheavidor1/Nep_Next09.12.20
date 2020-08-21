@@ -3,6 +3,7 @@ package Tests.LNE;
 import Actions.AgentActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.json.JSONArray;
@@ -34,16 +35,36 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
             // set stand alone config to Linux EP
             String StandAloneConfJson = data.get("StandAloneConfig");
-            manager.SetCustomerConfiguration(StandAloneConfJson);
+            String ep_name = endpoint.getEPName();
+            if (null == ep_name)
+                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify ep_name is invalid: " + ep_name);
+            String updatedConfig = JsonUtil.ChangeEpNameConfiguration(StandAloneConfJson, ep_name);
+            if (null == updatedConfig)
+                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify updatedConfig is invalid: " + updatedConfig);
+            manager.SetCustomerConfiguration(updatedConfig);
             endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-//        endpoint.CompareConfigurationToEPConfiguration(StandAloneConfJson, epOs);
+//            endpoint.CompareConfigurationToEPConfiguration(StandAloneConfJson, epOs);
             if (epOs == AgentActions.EP_OS.LINUX)
                 result = endpoint.findInText(config_linux, settings_toVerify);
             else
                 result = endpoint.findInText(config_win, settings_toVerify);
             if (null != result)
                 JLog.logger.info("res: " + result);
+
+            Thread.sleep(10000);
+            String RevokeAloneConfJson = data.get("revokeStandAlone");
+            manager.revokeEpConfiguration(RevokeAloneConfJson);
+            Thread.sleep(10000);
+            endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
+            endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
+
+            Thread.sleep(10000);
+            String StandAloneSet = data.get("StandAloneSet");
+            manager.SetCustomerConfiguration(StandAloneSet);
+            Thread.sleep(10000);
+            endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
+            endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
         }
                 catch (Exception e) {
                 org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify ." + "\n" + e.toString());
