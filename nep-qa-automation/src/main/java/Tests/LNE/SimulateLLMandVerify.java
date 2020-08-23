@@ -21,7 +21,7 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
     static final String LLM_Syslog_path = "/opt/tw-endpoint/data/llm/monitor_dir/syslogs";
     static final String EP_Syslog_pattern = "LLM Test message #";
-    static final String EP_LCA_SYSLOG_log_pattern = "SecureSyslogCollector: sent 30 events";
+    static final String EP_LCA_SYSLOG_log_pattern = "Sent 29 events.";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent 29 events.\"";
     static final int schedule_report_timeout = 120000; //ms
