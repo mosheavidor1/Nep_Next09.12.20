@@ -25,10 +25,7 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent 29 events.\"";
     static final int schedule_report_timeout = 120000; //ms
-    static final String expected_SIEM_lnx = "29";
-    static final String expected_LCA_lnx = "29";
-    String right_result_SIEM;
-    String right_result_LCA;
+    String right_result;
     @Factory(dataProvider = "getData")
     public SimulateLLMandVerify(Object dataToSet) {
         super(dataToSet);
@@ -47,8 +44,7 @@ public class SimulateLLMandVerify extends GenericTest {
 
     commandSIEM = command_linuxSIEM;
     commandLCA = command_linuxLCA;
-    right_result_SIEM = expected_SIEM_lnx;
-    right_result_LCA = expected_LCA_lnx;
+    right_result = data.get("ExpectedResult");
 
     manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
@@ -57,7 +53,7 @@ public class SimulateLLMandVerify extends GenericTest {
     manager.SetCustomerConfiguration(confJson);
     endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-    endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
+    endpoint.CompareConfigurationToEPConfiguration(epOs);
 
     endpoint.clearFile("/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log", epOs);
     endpoint.clearFile(LLM_Syslog_path, epOs);
@@ -108,7 +104,7 @@ public class SimulateLLMandVerify extends GenericTest {
         for (int i = 0; i < zipFiles.size(); i++) {
             res = manager.numLinesinFile(scp_path + zipFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result_SIEM) || res.contains((expected_LCA_lnx))))
+            if ((null != res) && (res.contains(right_result)))
                 result = true;
             else {
                 result = false;
@@ -162,7 +158,7 @@ public class SimulateLLMandVerify extends GenericTest {
         for (int i = 0; i < logFiles.size(); i++) {
             res = manager.numLinesinFile(scp_path + logFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result_LCA)))
+            if ((null != res) && (res.contains(right_result)))
                 result = true;
             else {
                 result = false;
