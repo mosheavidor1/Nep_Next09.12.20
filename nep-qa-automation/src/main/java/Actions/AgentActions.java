@@ -625,9 +625,14 @@ public class AgentActions  {
         }
     }
 
-    public void clearFile(String fileName) {
-        String ClearSyslogCmd = "> " + fileName;
-        connection.Execute(ClearSyslogCmd);
+    public void clearFile(String fileName, EP_OS os) {
+        String ClearCmd;
+        if (os == EP_OS.WINDOWS) {
+            ClearCmd = "type nul > " + fileName;
+        } else {
+            ClearCmd = "> " + fileName;
+        }
+        connection.Execute(ClearCmd);
     }
 
     public String getEPName() {

@@ -59,7 +59,8 @@ public class SimulateLLMandVerify extends GenericTest {
     endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
 
-    endpoint.clearFile(LLM_Syslog_path);
+    endpoint.clearFile("/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log", epOs);
+    endpoint.clearFile(LLM_Syslog_path, epOs);
     Thread.sleep(10000);
     createLLM_input();
     if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {

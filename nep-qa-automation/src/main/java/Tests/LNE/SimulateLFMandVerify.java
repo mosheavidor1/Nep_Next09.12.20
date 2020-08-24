@@ -17,7 +17,9 @@ public class SimulateLFMandVerify extends GenericTest {
 
     private LNEActions manager;
     private AgentActions endpoint;
-    String scp_path = "/work/services/siem/var/siem/data/nep/";
+    static final String linuxLog = "/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log";
+    static final String WinLog = "C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log";
+    static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     static final String command_winSIEM = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".zip was sent successfully\"";
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
     static final String command_winLCA = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".log-tag.log was sent\"";
@@ -43,7 +45,7 @@ public class SimulateLFMandVerify extends GenericTest {
     String log_type = data.get("Log_Type");
     JLog.logger.info("log_type: " + log_type);
     String commandSIEM;
-    String commandLCA,commandLCA2;
+    String commandLCA,commandLCA2, logFile;
     endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
     AgentActions.EP_OS epOs = data.get("EP_Type_1").contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
     if (epOs == AgentActions.EP_OS.WINDOWS) {
@@ -52,12 +54,14 @@ public class SimulateLFMandVerify extends GenericTest {
         commandLCA2 = command_winLCA2;
         right_result_SIEM = expected_SIEM_win;
         right_result_LCA = expected_LCA_win;
+        logFile = WinLog;
     } else {
         commandSIEM = command_linuxSIEM;
         commandLCA = command_linuxLCA;
         commandLCA2 = command_linuxLCA2;
         right_result_SIEM = expected_SIEM_lnx;
         right_result_LCA = expected_LCA_lnx;
+        logFile = linuxLog;
     }
 
     prepareDirectories(epOs);
@@ -70,6 +74,7 @@ public class SimulateLFMandVerify extends GenericTest {
     manager.SetCustomerConfiguration(confJson);
     Thread.sleep(10000);
     endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
+    endpoint.clearFile(logFile, epOs);
     endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
     Thread.sleep(10000);
