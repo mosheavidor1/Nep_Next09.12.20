@@ -52,6 +52,7 @@ public class WLMCreateEvent extends GenericTest {
             String confJson =data.get("Settings Json");
             manager.SetCustomerConfiguration(confJson);
             endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
+            endpoint.clearFile("C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log", AgentActions.EP_OS.WINDOWS);
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
             Thread.sleep(10000);
             endpoint.CompareConfigurationToEPConfiguration(confJson, AgentActions.EP_OS.WINDOWS);
@@ -144,23 +145,6 @@ public class WLMCreateEvent extends GenericTest {
         if ((null != res) && (res.contains(right_result)))
             return true;
         return false;
-    }
-
-     public void createEvents_old() {
-        String[] events = {"eventcreate  /Id 111  /D \"WLM test log included - application error\" /T error /so wlm_test_source /L Application",
-        "eventcreate  /Id 333  /D \"WLM test log included - application warning\" /T warning /so wlm_test_source /L Application",
-        "eventcreate  /Id 110  /D \"WLM test log included - application error\" /T error /so wlm_test_source /L Application",
-        "eventcreate  /Id 111  /D \"WLM test log included - application error\" /T error /so wlm_test_source2 /L Application"};
- /*       "eventcreate  /Id 999  /D \"WLM test log included - setup error\" /T error /L setup /so SetupTestSource",
-        "eventcreate  /Id 1000  /D \"WLM test log included - setup error\" /T error /L \"setup\" /so SetupTestSource",
-        "eventcreate  /Id 999  /D \"WLM test log excluded - setup warning\" /T warning /L \"setup\" /so SetupTestSource",
-        "eventcreate  /Id 123  /D \"WLM test log excluded - setup error\" /T error /L \"setup\" /so SetupTestSource1"};*/
-        for (int i = 0; i < events.length; i++) {
-            String evt_res = connection.Execute(events[i]);
-            if (!evt_res.contains("SUCCESS: An event of type"))
-                org.testng.Assert.fail("Could no add log event.\nAdd event result: " + evt_res + "\nCommand sent: " + events[i]);
-        }
-
     }
 
     public void createEvents() {
