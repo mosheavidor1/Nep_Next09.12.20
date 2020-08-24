@@ -31,7 +31,7 @@ public class WLMCreateEvent extends GenericTest {
     public static final String syslog_path = "/work/services/siem/var/log/";
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
-    String right_result = "4";
+    String right_result;
     static final int schedule_report_timeout = 120000; //ms
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
@@ -45,7 +45,8 @@ public class WLMCreateEvent extends GenericTest {
 
             JLog.logger.info("Opening...");
             String log_type = data.get("Log_Type");
-            JLog.logger.info("log_type: " + log_type);
+            right_result = data.get("expectedResult");
+            JLog.logger.info("log_type: " + log_type + " ; Expected result value: " + right_result);
 
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             endpoint = new AgentActions(data.get("EP_HostName_1"),data.get("EP_UserName_1"), data.get("EP_Password_1"));
