@@ -69,7 +69,7 @@ public class SimulateLFMandVerify extends GenericTest {
     endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
     endpoint.clearFile(logFile, epOs);
     endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-    endpoint.CompareConfigurationToEPConfiguration(confJson, epOs);
+    endpoint.CompareConfigurationToEPConfiguration( epOs);
     Thread.sleep(10000);
     createLogs(epOs);
     Thread.sleep(schedule_report_timeout);

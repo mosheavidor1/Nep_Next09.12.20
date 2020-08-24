@@ -56,7 +56,7 @@ public class WLMCreateEvent extends GenericTest {
             endpoint.clearFile("C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log", AgentActions.EP_OS.WINDOWS);
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
             Thread.sleep(10000);
-            endpoint.CompareConfigurationToEPConfiguration(confJson, AgentActions.EP_OS.WINDOWS);
+            endpoint.CompareConfigurationToEPConfiguration( AgentActions.EP_OS.WINDOWS);
 
             connection = new SSHManager(data.get("EP_UserName_1"),data.get("EP_Password_1"),data.get("EP_HostName_1"), connection_port );
 

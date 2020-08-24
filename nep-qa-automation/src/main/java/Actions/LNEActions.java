@@ -1,14 +1,15 @@
 package Actions;
 
-import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -344,6 +345,8 @@ public class LNEActions extends ManagerActions  {
                 }
 
                 if (response == 200 ) {
+                    String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
+                    FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
                     break;
                 }
                 else if (!exception){
@@ -390,8 +393,11 @@ public class LNEActions extends ManagerActions  {
 
             int response = r.getStatusCode();
 
-            if (response == 200)
+            if (response == 200) {
                 JLog.logger.info("Success. LNE setConfig response: " + response);
+                String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
+                FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
+            }
             else
                 org.testng.Assert.fail("Could not set customer configuration. LNE response status code received is: " + response);
         }

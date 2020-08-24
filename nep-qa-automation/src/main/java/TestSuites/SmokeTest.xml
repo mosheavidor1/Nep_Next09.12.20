@@ -9,6 +9,8 @@
             <dependencies>
                 <group  name= "VerifyInstallation" depends-on="InitCustomer" ></group>
                 <group  name= "ChangeConfiguration" depends-on="VerifyInstallation" ></group>
+                <group  name= "VerifyConfiguration" depends-on="ChangeConfiguration" ></group>
+
             </dependencies>
         </groups>
 
@@ -16,6 +18,7 @@
             <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>
             <class name = "Tests.LNE.InstallEP" />
             <class name = "Tests.LNE.ChangeCustomerConfiguration" />
+            <class name = "Tests.LNE.VerifyConfiguration" />
         </classes>
     </test>
 

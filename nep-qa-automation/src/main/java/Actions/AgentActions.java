@@ -5,6 +5,7 @@ import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
 import Utils.TestFiles;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONObject;
@@ -68,7 +69,7 @@ public class AgentActions  {
 
     public void InstallEPIncludingRequisites(EP_OS epOs, int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
         if ((epOs == EP_OS.WINDOWS)) {
-            UnInstallEndPoint(installationTimeout);
+            UnInstallWindowsEndPoint(installationTimeout);
         } else {
             UnInstallLinuxEndPoint(installationTimeout);
         }
@@ -79,6 +80,14 @@ public class AgentActions  {
         AddCaCertificate(epOs);
         StartEPService(epServiceTimeout, epOs);
         CheckEndPointActiveByDbJson(dbJsonToShowActiveTimeout, epOs);
+    }
+
+    public void UninstallEndpoint(EP_OS epOs, int installationTimeout) {
+        if ((epOs == EP_OS.WINDOWS)) {
+            UnInstallWindowsEndPoint(installationTimeout);
+        } else {
+            UnInstallLinuxEndPoint(installationTimeout);
+        }
     }
 
 
@@ -142,7 +151,7 @@ public class AgentActions  {
         }
     }
 
-    public void UnInstallEndPoint(int timeout) {
+    private void UnInstallWindowsEndPoint(int timeout) {
         try {
             JLog.logger.info("Uninstalling EP if exists...");
 
@@ -224,7 +233,7 @@ public class AgentActions  {
 
     }
 
-    public void UnInstallLinuxEndPoint(int timeout) {
+    private void UnInstallLinuxEndPoint(int timeout) {
         try {
             JLog.logger.info("Uninstalling EP if exists...");
 
@@ -358,7 +367,7 @@ public class AgentActions  {
             JLog.logger.debug("epDownloadDirectory: " + epDownloadDirectory);
 
             if(! connection.IsFileExists(epDownloadDirectory)) {
-                if (SystemUtils.IS_OS_WINDOWS && !connection.IsFileExists("/C:/home")) {
+                if (epOs== EP_OS.WINDOWS && !connection.IsFileExists("/C:/home")) {
                     connection.CreateDirectory("/C:/home");
                 }
                 connection.CreateDirectory(epDownloadDirectory);
@@ -408,10 +417,14 @@ public class AgentActions  {
 
     }
 
-    public void CompareConfigurationToEPConfiguration (String sentConfiguration, EP_OS epOs){
+    public void CompareConfigurationToEPConfiguration (EP_OS epOs){
         String configJson=null;
+        String sentConfiguration = null;
         try {
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
+
+            String confFile = masterDownloadDirectory+"/" + ManagerActions.customerConfigurationSentSuccessfullyFile;
+            sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
 
             String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";
             String configJsonRemotePath = (epOs == EP_OS.WINDOWS) ? configJsonWindowsPath : configJsonLinuxPath;
