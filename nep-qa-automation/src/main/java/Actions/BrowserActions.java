@@ -343,9 +343,22 @@ public class BrowserActions extends ManagerActions {
             up.customerSelector_element.click();
 
             up.WaitUntilObjectClickable(up.searchTextBy);
+            up.WaitUntilObjectDisappear(up.spinnerBy);
+            up.WaitUntilPageLoad();
+            up.WaitUntilObjectClickable(up.searchTextBy);
+
             up.searchText_element.clear();
+
+            up.WaitUntilObjectClickable(up.searchTextBy);
+            up.WaitUntilObjectDisappear(up.spinnerBy);
+            up.WaitUntilPageLoad();
+            up.WaitUntilObjectClickable(up.searchTextBy);
+
             up.searchText_element.sendKeys(customerName);
 
+            up.WaitUntilObjectClickable(up.customerNameBy);
+            up.WaitUntilObjectDisappear(up.spinnerBy);
+            up.WaitUntilPageLoad();
             up.WaitUntilObjectClickable(up.customerNameBy);
             up.customerName.click();
         }

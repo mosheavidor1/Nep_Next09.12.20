@@ -85,7 +85,7 @@ public class AgentActions  {
     public void InstallEndPointWithoutAdditions(EP_OS epOs, int timeout) {
         try {
             JLog.logger.info("Installing EP...");
-            String installerLocation = PropertiesFile.readProperty("EPDownloadFolder");
+            String installerLocation = GetDownloadFolder(epOs);
 
             installerLocation += (epOs == EP_OS.WINDOWS) ? "/" + windowsInstallationFile : "/" + linuxInstallationFile;
 
@@ -133,11 +133,20 @@ public class AgentActions  {
 
     }
 
+    private String GetDownloadFolder(EP_OS epOs) {
+
+        if( epOs == EP_OS.WINDOWS ) {
+            return PropertiesFile.readProperty("EPDownloadWindowsFolder");
+        } else {
+            return PropertiesFile.readProperty("EPDownloadLinuxFolder");
+        }
+    }
+
     public void UnInstallEndPoint(int timeout) {
         try {
             JLog.logger.info("Uninstalling EP if exists...");
 
-            String DownloadFolder = PropertiesFile.readProperty("EPDownloadFolder");
+            String DownloadFolder = GetDownloadFolder(EP_OS.WINDOWS);
             String installerLocation = DownloadFolder + "/" + windowsInstallationFile;
             //boolean toDeleteInstaller = true;
 
@@ -343,7 +352,7 @@ public class AgentActions  {
         String installerSource = null;
         try {
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
-            String epDownloadDirectory = PropertiesFile.readProperty("EPDownloadFolder");
+            String epDownloadDirectory = GetDownloadFolder(epOs);
 
             JLog.logger.debug("masterDownloadDirectory: " + masterDownloadDirectory);
             JLog.logger.debug("epDownloadDirectory: " + epDownloadDirectory);

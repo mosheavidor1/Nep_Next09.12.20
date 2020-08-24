@@ -15,10 +15,10 @@ public class JsonUtil {
         }
     }
 
-    public static String ChangeEpNameConfiguration(String configurationJson, String nameToSet) {
+    public static String ChangeTagConfiguration(String configurationJson, String tag, String nameToSet) {
         try {
             JSONObject json = new JSONObject(configurationJson);
-            json = json.put("name", nameToSet);
+            json = json.put(tag, nameToSet);
             return json.toString();
         } catch (Exception e) {
             org.testng.Assert.fail("Could not .... Json sent: " + configurationJson + "\n" + e.toString());
