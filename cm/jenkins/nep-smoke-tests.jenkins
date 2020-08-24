@@ -29,6 +29,7 @@ node('nep-build-centos7') {
                 WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' :  '10.85.25.159' // '10.85.24.250'
                 ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
                 VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
+                LIN_AGENT_IP = (NEP_BRANCH == 'master') ? '10.85.24.204' : '10.85.24.202'
 
                 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
                 deleteDir()
@@ -177,6 +178,11 @@ node('nep-build-centos7') {
                             """
                             SETTINGS_XML = "SmokeTest.xml"
                             timeout(time: 20, unit: 'MINUTES') {
+                                // SmokeTest.xml 10.85.25.76 
+                                // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
+                                bat """
+                                java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "lnx]${LIN_AGENT_IP}]root]trustwave"
+                                """
                                 bat """
                                 java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
                                 """
