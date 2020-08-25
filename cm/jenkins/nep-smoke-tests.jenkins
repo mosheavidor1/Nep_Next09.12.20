@@ -27,6 +27,7 @@ node('nep-build-centos7') {
                 HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
                 WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' :  'WinSmoke_10_85_25_159' //  'WinSmoke_10_85_24_250'
                 WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.247' :  '10.85.25.159' // '10.85.24.250'
+                // WIN_IP = (NEP_BRANCH == 'master') ? '10.85.24.85' :  '10.85.25.159' // '10.85.24.250'
                 ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
                 VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
                 LIN_AGENT_IP = (NEP_BRANCH == 'master') ? '10.85.24.204' : '10.85.24.202'
@@ -41,6 +42,17 @@ node('nep-build-centos7') {
                     remote_LNE.user = "root"
                     remote_LNE.password = "trustwave"
                     remote_LNE.allowAnyHosts = true
+
+                 echo """
+                 ============ Test info ============
+                 Version       :   ${NEP_BRANCH}
+                 LNE IP        :   ${HOST_IP}
+                 ESX_LNE_IP    :   ${ESX_IP}
+                 VM_LNE_NAME   :   ${VM_NAME}
+                 Win EP IP     :   ${WIN_IP}
+                 Lin EP IP     :   ${LIN_AGENT_IP}
+                 ====================================
+                 """
             }
 
             stage("LNE install part") {
@@ -141,7 +153,7 @@ node('nep-build-centos7') {
 
             } // stage
 
-            stage('Run Win tests') {
+            stage('Run EndPoint tests') {
                 timeout(time: 20, unit: 'MINUTES') {
 
                     node( WIN_NODE ) {
@@ -397,11 +409,15 @@ def prepareMailBody() {
                     <td><b>${HOST_IP}</b></td>
                 </tr>
                 <tr>
-                    <td>Win IP :</td>
+                    <td>Windows EP IP :</td>
                     <td><b>${WIN_IP}</b></td>
                 </tr>
                 <tr>
-                    <td>ESX_IP :</td>
+                    <td>Linux EP IP :</td>
+                    <td><b>${LIN_AGENT_IP}</b></td>
+                </tr>
+                <tr>
+                    <td>ESX_LNE_IP :</td>
                   <td><b>${ESX_IP} </b></td>
                 </tr>
                 <tr>
