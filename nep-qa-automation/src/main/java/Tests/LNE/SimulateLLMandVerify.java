@@ -21,9 +21,9 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
     static final String LLM_Syslog_path = "/opt/tw-endpoint/data/llm/monitor_dir/syslogs";
     static final String EP_Syslog_pattern = "LLM Test message #";
-    static final String EP_LCA_SYSLOG_log_pattern = "Sent 29 events.";
+    static final String EP_LCA_SYSLOG_log_pattern = "Sent %s events.";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
-    static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent 29 events.\"";
+    static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent %s events.\"";
     static final int schedule_report_timeout = 120000; //ms
     String right_result;
     @Factory(dataProvider = "getData")
@@ -36,7 +36,8 @@ public class SimulateLLMandVerify extends GenericTest {
     try {
     JLog.logger.info("Opening...");
     String log_type = data.get("Log_Type");
-    JLog.logger.info("log_type: " + log_type);
+    right_result = data.get("ExpectedResult");
+    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + right_result);
     String commandSIEM;
     String commandLCA;
     endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
@@ -44,7 +45,6 @@ public class SimulateLLMandVerify extends GenericTest {
 
     commandSIEM = command_linuxSIEM;
     commandLCA = command_linuxLCA;
-    right_result = data.get("ExpectedResult");
 
     manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
@@ -72,7 +72,8 @@ public class SimulateLLMandVerify extends GenericTest {
         } else if (log_type.equalsIgnoreCase("LCA")) {
             res = handleLCA(commandLCA);
         } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
-            res = handleLCA_SYSLOG(command_linuxLCA_SYSLOG);
+            String command = String.format(command_linuxLCA_SYSLOG, right_result);
+            res = handleLCA_SYSLOG(command);
         }else {
             org.testng.Assert.fail("Unknown server log_type: " +  log_type);
         }
@@ -140,7 +141,8 @@ public class SimulateLLMandVerify extends GenericTest {
         if (res != null) {
             int num_of_patterns = res.split(pattern,-1).length - 1;
             JLog.logger.info("Found " + num_of_patterns + " patterns: " + pattern);
-            result = true;
+            if (Integer.parseInt(right_result) == num_of_patterns)
+                result = true;
         }
         return result;
     }
@@ -171,7 +173,7 @@ public class SimulateLLMandVerify extends GenericTest {
     public boolean handleLCA_SYSLOG(String command) {
         boolean result = true;
 
-        String patt = EP_LCA_SYSLOG_log_pattern;
+        String patt = String.format(EP_LCA_SYSLOG_log_pattern, right_result);
         String res = endpoint.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
@@ -180,7 +182,7 @@ public class SimulateLLMandVerify extends GenericTest {
         String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/user.log";
         res = manager.numLinesinFile(txtFileMane, EP_Syslog_pattern);
         JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains(EP_LCA_SYSLOG_log_pattern)))
+        if ((null != res) && (res.contains(patt)))
             result = true;
         else {
             result = false;

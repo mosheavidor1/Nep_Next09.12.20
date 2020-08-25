@@ -29,12 +29,17 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     @Test()
     public void ChangeStandaloneEPconfigurationVerify()  {
         try {
+            endpoint2 = new AgentActions(data.get("AnotherEP_IP"), data.get("AnotherEP_User"), data.get("AnotherEP_Password"));
+        } catch (Exception e) {
+            org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify: This test requires usage of more than 1 EP. Need to configure another EP" + "\n" + e.toString());
+            org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify Failed");
+        }
+        try {
             String result;
             JLog.logger.info("Opening...");
             AgentActions.EP_OS epOs = data.get("EP_Type_1").contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-            endpoint2 = new AgentActions(data.get("AnotherEP_IP"), data.get("AnotherEP_User"), data.get("AnotherEP_Password"));
             AgentActions.EP_OS ep2Os = data.get("AnotherEP_Type").contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
             // 1.set stand alone config to endpoint
             String StandAloneConfJson = data.get("StandAloneConfig");
@@ -92,7 +97,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
                 org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration on second EP was not updated - " + settings_toVerify_Set + " was not found");
         }
                 catch (Exception e) {
-                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify Need to configure another EP" + "\n" + e.toString());
+                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify failed " + "\n" + e.toString());
             }
     }
 

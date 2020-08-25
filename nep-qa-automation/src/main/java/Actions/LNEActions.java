@@ -52,7 +52,7 @@ public class LNEActions extends ManagerActions  {
         String gz_comm;
         try {
             if (!connection.IsFileExists(fileName)) {
-                org.testng.Assert.fail("SIEM file is not found on LNE: " + fileName + " LNE: " + LNE_IP + "\n");
+                org.testng.Assert.fail("file is not found on LNE: " + fileName + " LNE: " + LNE_IP + "\n");
             }
             if (fileName.contains((".zip"))) {
                 String unzip = "unzip -o " + fileName + " -d /tmp";
