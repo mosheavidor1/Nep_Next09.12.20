@@ -6,7 +6,7 @@ node('nep-build-centos7') {
 
         echo "buildCauses:  ${currentBuild.buildCauses}"
         isStartedByNEPSET = "${currentBuild.buildCauses}".contains('nepset-multijob')
-        
+        currentBuild.displayName = "${BUILD_NUMBER}" + "-${env.NEP_BRANCH}"
         // echo "groovy version : ${GroovySystem.version}"
         
         lock (LOCK_NAME) {
@@ -290,10 +290,12 @@ def sendEmailExt()
         echo "no stash win_stash"
     }
 
+    echo "===== currentBuild.result: ${currentBuild.result} "
+
     prepareMailBody()
 
     emailext (
-       attachLog: currentBuild.result=='SUCCESS', // don't attach log when SUCCESS
+       attachLog: true,
        attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log, lne_logs/*",
        // body: '${FILE,path="mail_body.html"} ${SCRIPT, template="groovy-html.template"}',
        body: '${FILE,path="mail_body.html"}',
