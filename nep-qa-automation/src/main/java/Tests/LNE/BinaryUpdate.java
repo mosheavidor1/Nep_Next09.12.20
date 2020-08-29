@@ -65,8 +65,8 @@ public class BinaryUpdate extends GenericTest {
         endpointLinux = new AgentActions(data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get(
                 "EP_Password_2"));
 
-        endpointWin.UnInstallEndPoint(Integer.parseInt(general.get("EP Installation timeout")));
-        endpointLinux.UnInstallLinuxEndPoint(Integer.parseInt(general.get("EP Installation timeout")));
+        endpointWin.UninstallEndpoint(AgentActions.EP_OS.WINDOWS,Integer.parseInt(general.get("EP Installation timeout")));
+        endpointLinux.UninstallEndpoint(AgentActions.EP_OS.LINUX, Integer.parseInt(general.get("EP Installation timeout")));
 
         // Get newer binaries
         String windowsNewVer = data.get("update_win_ver");
