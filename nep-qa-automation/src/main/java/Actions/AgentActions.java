@@ -16,6 +16,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AgentActions  {
 
@@ -44,6 +46,8 @@ public class AgentActions  {
     public static final String dbJsonLinuxPath = "/opt/tw-endpoint/data/db.json";
     public static final String configJsonWindowsPath = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
     public static final String configJsonLinuxPath = "/opt/tw-endpoint/data/config.json";
+    public static final String versionJsonWindowsPath = "/C:/Program Files/Trustwave/NEPAgent/version.json";
+    public static final String versionJsonLinuxPath = "/opt/tw-endpoint/bin/version.json";
 
     private static final String configJsonReportInterval = "\"report_period\":";
 
@@ -652,6 +656,22 @@ public class AgentActions  {
         String comm = "hostname";
         String result = connection.Execute(comm);
         return result;
+    }
+
+    public String getEPBinaryVersion(EP_OS epOs) {
+
+        String epVersion = "";
+
+        String versionRemoteFile = (epOs == EP_OS.WINDOWS) ? versionJsonWindowsPath : versionJsonLinuxPath;
+
+        if (connection.IsFileExists(versionRemoteFile)) {
+            String text = connection.GetTextFromFile(versionRemoteFile);
+
+            JSONObject json = new JSONObject(text);
+            epVersion = json.getString("BinVersion");
+        }
+
+        return epVersion;
     }
 }
 
