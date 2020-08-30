@@ -1074,7 +1074,7 @@
   </WorksheetOptions>
  </Worksheet>
  <Worksheet ss:Name="BinaryUpdate">
-  <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="2" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="16" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
    <Column ss:Width="93.75"/>
    <Column ss:Width="192"/>
@@ -1102,6 +1102,8 @@
     <Cell><Data ss:Type="String">update_win_ver</Data></Cell>
     <Cell><Data ss:Type="String">update_linux_ver</Data></Cell>
     <Cell><Data ss:Type="String">s3Bucket</Data></Cell>
+	<Cell><Data ss:Type="String">update_bad_win_ver</Data></Cell>
+    <Cell><Data ss:Type="String">update_bad_linux_ver</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1117,7 +1119,9 @@
     <Cell ss:StyleID="s64"><Data ss:Type="String">linux</Data></Cell>
     <Cell><Data ss:Type="String">1.1.1.5000</Data></Cell>
     <Cell><Data ss:Type="String">1.1.1.5000</Data></Cell>
-    <Cell><Data ss:Type="String">nep-tests-nep-dev-{num}-eu-west-1</Data></Cell>
+    <Cell><Data ss:Type="String">nep-tests-nep-dev-{num}-eu-west-1</Data></Cell>	
+	<Cell><Data ss:Type="String">1.1.1.5001</Data></Cell>
+    <Cell><Data ss:Type="String">1.1.1.5001</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
