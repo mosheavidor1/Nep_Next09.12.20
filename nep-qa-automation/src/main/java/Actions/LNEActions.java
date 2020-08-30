@@ -430,6 +430,48 @@ public class LNEActions extends ManagerActions  {
 
     }
 
+    public void revoke(String configJson) {
+        try {
+            Response r = given()
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("revoke");
+
+            int response = r.getStatusCode();
+
+            if (response == 200)
+                JLog.logger.info("Success. LNE revoke response: " + response);
+            else
+                org.testng.Assert.fail("Failure. LNE revoke failed with response status code: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Revoke action failed. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
+
+    public void delete(String configJson) {
+        try {
+            Response r = given()
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("delete");
+
+            int response = r.getStatusCode();
+
+            if (response == 200)
+                JLog.logger.info("Success. LNE delete response: " + response);
+            else
+                org.testng.Assert.fail("Failure. LNE delete failed with response status code: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Delete action failed. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
+
     public String GetCACertificate () {
         try {
             RestAssured.baseURI = basePrefix + LNE_IP + ":8000/ca/CA_get.sh?ca";

@@ -16,11 +16,15 @@
   <AllowPNG/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
-  <WindowHeight>8400</WindowHeight>
-  <WindowWidth>23040</WindowWidth>
+  <SupBook>
+   <Path> </Path>
+   <SheetName> </SheetName>
+  </SupBook>
+  <WindowHeight>12165</WindowHeight>
+  <WindowWidth>28800</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>10</ActiveSheet>
+  <ActiveSheet>15</ActiveSheet>
   <FirstVisibleSheet>9</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
@@ -63,14 +67,17 @@
    <NumberFormat ss:Format="@"/>
   </Style>
  </Styles>
+ <Names>
+  <NamedRange ss:Name="SUM" ss:RefersTo="=RevokeEndpoint!R2C1"/>
+ </Names>
  <Worksheet ss:Name="DownloadFromPortalTest">
   <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="131.4"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:Width="131.25"/>
    <Column ss:Width="171" ss:Span="1"/>
-   <Column ss:Index="4" ss:Width="304.2"/>
-   <Column ss:Width="218.39999999999998"/>
-   <Column ss:Width="137.4"/>
+   <Column ss:Index="4" ss:Width="304.5"/>
+   <Column ss:Width="218.25"/>
+   <Column ss:Width="137.25"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Customer</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">Wait files ready to download timeout</Data></Cell>
@@ -114,10 +121,10 @@
  </Worksheet>
  <Worksheet ss:Name="InstallEndPointEnvironmentsTest">
   <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="185.4"/>
-   <Column ss:Width="229.8"/>
-   <Column ss:Width="148.19999999999999"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:Width="185.25"/>
+   <Column ss:Width="229.5"/>
+   <Column ss:Width="148.5"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Installation timeout</Data></Cell>
     <Cell><Data ss:Type="String">From service start until logs show active timeout</Data></Cell>
@@ -154,8 +161,8 @@
  </Worksheet>
  <Worksheet ss:Name="VerifyEndPointOkAtPortalTest">
   <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="131.4"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:Width="131.25"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Customer</Data></Cell>
    </Row>
@@ -188,16 +195,16 @@
  </Worksheet>
  <Worksheet ss:Name="ClientLogToPortalTest">
   <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="10" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="151.80000000000001"/>
-   <Column ss:Width="185.4"/>
-   <Column ss:Width="131.4"/>
-   <Column ss:Width="220.8"/>
-   <Column ss:Width="131.4"/>
-   <Column ss:AutoFitWidth="0" ss:Width="185.4" ss:Span="5"/>
-   <Column ss:Index="12" ss:Width="229.8" ss:Span="1"/>
-   <Column ss:Index="14" ss:Width="137.4"/>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45" ss:StyleID="s65">
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:Width="151.5"/>
+   <Column ss:Width="185.25"/>
+   <Column ss:Width="131.25"/>
+   <Column ss:Width="220.5"/>
+   <Column ss:Width="131.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="185.25" ss:Span="5"/>
+   <Column ss:Index="12" ss:Width="229.5" ss:Span="1"/>
+   <Column ss:Index="14" ss:Width="137.25"/>
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625" ss:StyleID="s65">
     <Cell ss:StyleID="s66"><Data ss:Type="String">Parameters Per Environment</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">Report Interval</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">Customer</Data></Cell>
@@ -213,7 +220,7 @@
     <Cell ss:StyleID="s66"><Data ss:Type="String">Add time stamp to description</Data></Cell>
     <Cell ss:StyleID="Default"><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">Default</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">30</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -229,7 +236,7 @@
     <Cell ss:StyleID="s63"><Data ss:Type="String">Yes</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">QA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
@@ -245,7 +252,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">INC</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
@@ -261,7 +268,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">STG</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
@@ -277,7 +284,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">EMEA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TWTestEMEA Standalone</Data></Cell>
@@ -293,7 +300,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">APJ</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TWTEST EPAPJ</Data></Cell>
@@ -311,7 +318,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">AMS</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">Acme San Francisco</Data></Cell>
@@ -359,15 +366,15 @@
  </Worksheet>
  <Worksheet ss:Name="SetConfigAndDownloadInstaller">
   <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:AutoFitWidth="0" ss:Width="381.59999999999997"/>
-   <Column ss:Width="88.2"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:AutoFitWidth="0" ss:Width="381.75"/>
+   <Column ss:Width="88.5"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
     <Cell><Data ss:Type="String">From LNE up until response OK timeout</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
+   <Row ss:AutoFitHeight="0" ss:Height="409.6875">
     <Cell ss:StyleID="s71" ss:Formula="=Cofigurations!RC"><Data ss:Type="String">{&#10; &quot;customerId&quot;: 1001,&#10; &quot;configuration&quot;: {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 60,&#10;   &quot;report_period&quot;: 50,&#10;   &quot;ds_max_off_period&quot;: 48,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;}</Data></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">300</Data></Cell>
@@ -397,14 +404,14 @@
  </Worksheet>
  <Worksheet ss:Name="InstallEP">
   <Table ss:ExpandedColumnCount="8" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="88.2"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:Width="88.5"/>
    <Column ss:Width="180"/>
-   <Column ss:Width="79.2" ss:Span="1"/>
+   <Column ss:Width="79.5" ss:Span="1"/>
    <Column ss:Index="5" ss:Width="75"/>
-   <Column ss:Width="53.400000000000006"/>
-   <Column ss:Width="137.4"/>
-   <Column ss:Width="148.19999999999999"/>
+   <Column ss:Width="53.25"/>
+   <Column ss:Width="137.25"/>
+   <Column ss:Width="148.5"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
     <Cell><Data ss:Type="String">From LNE up until response OK timeout</Data></Cell>
@@ -415,7 +422,7 @@
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="169.20000000000002">
+   <Row ss:AutoFitHeight="0" ss:Height="169.3125">
     <Cell ss:StyleID="s72"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">300</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
@@ -451,18 +458,18 @@
  </Worksheet>
  <Worksheet ss:Name="StandaloneEPconfigurationVerify">
   <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:AutoFitWidth="0" ss:Width="381.59999999999997"/>
-   <Column ss:Index="3" ss:Width="73.8"/>
-   <Column ss:AutoFitWidth="0" ss:Width="82.8"/>
-   <Column ss:Width="73.199999999999989"/>
-   <Column ss:Width="53.400000000000006"/>
-   <Column ss:Width="137.4"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:AutoFitWidth="0" ss:Width="381.75"/>
+   <Column ss:Index="3" ss:Width="73.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="82.5"/>
+   <Column ss:Width="73.5"/>
+   <Column ss:Width="53.25"/>
+   <Column ss:Width="137.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="312"/>
-   <Column ss:AutoFitWidth="0" ss:Width="236.39999999999998"/>
+   <Column ss:AutoFitWidth="0" ss:Width="236.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="93"/>
    <Column ss:AutoFitWidth="0" ss:Width="117"/>
-   <Column ss:AutoFitWidth="0" ss:Width="127.8"/>
+   <Column ss:AutoFitWidth="0" ss:Width="127.5"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">StandAloneConfig</Data></Cell>
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
@@ -478,7 +485,7 @@
     <Cell><Data ss:Type="String">AnotherEP_Password</Data></Cell>
     <Cell><Data ss:Type="String">AnotherEP_Type</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="108.45">
+   <Row ss:AutoFitHeight="0" ss:Height="108.5625">
     <Cell ss:StyleID="s71" ss:Formula="=Cofigurations!RC[5]"><Data ss:Type="String">{&#10;    &quot;customerId&quot;: &quot;1001&quot;,&#10;    &quot;name&quot;: &quot;moshe12345&quot;,&#10;    &quot;configuration&quot;: {&#10;        &quot;centcom_meta&quot;: {&#10;            &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;        },&#10;        &quot;global_conf&quot;: {&#10;            &quot;log_level&quot;: &quot;info&quot;&#10;        },&#10;        &quot;agent&quot;: {&#10;            &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;            &quot;ds_port&quot;: 443,&#10;            &quot;ds_protocol&quot;: &quot;https&quot;,&#10;            &quot;check_update_period&quot;: 53,&#10;            &quot;report_period&quot;: 60,&#10;            &quot;ds_max_off_period&quot;: 24,&#10;            &quot;modules&quot;: [{&#10;                    &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }, {&#10;                    &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }, {&#10;                    &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }&#10;            ],&#10;            &quot;transport&quot;: {&#10;                &quot;server_type&quot;: 2,&#10;                &quot;syslog&quot;: {&#10;                    &quot;host&quot;: &quot;10.85.25.43&quot;,&#10;                    &quot;port&quot;: 6514,&#10;                    &quot;protocol&quot;: &quot;Secured&quot;&#10;                },&#10;                &quot;scp&quot;: {&#10;                    &quot;host&quot;: &quot;10.85.25.43&quot;,&#10;                    &quot;port&quot;: 2200,&#10;                    &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;                    &quot;user&quot;: &quot;twsiem&quot;,&#10;                    &quot;max_send_folder_size&quot;: 100&#10;                }&#10;            }&#10;        },&#10;        &quot;wlm&quot;: {&#10;            &quot;transport_type&quot;: 2,&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5,&#10;            &quot;monitor_items&quot;: []&#10;        },&#10;        &quot;lfm&quot;: {&#10;            &quot;monitor_items&quot;: [{&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;os_type&quot;: &quot;windows&quot;,&#10;                    &quot;dir_path&quot;: &quot;c:\\test_files&quot;,&#10;                    &quot;filename&quot;: &quot;.*\\.log&quot;,&#10;                    &quot;header_lines&quot;: 0,&#10;                    &quot;only_new_data&quot;: true,&#10;                    &quot;configured_source&quot;: &quot;log-src&quot;,&#10;                    &quot;tag&quot;: &quot;log-tag&quot;,&#10;                    &quot;filters&quot;: [{&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;test&quot;,&#10;                                &quot;line&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;nep&quot;,&#10;                                &quot;file&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;included&quot;&#10;                            ]&#10;                        }&#10;                    ]&#10;                }, {&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;os_type&quot;: &quot;linux&quot;,&#10;                    &quot;dir_path&quot;: &quot;/root/test_files&quot;,&#10;                    &quot;filename&quot;: &quot;.*\\.log&quot;,&#10;                    &quot;header_lines&quot;: 0,&#10;                    &quot;only_new_data&quot;: true,&#10;                    &quot;configured_source&quot;: &quot;log-src&quot;,&#10;                    &quot;tag&quot;: &quot;log-tag&quot;,&#10;                    &quot;filters&quot;: [{&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;test&quot;,&#10;                                &quot;line&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;file&quot;,&#10;                                &quot;nep&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;included&quot;&#10;                            ]&#10;                        }&#10;                    ]&#10;                }, {&#10;                    &quot;dir_path&quot;: &quot;c:\\test_files2&quot;,&#10;                    &quot;os_type&quot;: &quot;windows&quot;,&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;only_new_data&quot;: false,&#10;                    &quot;filename&quot;: &quot;test_file.txt&quot;,&#10;                    &quot;configured_source&quot;: &quot;txt-src&quot;,&#10;                    &quot;tag&quot;: &quot;txt-tag&quot;,&#10;                    &quot;header_lines&quot;: 0&#10;                }, {&#10;                    &quot;dir_path&quot;: &quot;/root/test_files2&quot;,&#10;                    &quot;os_type&quot;: &quot;linux&quot;,&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;only_new_data&quot;: false,&#10;                    &quot;filename&quot;: &quot;test_file.txt&quot;,&#10;                    &quot;configured_source&quot;: &quot;txt-src&quot;,&#10;                    &quot;tag&quot;: &quot;txt-tag&quot;,&#10;                    &quot;header_lines&quot;: 0&#10;                }&#10;            ],&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5&#10;        },&#10;        &quot;llm&quot;: {&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5,&#10;            &quot;transport_type&quot;: 2,&#10;            &quot;monitor_items&quot;: []&#10;        }&#10;    }&#10;}</Data></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
@@ -506,12 +513,11 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <LeftColumnVisible>8</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
-     <ActiveCol>11</ActiveCol>
+     <ActiveRow>2</ActiveRow>
+     <ActiveCol>7</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -520,15 +526,15 @@
  </Worksheet>
  <Worksheet ss:Name="SimulateLLMandVerify">
   <Table ss:ExpandedColumnCount="10" ss:ExpandedRowCount="4" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:AutoFitWidth="0" ss:Width="382.20000000000005"/>
-   <Column ss:AutoFitWidth="0" ss:Width="199.2"/>
-   <Column ss:Width="74.400000000000006"/>
-   <Column ss:AutoFitWidth="0" ss:Width="82.199999999999989"/>
-   <Column ss:Width="73.199999999999989"/>
-   <Column ss:Width="52.8"/>
-   <Column ss:AutoFitWidth="0" ss:Width="162.6"/>
-   <Column ss:Index="9" ss:AutoFitWidth="0" ss:Width="127.19999999999999"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:AutoFitWidth="0" ss:Width="382.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="199.5"/>
+   <Column ss:Width="74.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="82.5"/>
+   <Column ss:Width="73.5"/>
+   <Column ss:Width="52.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="162.75"/>
+   <Column ss:Index="9" ss:AutoFitWidth="0" ss:Width="127.5"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
@@ -607,18 +613,18 @@
  </Worksheet>
  <Worksheet ss:Name="SimulateLFMandVerify">
   <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="3" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:AutoFitWidth="0" ss:Width="382.20000000000005"/>
-   <Column ss:Index="3" ss:Width="74.400000000000006"/>
-   <Column ss:AutoFitWidth="0" ss:Width="82.199999999999989"/>
-   <Column ss:Width="73.199999999999989"/>
-   <Column ss:Width="52.8"/>
-   <Column ss:AutoFitWidth="0" ss:Width="162.6"/>
-   <Column ss:Index="9" ss:AutoFitWidth="0" ss:Width="148.19999999999999"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:AutoFitWidth="0" ss:Width="382.5"/>
+   <Column ss:Index="3" ss:Width="74.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="82.5"/>
+   <Column ss:Width="73.5"/>
+   <Column ss:Width="52.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="162.75"/>
+   <Column ss:Index="9" ss:AutoFitWidth="0" ss:Width="148.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="57"/>
-   <Column ss:AutoFitWidth="0" ss:Width="106.2"/>
+   <Column ss:AutoFitWidth="0" ss:Width="106.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="117"/>
-   <Column ss:AutoFitWidth="0" ss:Width="127.19999999999999"/>
+   <Column ss:AutoFitWidth="0" ss:Width="127.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="99"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
@@ -695,14 +701,14 @@
  </Worksheet>
  <Worksheet ss:Name="WLMCreateEvent">
   <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="4" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:AutoFitWidth="0" ss:Width="382.20000000000005"/>
-   <Column ss:Index="3" ss:Width="74.400000000000006"/>
-   <Column ss:AutoFitWidth="0" ss:Width="82.199999999999989"/>
-   <Column ss:Width="73.199999999999989"/>
-   <Column ss:Width="52.8"/>
-   <Column ss:AutoFitWidth="0" ss:Width="162.6"/>
-   <Column ss:AutoFitWidth="0" ss:Width="170.4"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:AutoFitWidth="0" ss:Width="382.5"/>
+   <Column ss:Index="3" ss:Width="74.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="82.5"/>
+   <Column ss:Width="73.5"/>
+   <Column ss:Width="52.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="162.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="170.25"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
@@ -783,12 +789,12 @@
  </Worksheet>
  <Worksheet ss:Name="ChangeCustomerConfiguration">
   <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:AutoFitWidth="0" ss:Width="381.59999999999997"/>
-   <Column ss:Width="73.8"/>
-   <Column ss:AutoFitWidth="0" ss:Width="82.8"/>
-   <Column ss:Width="73.199999999999989"/>
-   <Column ss:Width="53.400000000000006"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:AutoFitWidth="0" ss:Width="381.75"/>
+   <Column ss:Width="73.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="82.5"/>
+   <Column ss:Width="73.5"/>
+   <Column ss:Width="53.25"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
     <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
@@ -796,7 +802,7 @@
     <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="108.45">
+   <Row ss:AutoFitHeight="0" ss:Height="108.5625">
     <Cell ss:StyleID="s71" ss:Formula="=Cofigurations!RC[1]"><Data ss:Type="String">{&#10; &quot;customerId&quot;: 1001,&#10; &quot;configuration&quot;: {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 33,&#10;   &quot;report_period&quot;: 34,&#10;   &quot;ds_max_off_period&quot;: 24,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;}</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
@@ -816,12 +822,10 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveCol>5</ActiveCol>
-     <RangeSelection>C6</RangeSelection>
+     <ActiveRow>1</ActiveRow>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -830,12 +834,12 @@
  </Worksheet>
  <Worksheet ss:Name="VerifyConfiguration">
   <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="73.8"/>
-   <Column ss:AutoFitWidth="0" ss:Width="82.8"/>
-   <Column ss:Width="73.199999999999989"/>
-   <Column ss:Width="53.400000000000006"/>
-   <Column ss:Width="137.4"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:Width="73.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="82.5"/>
+   <Column ss:Width="73.5"/>
+   <Column ss:Width="53.25"/>
+   <Column ss:Width="137.25"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
@@ -843,7 +847,7 @@
     <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="108.45">
+   <Row ss:AutoFitHeight="0" ss:Height="108.5625">
     <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
@@ -876,17 +880,17 @@
  </Worksheet>
  <Worksheet ss:Name="General Settings">
   <Table ss:ExpandedColumnCount="12" ss:ExpandedRowCount="5" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="132.6"/>
-   <Column ss:Index="3" ss:Width="185.4"/>
-   <Column ss:Width="131.4"/>
-   <Column ss:AutoFitWidth="0" ss:Width="185.4"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:Width="132.75"/>
+   <Column ss:Index="3" ss:Width="185.25"/>
+   <Column ss:Width="131.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="185.25"/>
    <Column ss:Width="75"/>
-   <Column ss:Width="67.2"/>
-   <Column ss:Width="62.400000000000006"/>
-   <Column ss:Width="107.4"/>
-   <Column ss:Width="106.2"/>
-   <Column ss:Width="221.4"/>
+   <Column ss:Width="67.5"/>
+   <Column ss:Width="62.25"/>
+   <Column ss:Width="107.25"/>
+   <Column ss:Width="106.5"/>
+   <Column ss:Width="221.25"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Parameters Per Environment</Data></Cell>
     <Cell><Data ss:Type="String">Browser</Data></Cell>
@@ -901,7 +905,7 @@
     <Cell><Data ss:Type="String">From EP service start until logs show EP active timeout</Data></Cell>
     <Cell><Data ss:Type="String">EP Service Timeout</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">Chrome</Data></Cell>
     <Cell><Data ss:Type="String">twSuperAdmin</Data></Cell>
@@ -915,7 +919,7 @@
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">QA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -929,7 +933,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">INC</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -943,7 +947,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.45">
+   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
     <Cell ss:StyleID="s68"><Data ss:Type="String">STG</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -984,23 +988,23 @@
  </Worksheet>
  <Worksheet ss:Name="Cofigurations">
   <Table ss:ExpandedColumnCount="20" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:AutoFitWidth="0" ss:Width="253.2"/>
-   <Column ss:AutoFitWidth="0" ss:Width="239.4"/>
-   <Column ss:AutoFitWidth="0" ss:Width="395.4"/>
-   <Column ss:AutoFitWidth="0" ss:Width="330.6"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   <Column ss:AutoFitWidth="0" ss:Width="253.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="239.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="395.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="330.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="258"/>
    <Column ss:AutoFitWidth="0" ss:Width="201"/>
-   <Column ss:AutoFitWidth="0" ss:Width="97.2"/>
-   <Column ss:AutoFitWidth="0" ss:Width="112.8"/>
+   <Column ss:AutoFitWidth="0" ss:Width="97.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="112.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="162"/>
-   <Column ss:AutoFitWidth="0" ss:Width="194.4"/>
-   <Column ss:AutoFitWidth="0" ss:Width="135.6"/>
-   <Column ss:Index="15" ss:AutoFitWidth="0" ss:Width="100.19999999999999"/>
-   <Column ss:AutoFitWidth="0" ss:Width="157.19999999999999"/>
-   <Column ss:AutoFitWidth="0" ss:Width="101.4"/>
-   <Column ss:AutoFitWidth="0" ss:Width="145.79999999999998"/>
-   <Column ss:Index="20" ss:AutoFitWidth="0" ss:Width="217.2"/>
+   <Column ss:AutoFitWidth="0" ss:Width="194.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="135.75"/>
+   <Column ss:Index="15" ss:AutoFitWidth="0" ss:Width="100.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="157.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="101.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="145.5"/>
+   <Column ss:Index="20" ss:AutoFitWidth="0" ss:Width="217.5"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Basic Configuration</Data></Cell>
     <Cell><Data ss:Type="String">Changed Configuration</Data></Cell>
@@ -1022,7 +1026,7 @@
     <Cell><Data ss:Type="String">WLMScript</Data></Cell>
     <Cell><Data ss:Type="String">StandAloneSet</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
+   <Row ss:AutoFitHeight="0" ss:Height="409.6875">
     <Cell ss:StyleID="s71"><Data ss:Type="String">{&#10; &quot;customerId&quot;: 1001,&#10; &quot;configuration&quot;: {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 60,&#10;   &quot;report_period&quot;: 50,&#10;   &quot;ds_max_off_period&quot;: 48,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;}</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">{&#10; &quot;customerId&quot;: 1001,&#10; &quot;configuration&quot;: {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 33,&#10;   &quot;report_period&quot;: 34,&#10;   &quot;ds_max_off_period&quot;: 24,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;}</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">{&#10; &quot;customerId&quot;: &quot;1001&quot;,&#10; &quot;configuration&quot;: {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;info&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 60,&#10;   &quot;report_period&quot;: 60,&#10;   &quot;ds_max_off_period&quot;: 24,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: true&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;host&quot;: &quot;{{machine-ip}}&quot;,&#10;     &quot;port&quot;: 6514,&#10;     &quot;protocol&quot;: &quot;Secured&quot;&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;10.85.25.43&quot;,&#10;     &quot;port&quot;: 2200,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;max_send_folder_size&quot;: 100&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;transport_type&quot;: 2,&#10;         &quot;max_monitor_queue_size&quot;: 10000,&#10;         &quot;queues_collector_idle_time&quot;: 5,&#10;         &quot;monitor_items&quot;: [&#10;   {&#10;    &quot;log_name&quot;: &quot;Application&quot;,&#10;                &quot;advanced_filter&quot;: false,&#10;                &quot;enabled&quot;: true,&#10;                &quot;filters&quot;: [&#10;                    {&#10;                        &quot;name&quot;: &quot;EventID&quot;,&#10;                        &quot;values&quot;: [&#10;                            &quot;111&quot;,&#10;                            &quot;222&quot;,&#10;                            &quot;333&quot;,&#10;                            &quot;444&quot;,&#10;                            &quot;555&quot;&#10;                        ]&#10;                    },&#10;                    {&#10;                        &quot;name&quot;: &quot;Provider&quot;,&#10;                        &quot;values&quot;: [&#10;                            &quot;wlm_test_source&quot;&#10;                        ]&#10;                    }&#10;                ]&#10;            },&#10;            {&#10;    &quot;log_name&quot;: &quot;System&quot;,&#10;                &quot;advanced_filter&quot;: false,&#10;                &quot;enabled&quot;: true,&#10;                &quot;filters&quot;: [&#10;                    {&#10;                        &quot;name&quot;: &quot;EventID&quot;,&#10;                        &quot;values&quot;: [&#10;                            &quot;111&quot;&#10;                        ]&#10;                    },&#10;                    {&#10;                        &quot;name&quot;: &quot;Level&quot;,&#10;                        &quot;values&quot;: [&#10;                            &quot;information&quot;&#10;                        ]&#10;                    }&#10;                ]&#10;            },&#10;            {&#10;                &quot;query&quot;: &quot;*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=0 or Level=5) and ( (EventID &gt;= 111 and EventID &lt;= 555) )]]&quot;,&#10;                &quot;enabled&quot;: true,&#10;                &quot;log_name&quot;: &quot;Microsoft-Windows-Windows Defender/Operational&quot;,&#10;                &quot;advanced_filter&quot;: true&#10;            },&#10;            {&#10;                &quot;query&quot;: &quot;*[System[Provider[@Name='WlmTestSource'] and (Level=2)]]&quot;,&#10;                &quot;enabled&quot;: true,&#10;                &quot;log_name&quot;: &quot;Setup&quot;,&#10;                &quot;advanced_filter&quot;: true&#10;            }&#10;        ]&#10;     },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 30,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;}</Data></Cell>
@@ -1059,19 +1063,17 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <LeftColumnVisible>5</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
      <ActiveRow>1</ActiveRow>
-     <ActiveCol>6</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
  </Worksheet>
-  <Worksheet ss:Name="BinaryUpdate">
+ <Worksheet ss:Name="BinaryUpdate">
   <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
    <Column ss:Width="93.75"/>
@@ -1086,7 +1088,7 @@
    <Column ss:Width="87.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="188.25"/>
    <Column ss:Width="113.25"/>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
     <Cell><Data ss:Type="String">From LNE up until response OK timeout</Data></Cell>
     <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
@@ -1102,7 +1104,7 @@
     <Cell><Data ss:Type="String">s3Bucket</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">180</Data></Cell>
     <Cell><Data ss:Type="Number">300</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
@@ -1124,17 +1126,75 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
+   <Unsynced/>
    <Print>
     <ValidPrinterInfo/>
     <HorizontalResolution>200</HorizontalResolution>
     <VerticalResolution>200</VerticalResolution>
    </Print>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
+     <ActiveCol>12</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="RevokeEndpoint">
+  <Table ss:ExpandedColumnCount="11" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="188.25"/>
+   <Column ss:Width="81.75" ss:Span="1"/>
+   <Column ss:Index="4" ss:Width="77.25"/>
+   <Column ss:Width="54.75"/>
+   <Column ss:Width="81.75" ss:Span="1"/>
+   <Column ss:Index="8" ss:Width="77.25"/>
+   <Column ss:Width="54.75"/>
+   <Column ss:Width="267.75"/>
+   <Column ss:Width="145.5"/>
+   <Row>
+    <Cell><Data ss:Type="String">Settings Json</Data></Cell>
+    <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_HostName_2</Data></Cell>
+    <Cell><Data ss:Type="String">EP_UserName_2</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Password_2</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Type_2</Data></Cell>
+    <Cell><Data ss:Type="String">revokeStandAlone</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Formula="=Cofigurations!RC"><Data ss:Type="String">{&#10; &quot;customerId&quot;: 1001,&#10; &quot;configuration&quot;: {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 60,&#10;   &quot;report_period&quot;: 50,&#10;   &quot;ds_max_off_period&quot;: 48,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;}</Data><NamedCell
+      ss:Name="SUM"/></Cell>
+    <Cell><Data ss:Type="String">hostname</Data></Cell>
+    <Cell><Data ss:Type="String">user name</Data></Cell>
+    <Cell><Data ss:Type="String">password</Data></Cell>
+    <Cell><Data ss:Type="String">win</Data></Cell>
+    <Cell><Data ss:Type="String">hostname</Data></Cell>
+    <Cell><Data ss:Type="String">user name</Data></Cell>
+    <Cell><Data ss:Type="String">password</Data></Cell>
+    <Cell><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:Formula="=Cofigurations!RC[-3]"><Data ss:Type="String">{&#10;  &quot;customerId&quot;: &quot;1001&quot;,&#10;  &quot;epName&quot;: &quot;moshe12345&quot;&#10;}</Data></Cell>
+    <Cell><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
    <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>2</ActiveRow>
-     <ActiveCol>12</ActiveCol>
+     <ActiveRow>10</ActiveRow>
+     <ActiveCol>3</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

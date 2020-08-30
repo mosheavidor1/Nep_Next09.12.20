@@ -1,6 +1,7 @@
 package Actions;
 
 import Utils.EventsLog.LogEntry;
+import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
@@ -54,7 +55,8 @@ public class AgentActions  {
     protected static final int checkInterval = 5000;
 
 
-    private String epIp, epUserName, epPassword;
+    private String epIp, epUserName, epPassword, epName;
+    private EP_OS epOs;
     private SSHManager connection;
     public static final int connection_port =22;
 
@@ -65,10 +67,32 @@ public class AgentActions  {
         connection = new SSHManager(epUserName,epPassword,epIp, connection_port );
     }
 
+    public AgentActions(String epIp, String epUserName, String epPassword, String epType) {
+        this.epIp = epIp;
+        this.epUserName = epUserName;
+        this.epPassword = epPassword;
+        connection = new SSHManager(epUserName,epPassword,epIp, connection_port );
+
+        this.epOs = epType.contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
+
+        String rawEpName = getEPName();
+        if (null != rawEpName){
+            this.epName = rawEpName.replaceAll("^\n+", "");
+        }
+    }
+
+    public String getEpName() {
+        return epName;
+    }
+
     public void Close(){
         if (connection!=null) {
             connection.Close();
         }
+    }
+
+    public void InstallEPIncludingRequisites(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
+        InstallEPIncludingRequisites(this.epOs, installationTimeout, epServiceTimeout, dbJsonToShowActiveTimeout);
     }
 
     public void InstallEPIncludingRequisites(EP_OS epOs, int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
@@ -354,6 +378,86 @@ public class AgentActions  {
             org.testng.Assert.fail("Could not start endpoint service." + "\n" + e.toString());
         }
 
+    }
+
+    public void CheckRevoked(int timeout) {
+
+        boolean revoked = false;
+        JLog.logger.info("Starting CheckRevoked verification ...");
+
+        try {
+            Thread.sleep(checkInterval);
+
+            // Restart the endpoint to initiate the config update to perform the revoke action
+            StopEPService(timeout, epOs);
+            // Start without verifying the start
+            String startCommand = (epOs == EP_OS.WINDOWS) ? "Net start NepaService" : "systemctl start tw-endpoint";
+            connection.Execute(startCommand);
+
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (!EndPointServiceExist(epOs)) {
+                    revoked = true;
+                    JLog.logger.info("The endpoint was revoked correctly");
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if(!revoked){
+            org.testng.Assert.fail("Endpoint revoked verification failed, the endpoint service still installed.");
+        }
+    }
+
+    public void CheckNotRevoked() {
+        if(!EndPointServiceExist(epOs)){
+            org.testng.Assert.fail("Endpoint not revoked verification failed, the endpoint service is not installed.");
+        }
+    }
+
+    public void CheckDeleted(int timeout) {
+
+        boolean revoked = false;
+
+        // Restart the endpoint to initiate the config update to perform the revoke action
+        StopEPService(timeout, epOs);
+        // Start without verifying the start
+        String startCommand = (epOs == EP_OS.WINDOWS) ? "Net start NepaService" : "systemctl start tw-endpoint";
+        connection.Execute(startCommand);
+
+        try {
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (!EndPointServiceExist(epOs)) {
+                    revoked = true;
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if(!revoked){
+            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still installed.");
+        }
+    }
+
+    public void CheckNotDeleted() {
+        if(!EndPointServiceExist(epOs)){
+            org.testng.Assert.fail("Endpoint not deleted verification failed, the endpoint service is not installed.");
+        }
     }
 
 
