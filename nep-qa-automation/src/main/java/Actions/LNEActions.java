@@ -174,6 +174,7 @@ public class LNEActions extends ManagerActions  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 try {
                     list = connection.ListOfFilesWithoutExceptionProtection(clientFolder);
+                    //System.out.println(Arrays.toString(list.toArray()));
                     if(list!=null) {
                         found=true;
                         break;
@@ -214,7 +215,7 @@ public class LNEActions extends ManagerActions  {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
                 list = connection.ListOfFiles(clientFolder);
-
+                //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
@@ -242,7 +243,7 @@ public class LNEActions extends ManagerActions  {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
                 list = connection.ListOfFiles(clientFolder);
-
+                //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
@@ -291,6 +292,7 @@ public class LNEActions extends ManagerActions  {
 
             if (connection.IsFileExists(clientFolder)) {
                 List<String> list = connection.ListOfFiles(clientFolder);
+                //System.out.println(Arrays.toString(list.toArray()));
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
                         String currentInstaller = clientFolder + "/" + list.get(i);

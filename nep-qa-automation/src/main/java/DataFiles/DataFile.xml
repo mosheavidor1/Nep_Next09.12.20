@@ -1071,4 +1071,74 @@
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
  </Worksheet>
+  <Worksheet ss:Name="BinaryUpdate">
+  <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:Width="93.75"/>
+   <Column ss:Width="192"/>
+   <Column ss:Width="81.75" ss:Span="1"/>
+   <Column ss:Index="5" ss:Width="77.25"/>
+   <Column ss:Width="54.75"/>
+   <Column ss:Width="81.75" ss:Span="1"/>
+   <Column ss:Index="9" ss:Width="77.25"/>
+   <Column ss:Width="54.75"/>
+   <Column ss:Width="81.75"/>
+   <Column ss:Width="87.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="188.25"/>
+   <Column ss:Width="113.25"/>
+   <Row>
+    <Cell><Data ss:Type="String">Download timeout</Data></Cell>
+    <Cell><Data ss:Type="String">From LNE up until response OK timeout</Data></Cell>
+    <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_HostName_2</Data></Cell>
+    <Cell><Data ss:Type="String">EP_UserName_2</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Password_2</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Type_2</Data></Cell>
+    <Cell><Data ss:Type="String">update_win_ver</Data></Cell>
+    <Cell><Data ss:Type="String">update_linux_ver</Data></Cell>
+    <Cell><Data ss:Type="String">s3Bucket</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="Number">180</Data></Cell>
+    <Cell><Data ss:Type="Number">300</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">linux</Data></Cell>
+    <Cell><Data ss:Type="String">1.1.1.5000</Data></Cell>
+    <Cell><Data ss:Type="String">1.1.1.5000</Data></Cell>
+    <Cell><Data ss:Type="String">nep-tests-nep-dev-{num}-eu-west-1</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>200</HorizontalResolution>
+    <VerticalResolution>200</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>2</ActiveRow>
+     <ActiveCol>12</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
 </Workbook>
