@@ -179,7 +179,7 @@ public class SimulateLLMandVerify extends GenericTest {
         if (res == null)
             return false;
         // now check on LNE
-        String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/user.log";
+        String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/local0.log";
         res = manager.numLinesinFile(txtFileMane, EP_Syslog_pattern);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(patt)))
