@@ -214,10 +214,12 @@ public class AgentActions  {
             if (found)
                 org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint Agent Service still found after timeout(sec): " + Integer.toString(timeout));
 
+            //If agent uninstall did remove installation folder do not remove the folder as this is fail intermittently- not clear why needs investigation
+            // maybe because a recursive solution to delete all files is needed. Needs a check
 
+            /*
             //File installationFolderFile = new File(installationFolder);
             found = true;
-
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 if (! connection.IsFileExists(installationFolder)) {
                     found = false;
@@ -230,9 +232,10 @@ public class AgentActions  {
             }
 
             if (found) {
-                connection.DeleteFile(installationFolder);
+                connection.DeleteFile(installationFolder); //delete is commented - see above
+
                 durationTimeout = durationTimeout.plusMinutes(1);
-            }
+            }*/
 
             found = true;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
