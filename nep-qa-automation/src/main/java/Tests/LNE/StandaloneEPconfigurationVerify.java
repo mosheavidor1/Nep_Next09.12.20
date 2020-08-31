@@ -17,8 +17,6 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
 
     private LNEActions manager;
     private AgentActions endpoint, endpoint2;
-    static final String config_win = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
-    static final String config_linux = "/opt/tw-endpoint/data/config.json";
     static final String settings_toVerify_Alone = "\"check_update_period\":53";
     static final String settings_toVerify_Set = "\"check_update_period\":311";
     @Factory(dataProvider = "getData")
@@ -75,7 +73,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             Thread.sleep(10000);
             endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-            Thread.sleep(5000);
+            Thread.sleep(10000);
             // Verify that configuration on second EP was not updated
             if (null != verifyPatternInConfig(endpoint2, ep2Os, settings_toVerify_Alone))
                 org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration was update on second EP - Error - " + settings_toVerify_Alone + " was found");
@@ -88,7 +86,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
             endpoint2.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), ep2Os);
             endpoint2.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), ep2Os);
-            Thread.sleep(5000);
+            Thread.sleep(10000);
             // Verify that configuration on stand alone EP was updated
             if (null == verifyPatternInConfig(endpoint, epOs, settings_toVerify_Set))
                 org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration on stand alone EP was not updated - " + settings_toVerify_Set + " was not found");
@@ -103,10 +101,8 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
 
     String verifyPatternInConfig(AgentActions endpoint, AgentActions.EP_OS epOs, String pattern) {
         String result;
-        if (epOs == AgentActions.EP_OS.LINUX)
-            result = endpoint.findInText(config_linux, pattern);
-        else
-            result = endpoint.findInText(config_win, pattern);
+        String conf_path = endpoint.getConfigPath(epOs);
+        result = endpoint.findInText(conf_path, pattern);
         return result;
     }
 

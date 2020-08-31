@@ -45,8 +45,10 @@ public class AgentActions  {
 
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
     public static final String dbJsonLinuxPath = "/opt/tw-endpoint/data/db.json";
-    public static final String configJsonWindowsPath = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
-    public static final String configJsonLinuxPath = "/opt/tw-endpoint/data/config.json";
+    public static final String configJsonWindowsPath_1_1 = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
+    public static final String configJsonWindowsPath_1_2 = "/C:/ProgramData/Trustwave/NEPAgent/General/2/config.json";
+    public static final String configJsonLinuxPath_1_1 = "/opt/tw-endpoint/data/config.json";
+    public static final String configJsonLinuxPath_1_2 = "/opt/tw-endpoint/data/General/2/config.json";
     public static final String versionJsonWindowsPath = "/C:/Program Files/Trustwave/NEPAgent/version.json";
     public static final String versionJsonLinuxPath = "/opt/tw-endpoint/bin/version.json";
 
@@ -538,7 +540,7 @@ public class AgentActions  {
             sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
 
             String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";
-            String configJsonRemotePath = (epOs == EP_OS.WINDOWS) ? configJsonWindowsPath : configJsonLinuxPath;
+            String configJsonRemotePath = getConfigPath(epOs);
             connection.CopyToLocal(configJsonRemotePath,localFilePath);
 
             FileInputStream inputStream = new FileInputStream(localFilePath);
@@ -683,15 +685,16 @@ public class AgentActions  {
         try {
 
             StopEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
-            if (!connection.IsFileExists(configJsonWindowsPath)) {
-                org.testng.Assert.fail("Could not find config.json; file was not found at: " + configJsonWindowsPath);
+            String config_file = getConfigPath(EP_OS.WINDOWS);
+            if (!connection.IsFileExists(config_file)) {
+                org.testng.Assert.fail("Could not find config.json; file was not found at: " + config_file);
             }
 
-            String text = connection.GetTextFromFile(configJsonWindowsPath);
+            String text = connection.GetTextFromFile(config_file);
 
             if (!text.contains(configJsonReportInterval)) {
                 StartEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
-                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonWindowsPath);
+                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + config_file);
             }
 
             int start = text.indexOf(configJsonReportInterval) + configJsonReportInterval.length();
@@ -699,7 +702,7 @@ public class AgentActions  {
             StringBuilder builder = new StringBuilder(text);
             builder.replace(start, end, interval);
 
-            connection.WriteTextToFile(builder.toString(), configJsonWindowsPath);
+            connection.WriteTextToFile(builder.toString(), config_file);
 
             StartEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
         }
@@ -779,6 +782,23 @@ public class AgentActions  {
         }
 
         return epVersion;
+    }
+    public String getConfigPath(EP_OS os) {
+        String conf_path;
+        if (os == EP_OS.WINDOWS) {
+            if (connection.IsFileExists(configJsonWindowsPath_1_2)) {
+                conf_path = configJsonWindowsPath_1_2;
+            } else {
+                conf_path = configJsonWindowsPath_1_1;
+            }
+        } else {
+            if (connection.IsFileExists(configJsonLinuxPath_1_2)) {
+                conf_path = configJsonLinuxPath_1_2;
+            } else {
+                conf_path = configJsonLinuxPath_1_1;
+            }
+        }
+        return conf_path;
     }
 }
 
