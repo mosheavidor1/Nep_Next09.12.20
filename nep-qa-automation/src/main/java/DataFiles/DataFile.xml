@@ -1182,7 +1182,8 @@
     <Cell><Data ss:Type="String">1.1.1.5000</Data></Cell>
     <Cell><Data ss:Type="String">nep-tests-nep-dev-{num}-eu-west-1</Data></Cell>
     <Cell><Data ss:Type="String">1.1.1.5001</Data></Cell>
-    <Cell><Data ss:Type="String">1.1.1.5001</Data></Cell>
+    <Cell><Data ss:Type="String">1.1.1.5002</Data></Cell>
+    <Cell><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1197,11 +1198,13 @@
     <HorizontalResolution>200</HorizontalResolution>
     <VerticalResolution>200</VerticalResolution>
    </Print>
+   <Selected/>
+   <LeftColumnVisible>4</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
      <ActiveRow>1</ActiveRow>
-     <ActiveCol>12</ActiveCol>
+     <ActiveCol>15</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
