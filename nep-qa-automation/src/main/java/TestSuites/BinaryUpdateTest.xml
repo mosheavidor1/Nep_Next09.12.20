@@ -8,14 +8,12 @@
         <groups>
             <dependencies>
                 <group  name= "VerifyInstallation" depends-on="InitCustomer" ></group>
-<!--                <group  name= "ChangeConfiguration" depends-on="VerifyInstallation" ></group>-->
             </dependencies>
         </groups>
 
         <classes>
             <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>
             <class name = "Tests.LNE.BinaryUpdate" />
-<!--            <class name = "Tests.LNE.ChangeCustomerConfiguration" />-->
         </classes>
     </test>
 
