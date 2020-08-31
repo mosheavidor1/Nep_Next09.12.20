@@ -90,6 +90,19 @@ public class SeleniumBrowser implements Application {
 						options.setExperimentalOption("prefs", chromePrefs);
 						JLog.logger.debug("Selenium browser Launch - After chrome setExperimentalOption" );
 
+						JLog.logger.debug("Selenium browser Launch - Before setting several chrome options" );
+
+						options.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
+						options.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
+						options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
+						options.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
+						options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
+						options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
+						options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+
+						JLog.logger.debug("Selenium browser Launch - Before creating new chrome driver" );
+
+
 						driver = new ChromeDriver(options);
 						JLog.logger.debug("Selenium browser Launch - After creating new chrome driver" );
 

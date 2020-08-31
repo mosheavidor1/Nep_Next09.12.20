@@ -22,6 +22,7 @@ public class LNEActions extends ManagerActions  {
     public static final String basePrefix = "http://";
     public static final String baseSuffix = ":9091/nep-centcom-client/";
     public static final String backupIdentifier = "backup";
+    public static final String hashIdentifier = "sha256";
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/nepa_ca.pem";
     public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
     public static final String caCertificateFileName = "cacertificate.txt";
@@ -229,7 +230,7 @@ public class LNEActions extends ManagerActions  {
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).contains(linuxInstallationFile) && !list.get(i).contains(backupIdentifier)) {
+                    if (list.get(i).contains(linuxInstallationFile) && !list.get(i).contains(backupIdentifier) && !list.get(i).contains(hashIdentifier)) {
                         String source = clientFolder + "/" + list.get(i);
                         String destination = copyLinuxInstallerLocation;
                         connection.CopyToLocal(source, destination);
@@ -426,6 +427,48 @@ public class LNEActions extends ManagerActions  {
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not revokeEpConfiguration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
+
+    public void revoke(String configJson) {
+        try {
+            Response r = given()
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("revoke");
+
+            int response = r.getStatusCode();
+
+            if (response == 200)
+                JLog.logger.info("Success. LNE revoke response: " + response);
+            else
+                org.testng.Assert.fail("Failure. LNE revoke failed with response status code: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Revoke action failed. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
+
+    public void delete(String configJson) {
+        try {
+            Response r = given()
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("delete");
+
+            int response = r.getStatusCode();
+
+            if (response == 200)
+                JLog.logger.info("Success. LNE delete response: " + response);
+            else
+                org.testng.Assert.fail("Failure. LNE delete failed with response status code: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Delete action failed. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
         }
 
     }

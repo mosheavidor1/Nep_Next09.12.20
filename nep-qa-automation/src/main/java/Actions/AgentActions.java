@@ -1,6 +1,7 @@
 package Actions;
 
 import Utils.EventsLog.LogEntry;
+import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
@@ -44,8 +45,10 @@ public class AgentActions  {
 
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
     public static final String dbJsonLinuxPath = "/opt/tw-endpoint/data/db.json";
-    public static final String configJsonWindowsPath = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
-    public static final String configJsonLinuxPath = "/opt/tw-endpoint/data/config.json";
+    public static final String configJsonWindowsPath_1_1 = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
+    public static final String configJsonWindowsPath_1_2 = "/C:/ProgramData/Trustwave/NEPAgent/General/2/config.json";
+    public static final String configJsonLinuxPath_1_1 = "/opt/tw-endpoint/data/config.json";
+    public static final String configJsonLinuxPath_1_2 = "/opt/tw-endpoint/data/General/2/config.json";
     public static final String versionJsonWindowsPath = "/C:/Program Files/Trustwave/NEPAgent/version.json";
     public static final String versionJsonLinuxPath = "/opt/tw-endpoint/bin/version.json";
 
@@ -54,7 +57,8 @@ public class AgentActions  {
     protected static final int checkInterval = 5000;
 
 
-    private String epIp, epUserName, epPassword;
+    private String epIp, epUserName, epPassword, epName;
+    private EP_OS epOs;
     private SSHManager connection;
     public static final int connection_port =22;
 
@@ -65,10 +69,32 @@ public class AgentActions  {
         connection = new SSHManager(epUserName,epPassword,epIp, connection_port );
     }
 
+    public AgentActions(String epIp, String epUserName, String epPassword, String epType) {
+        this.epIp = epIp;
+        this.epUserName = epUserName;
+        this.epPassword = epPassword;
+        connection = new SSHManager(epUserName,epPassword,epIp, connection_port );
+
+        this.epOs = epType.contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
+
+        String rawEpName = getEPName();
+        if (null != rawEpName){
+            this.epName = rawEpName.replaceAll("^\n+", "");
+        }
+    }
+
+    public String getEpName() {
+        return epName;
+    }
+
     public void Close(){
         if (connection!=null) {
             connection.Close();
         }
+    }
+
+    public void InstallEPIncludingRequisites(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
+        InstallEPIncludingRequisites(this.epOs, installationTimeout, epServiceTimeout, dbJsonToShowActiveTimeout);
     }
 
     public void InstallEPIncludingRequisites(EP_OS epOs, int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
@@ -190,10 +216,12 @@ public class AgentActions  {
             if (found)
                 org.testng.Assert.fail("Uninstall failed. Trustwave Endpoint Agent Service still found after timeout(sec): " + Integer.toString(timeout));
 
+            //If agent uninstall did remove installation folder do not remove the folder as this is fail intermittently- not clear why needs investigation
+            // maybe because a recursive solution to delete all files is needed. Needs a check
 
+            /*
             //File installationFolderFile = new File(installationFolder);
             found = true;
-
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 if (! connection.IsFileExists(installationFolder)) {
                     found = false;
@@ -206,9 +234,10 @@ public class AgentActions  {
             }
 
             if (found) {
-                connection.DeleteFile(installationFolder);
+                connection.DeleteFile(installationFolder); //delete is commented - see above
+
                 durationTimeout = durationTimeout.plusMinutes(1);
-            }
+            }*/
 
             found = true;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
@@ -356,6 +385,86 @@ public class AgentActions  {
 
     }
 
+    public void CheckRevoked(int timeout) {
+
+        boolean revoked = false;
+        JLog.logger.info("Starting CheckRevoked verification ...");
+
+        try {
+            Thread.sleep(checkInterval);
+
+            // Restart the endpoint to initiate the config update to perform the revoke action
+            StopEPService(timeout, epOs);
+            // Start without verifying the start
+            String startCommand = (epOs == EP_OS.WINDOWS) ? "Net start NepaService" : "systemctl start tw-endpoint";
+            connection.Execute(startCommand);
+
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (!EndPointServiceExist(epOs)) {
+                    revoked = true;
+                    JLog.logger.info("The endpoint was revoked correctly");
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if(!revoked){
+            org.testng.Assert.fail("Endpoint revoked verification failed, the endpoint service still installed.");
+        }
+    }
+
+    public void CheckNotRevoked() {
+        if(!EndPointServiceExist(epOs)){
+            org.testng.Assert.fail("Endpoint not revoked verification failed, the endpoint service is not installed.");
+        }
+    }
+
+    public void CheckDeleted(int timeout) {
+
+        boolean revoked = false;
+
+        // Restart the endpoint to initiate the config update to perform the revoke action
+        StopEPService(timeout, epOs);
+        // Start without verifying the start
+        String startCommand = (epOs == EP_OS.WINDOWS) ? "Net start NepaService" : "systemctl start tw-endpoint";
+        connection.Execute(startCommand);
+
+        try {
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (!EndPointServiceExist(epOs)) {
+                    revoked = true;
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if(!revoked){
+            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still installed.");
+        }
+    }
+
+    public void CheckNotDeleted() {
+        if(!EndPointServiceExist(epOs)){
+            org.testng.Assert.fail("Endpoint not deleted verification failed, the endpoint service is not installed.");
+        }
+    }
+
 
     public void CopyInstaller(EP_OS epOs){
 
@@ -431,7 +540,7 @@ public class AgentActions  {
             sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
 
             String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";
-            String configJsonRemotePath = (epOs == EP_OS.WINDOWS) ? configJsonWindowsPath : configJsonLinuxPath;
+            String configJsonRemotePath = getConfigPath(epOs);
             connection.CopyToLocal(configJsonRemotePath,localFilePath);
 
             FileInputStream inputStream = new FileInputStream(localFilePath);
@@ -576,15 +685,16 @@ public class AgentActions  {
         try {
 
             StopEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
-            if (!connection.IsFileExists(configJsonWindowsPath)) {
-                org.testng.Assert.fail("Could not find config.json; file was not found at: " + configJsonWindowsPath);
+            String config_file = getConfigPath(EP_OS.WINDOWS);
+            if (!connection.IsFileExists(config_file)) {
+                org.testng.Assert.fail("Could not find config.json; file was not found at: " + config_file);
             }
 
-            String text = connection.GetTextFromFile(configJsonWindowsPath);
+            String text = connection.GetTextFromFile(config_file);
 
             if (!text.contains(configJsonReportInterval)) {
                 StartEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
-                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + configJsonWindowsPath);
+                org.testng.Assert.fail("Endpoint did not received expected configuration. Could not change the logs interval as " + configJsonReportInterval + " could not be found at: " + config_file);
             }
 
             int start = text.indexOf(configJsonReportInterval) + configJsonReportInterval.length();
@@ -592,7 +702,7 @@ public class AgentActions  {
             StringBuilder builder = new StringBuilder(text);
             builder.replace(start, end, interval);
 
-            connection.WriteTextToFile(builder.toString(), configJsonWindowsPath);
+            connection.WriteTextToFile(builder.toString(), config_file);
 
             StartEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
         }
@@ -672,6 +782,23 @@ public class AgentActions  {
         }
 
         return epVersion;
+    }
+    public String getConfigPath(EP_OS os) {
+        String conf_path;
+        if (os == EP_OS.WINDOWS) {
+            if (connection.IsFileExists(configJsonWindowsPath_1_2)) {
+                conf_path = configJsonWindowsPath_1_2;
+            } else {
+                conf_path = configJsonWindowsPath_1_1;
+            }
+        } else {
+            if (connection.IsFileExists(configJsonLinuxPath_1_2)) {
+                conf_path = configJsonLinuxPath_1_2;
+            } else {
+                conf_path = configJsonLinuxPath_1_1;
+            }
+        }
+        return conf_path;
     }
 }
 

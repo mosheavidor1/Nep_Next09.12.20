@@ -32,9 +32,10 @@ public class UpperMenu extends GenericPage{
 	@FindBy(how= How.XPATH,using=searchTextXpath)
 	public WebElement searchText_element;
 
-	private static final String customerNameCSS=".customer-name";
-	public static final By customerNameBy = By.cssSelector(customerNameCSS);
-	@FindBy(how = How.CSS, using = customerNameCSS)
+	//private static final String customerNameCSS=".customer-name";
+	private static final String customerNameXpath="//twa-select-item";
+	public static final By customerNameBy = By.xpath(customerNameXpath);
+	@FindBy(how = How.XPATH, using = customerNameXpath)
 	public WebElement customerName;
 
 	public static final By spinnerBy =By.xpath("//span/twa-spinner");
