@@ -18,7 +18,6 @@
             <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>
             <class name = "Tests.LNE.InstallEP" />
             <class name = "Tests.LNE.ChangeCustomerConfiguration" />
-            <class name = "Tests.LNE.VerifyConfiguration" />
         </classes>
     </test>
 
