@@ -10,41 +10,38 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 
-
-public class RevokeEndpoint extends GenericTest {
+public class DeleteEndpoint extends GenericTest {
 
     private LNEActions manager;
     private AgentActions endpoint1, endpoint2;
 
     @Factory(dataProvider = "getData")
-    public RevokeEndpoint(Object dataToSet) {
+    public DeleteEndpoint(Object dataToSet) {
         super(dataToSet);
     }
 
-    @Test(groups = { "RevokeEndpoint" } )
-    public void RevokeEndpoint()  {
+    @Test(groups = { "DeleteEndpoint" } )
+    public void DeleteEndpoint()  {
 
         try {
-            JLog.logger.info("Starting RevokeEndpoint test ...");
+            JLog.logger.info("Starting DeleteEndpoint test ...");
 
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             endpoint1 = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"), data.get("EP_Type_1"));
             endpoint2 = new AgentActions(data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"), data.get("EP_Type_2"));
 
             // Set the endpoint name in the revoke configuration
-            String revokeStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("revokeStandAlone"), "epName", endpoint1.getEpName());
+            String deleteStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("deleteStandAlone"), "epName", endpoint1.getEpName());
 
-            manager.revoke(revokeStandAloneWithEpNameConfigForEp1);
-            endpoint1.CheckRevoked(Integer.parseInt(general.get("EP Service Timeout")));
-            endpoint2.CheckNotRevoked();
+            manager.delete(deleteStandAloneWithEpNameConfigForEp1);
+            endpoint1.CheckDeleted(Integer.parseInt(general.get("EP Service Timeout")));
+            endpoint2.CheckNotDeleted();
 
-            JLog.logger.info("RevokeEndpoint test completed.");
+            JLog.logger.info("DeleteEndpoint test completed.");
 
         } catch (Exception e) {
-            org.testng.Assert.fail("RevokeEndpoint test failed " + "\n" + e.toString());
+            org.testng.Assert.fail("DeleteEndpoint test failed " + "\n" + e.toString());
         }
     }
 

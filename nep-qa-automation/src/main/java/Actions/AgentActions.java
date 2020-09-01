@@ -429,7 +429,7 @@ public class AgentActions  {
 
     public void CheckDeleted(int timeout) {
 
-        boolean revoked = false;
+        boolean deleted = false;
 
         // Restart the endpoint to initiate the config update to perform the revoke action
         StopEPService(timeout, epOs);
@@ -446,7 +446,7 @@ public class AgentActions  {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
                 if (!EndPointServiceExist(epOs)) {
-                    revoked = true;
+                    deleted = true;
                     break;
                 }
             }
@@ -454,7 +454,7 @@ public class AgentActions  {
             e.printStackTrace();
         }
 
-        if(!revoked){
+        if(!deleted){
             org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still installed.");
         }
     }
