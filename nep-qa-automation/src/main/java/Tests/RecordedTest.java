@@ -33,10 +33,11 @@ public class RecordedTest extends GenericTest{
 		if (!GraphicsEnvironment.isHeadless()) {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss");
 			Date date = new Date();
-			video = new VideoCapture(".\\test-output\\Capture", this.getClass().getSimpleName() + " " + dateFormat.format(date));
+			//remove video creation just to check if that is damaging select customer
+			//video = new VideoCapture(".\\test-output\\Capture", this.getClass().getSimpleName() + " " + dateFormat.format(date));
 
 			try {
-				video.startRecording();
+				//video.startRecording();
 			} catch (Exception e) {
 				JLog.logger.warn("Could not start video recording. If multiple screens are used do not change the browser location to avoid this issue.");
 			}
@@ -53,7 +54,7 @@ public class RecordedTest extends GenericTest{
 	public void afterMethod() throws Exception {
 		if (!GraphicsEnvironment.isHeadless()) {
 
-			video.stopRecording();
+			//video.stopRecording();
 
 			if (SeleniumBrowser.InstanceExist()) {
 				File scrFile = ((TakesScreenshot) SeleniumBrowser.GetDriver()).getScreenshotAs(OutputType.FILE);
