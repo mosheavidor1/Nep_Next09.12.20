@@ -342,21 +342,20 @@ public class BrowserActions extends ManagerActions {
             up.WaitUntilObjectClickable(up.customerSelectorBy);
             up.customerSelector_element.click();
 
-            up.WaitUntilObjectClickable(up.searchTextBy);
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
             up.WaitUntilObjectClickable(up.searchTextBy);
-
             up.searchText_element.clear();
 
-            up.WaitUntilObjectClickable(up.searchTextBy);
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
             up.WaitUntilObjectClickable(up.searchTextBy);
 
             up.searchText_element.sendKeys(customerName);
 
-            up.WaitUntilObjectClickable(up.customerNameBy);
+            Thread.sleep(2000); // As there are failures with this click - after several tries got to rock bottom using sleep.
+            up.WaitUntilObjectDisappear(up.spinnerBy);
+            up.WaitUntilPageLoad();
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
             up.WaitUntilObjectClickable(up.customerNameBy);
