@@ -25,13 +25,13 @@ public class WLMCreateEvent extends GenericTest {
     private LNEActions manager;
     private AgentActions endpoint;
     private BrowserActions action;
-    private SSHManager connection;
-    public static final int connection_port =22;
+
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
     String right_result;
+    String syslogFileName;
     static final int schedule_report_timeout = 120000; //ms
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
@@ -47,6 +47,7 @@ public class WLMCreateEvent extends GenericTest {
             String log_type = data.get("Log_Type");
             right_result = data.get("expectedResult");
             JLog.logger.info("log_type: " + log_type + " ; Expected result value: " + right_result);
+            syslogFileName = syslog_path + data.get("EP_HostName_1") + "/user.log";
 
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             endpoint = new AgentActions(data.get("EP_HostName_1"),data.get("EP_UserName_1"), data.get("EP_Password_1"));
@@ -55,11 +56,10 @@ public class WLMCreateEvent extends GenericTest {
             endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
             endpoint.clearFile("C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log", AgentActions.EP_OS.WINDOWS);
             endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
+
             Thread.sleep(10000);
             endpoint.CompareConfigurationToEPConfiguration( AgentActions.EP_OS.WINDOWS);
-
-            connection = new SSHManager(data.get("EP_UserName_1"),data.get("EP_Password_1"),data.get("EP_HostName_1"), connection_port );
-
+            manager.clearFile(syslogFileName);
             createEvents();
             Thread.sleep(schedule_report_timeout);
             boolean res = false;
@@ -73,7 +73,7 @@ public class WLMCreateEvent extends GenericTest {
             } else {
                 org.testng.Assert.fail("Unknown server log_type: " +  log_type);
             }
-            connection.Close();
+
             if (!res)
                 org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: " +right_result);
         }
@@ -149,8 +149,29 @@ public class WLMCreateEvent extends GenericTest {
     }
 
     public void createEvents() {
-        String createEvents_bat = data.get("WLMcreateEvent");
-        endpoint.writeAndExecute(createEvents_bat, AgentActions.EP_OS.WINDOWS);
+               String[][] obj = {
+                {"information", "111","Microsoft-Windows-Windows Defender/Operational", "Windows Defender","WLM test log included - win defender info"},
+                {"error", "555","Microsoft-Windows-Windows Defender/Operational", "Windows Defender","WLM test log included - win defender error" },
+                {"information", "110","Microsoft-Windows-Windows Defender/Operational", "WLM test log excluded - win defender info" },
+                {"error", "556","Microsoft-Windows-Windows Defender/Operational", "WLM test log excluded - win defender error" },
+                {"error", "111","application", "wlm_test_source","WLM test log included - application error"},
+                {"warning", "333","application", "wlm_test_source","WLM test log included - application warning" },
+                {"error", "110","application", "wlm_test_source","WLM test log excluded - application error" },
+                {"error", "111","application", "wlm_test_source2","WLM test log excluded - application error"},
+                {"information", "111","system", "TestSource1","WLM test log included - system information" },
+                {"information", "111","system", "TestSource2","WLM test log included - system information" },
+                {"error", "111","system", "TestSource2","WLM test log excluded - system error"},
+                {"information", "333","system", "TestSource1","WLM test log excluded - system information" },
+                {"error", "999","setup", "SetupTestSource","WLM test log included - setup error" },
+                {"error", "1000","setup", "SetupTestSource","WLM test log included - setup error" },
+                {"warning", "999","setup", "SetupTestSource","WLM test log excluded - setup warning" },
+                {"error", "123","setup", "SetupTestSource1","WLM test log excluded - setup error" },
+               };
+
+        for (int i = 0; i < obj.length; i++) {
+            LogEntry lent = new LogEntry(obj[i][0],obj[i][1],obj[i][2],obj[i][3],obj[i][4],true);
+            endpoint.WriteEvent(lent);
+        }
     }
 
     @AfterMethod
