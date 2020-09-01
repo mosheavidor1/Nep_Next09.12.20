@@ -643,6 +643,24 @@ public class AgentActions  {
 
     }
 
+    public String GetEpIdFromDbJson() {
+
+        String endpointId = "";
+
+        try {
+            String dbJsonRemoteFile = (epOs == EP_OS.WINDOWS) ? dbJsonPath : dbJsonLinuxPath;
+            if (connection.IsFileExists(dbJsonRemoteFile)) {
+                String dbJsonFileContent = connection.GetTextFromFile(dbJsonRemoteFile);
+                JSONObject json = new JSONObject(dbJsonFileContent);
+                endpointId = json.getString("EndpointId");
+            }
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not get endpoint id from db.json file." + "\n" + e.toString(), e);
+        }
+        return endpointId;
+
+    }
 
     public boolean EndPointServiceExist(EP_OS epOs) {
         try {
