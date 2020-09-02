@@ -94,5 +94,5 @@ def sendEmail(status) {
 		subject: "${env.JOB_NAME} (env:${ENVIRONMENT_NAME})- TEST # ${DISPLAY_VERSION} - " + status,
 		mimeType: 'text/html',
 		from: 'svc_wafbuild@trustwave.com',
-		to: "${NEPA_ALL}"
+		to: "${EMAIL_LIST}"
 }
