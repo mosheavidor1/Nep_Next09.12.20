@@ -1,11 +1,13 @@
 package Actions;
 
+import DataModel.DbJson;
 import Utils.EventsLog.LogEntry;
 import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
 import Utils.TestFiles;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -643,6 +645,25 @@ public class AgentActions  {
 
     }
 
+    public String GetEpIdFromDbJson() {
+
+        String endpointId = "";
+
+        try {
+            String dbJsonRemoteFile = (epOs == EP_OS.WINDOWS) ? dbJsonPath : dbJsonLinuxPath;
+            if (connection.IsFileExists(dbJsonRemoteFile)) {
+                String dbJsonFileContent = connection.GetTextFromFile(dbJsonRemoteFile);
+                ObjectMapper objectMapper = new ObjectMapper();
+                DbJson dbJson = objectMapper.readValue(dbJsonFileContent, DbJson.class);
+                endpointId = dbJson.getEndpointId();
+            }
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not get endpoint id from db.json file." + "\n" + e.toString(), e);
+        }
+        return endpointId;
+
+    }
 
     public boolean EndPointServiceExist(EP_OS epOs) {
         try {

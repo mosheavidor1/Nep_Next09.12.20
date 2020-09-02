@@ -33,10 +33,18 @@ public class DeleteEndpoint extends GenericTest {
 
             // Set the endpoint name in the revoke configuration
             String deleteStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("deleteStandAlone"), "epName", endpoint1.getEpName());
+            String originalEndpointId = endpoint1.GetEpIdFromDbJson();
 
             manager.delete(deleteStandAloneWithEpNameConfigForEp1);
             endpoint1.CheckDeleted(Integer.parseInt(general.get("EP Service Timeout")));
             endpoint2.CheckNotDeleted();
+
+            endpoint1.InstallEPIncludingRequisites(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
+            String newEndpointId = endpoint1.GetEpIdFromDbJson();
+
+            if(originalEndpointId.compareTo(newEndpointId) == 0){
+                org.testng.Assert.fail("RevokeEndpoint test failed, the unique id is the same after the installation.");
+            }
 
             JLog.logger.info("DeleteEndpoint test completed.");
 
