@@ -2,6 +2,8 @@ package Actions;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
@@ -13,15 +15,17 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     public static final String windowsHostsFile = "/C:/Windows/System32/drivers/etc/hosts";
     public static final String exexInstPath = "C:\\Program Files\\Trustwave\\NEPAgent";
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
-    public static final String configJsonWindowsPath_1_1 = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
-    public static final String configJsonWindowsPath_1_2 = "/C:/ProgramData/Trustwave/NEPAgent/General/2/config.json";
     public static final String versionJsonWindowsPath = "/C:/Program Files/Trustwave/NEPAgent/version.json";
     private static final String winLog = "C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log";
     private static final String command_winSIEM = "type " + winLog + " | find /n \".zip was sent successfully\"";
     private static final String command_winLCA = "type " + winLog + " | find /n \".log-tag.log was sent\"";
     private static final String command_winLCA2 = "type " + winLog + " | find /n \".txt-tag.log was sent\"";
-    
-    
+    public static final String configJsonWindowsPath_1_1 = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
+    public static final String configJsonWindowsPath_1_2_gen = "/C:/ProgramData/Trustwave/NEPAgent/General/";
+    public static final String configJsonWindowsPath_1_2_new = "/C:/ProgramData/Trustwave/NEPAgent/General/new";
+    public static final String configJsonWindowsPath_1_2_stable = "/C:/ProgramData/Trustwave/NEPAgent/General/stable";
+
+    Map<String, String> scriptNamesMap;
     public static final String startCommand = "Net start NepaService";
     
     public WinAgentActions(String epIp, String epUserName, String epPassword) {
@@ -29,6 +33,10 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     	if (!connection.IsFileExists("/C:/home")) {
             connection.CreateDirectory("/C:/home");
     	}
+        scriptNamesMap = new HashMap<String, String>();
+        scriptNamesMap.put("LFM_Create_Dir", "WinDirscript");
+        scriptNamesMap.put("LFM_Create_Log", "WIncreateLogs");
+        scriptNamesMap.put("key3", "value3");
     }
     
     public String getInstallationFile() {
@@ -185,14 +193,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
         }
 
     }                                                                                                                         
-	      
-	 public String getConfigPath() {
-	       
-        if (connection.IsFileExists(configJsonWindowsPath_1_2)) {
-            return configJsonWindowsPath_1_2;
-        } 
-        return configJsonWindowsPath_1_1;
-    }
+
 	
 	public String getDownloadFolder() {
         return PropertiesFile.readProperty("EPDownloadWindowsFolder");
@@ -288,4 +289,21 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
 		return "type nul > ";
 	}
 
-}
+	public String getScriptName(String scriptName) {
+        String nameExcell = scriptNamesMap.get(scriptName);
+        return nameExcell;
+    }
+    public String getConfigPath(boolean afterUpdate) {
+        String conf_path;
+        String new_or_stable;
+        if (!connection.IsFileExists(configJsonWindowsPath_1_2_new))
+            return configJsonWindowsPath_1_1;
+            if (afterUpdate) {
+                new_or_stable = connection.GetTextFromFile(configJsonWindowsPath_1_2_new);
+            } else {
+                new_or_stable = connection.GetTextFromFile(configJsonWindowsPath_1_2_stable);
+            }
+            conf_path = configJsonWindowsPath_1_2_gen + new_or_stable + "/config.json";
+        return conf_path;
+    }
+    }

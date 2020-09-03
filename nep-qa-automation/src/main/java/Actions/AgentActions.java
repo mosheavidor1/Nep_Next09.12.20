@@ -48,9 +48,13 @@ public class AgentActions  {
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
     public static final String dbJsonLinuxPath = "/opt/tw-endpoint/data/db.json";
     public static final String configJsonWindowsPath_1_1 = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
-    public static final String configJsonWindowsPath_1_2 = "/C:/ProgramData/Trustwave/NEPAgent/General/2/config.json";
+    public static final String configJsonWindowsPath_1_2_gen = "/C:/ProgramData/Trustwave/NEPAgent/General/";
+    public static final String configJsonWindowsPath_1_2_new = "/C:/ProgramData/Trustwave/NEPAgent/General/new";
+    public static final String configJsonWindowsPath_1_2_stable = "/C:/ProgramData/Trustwave/NEPAgent/General/stable";
+    public static final String configJsonLinuxPath_1_2_gen = "/opt/tw-endpoint/data/General/";
+    public static final String configJsonLinuxPath_1_2_new = "/opt/tw-endpoint/data/General/new";
     public static final String configJsonLinuxPath_1_1 = "/opt/tw-endpoint/data/config.json";
-    public static final String configJsonLinuxPath_1_2 = "/opt/tw-endpoint/data/General/2/config.json";
+    public static final String configJsonLinuxPath_1_2_stable = "/opt/tw-endpoint/data/General/stable";
     public static final String versionJsonWindowsPath = "/C:/Program Files/Trustwave/NEPAgent/version.json";
     public static final String versionJsonLinuxPath = "/opt/tw-endpoint/bin/version.json";
 
@@ -532,7 +536,7 @@ public class AgentActions  {
 
     }
 
-    public void CompareConfigurationToEPConfiguration (EP_OS epOs){
+    public void CompareConfigurationToEPConfiguration (boolean afterUpdate){
         String configJson=null;
         String sentConfiguration = null;
         try {
@@ -542,7 +546,7 @@ public class AgentActions  {
             sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
 
             String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";
-            String configJsonRemotePath = getConfigPath(epOs);
+          String configJsonRemotePath = configJsonWindowsPath_1_1;
             connection.CopyToLocal(configJsonRemotePath,localFilePath);
 
             FileInputStream inputStream = new FileInputStream(localFilePath);
@@ -706,7 +710,7 @@ public class AgentActions  {
         try {
 
             StopEPService(serviceStartStopTimeout, EP_OS.WINDOWS);
-            String config_file = getConfigPath(EP_OS.WINDOWS);
+            String config_file = configJsonWindowsPath_1_1;
             if (!connection.IsFileExists(config_file)) {
                 org.testng.Assert.fail("Could not find config.json; file was not found at: " + config_file);
             }
@@ -804,20 +808,29 @@ public class AgentActions  {
 
         return epVersion;
     }
-    public String getConfigPath(EP_OS os) {
+    public String getConfigPath2(EP_OS os, boolean afterUpdate) {
         String conf_path;
+        String new_or_stable;
         if (os == EP_OS.WINDOWS) {
-            if (connection.IsFileExists(configJsonWindowsPath_1_2)) {
-                conf_path = configJsonWindowsPath_1_2;
-            } else {
-                conf_path = configJsonWindowsPath_1_1;
+            if (!connection.IsFileExists(configJsonWindowsPath_1_2_new))
+                return configJsonWindowsPath_1_1;
+            if (afterUpdate) {
+                new_or_stable = connection.GetTextFromFile(configJsonWindowsPath_1_2_new);
             }
+            else {
+                new_or_stable = connection.GetTextFromFile(configJsonWindowsPath_1_2_stable);
+            }
+            conf_path = configJsonWindowsPath_1_2_gen + new_or_stable + "/config.json";
         } else {
-            if (connection.IsFileExists(configJsonLinuxPath_1_2)) {
-                conf_path = configJsonLinuxPath_1_2;
-            } else {
-                conf_path = configJsonLinuxPath_1_1;
+            if (!connection.IsFileExists(configJsonLinuxPath_1_2_new))
+                return configJsonLinuxPath_1_1;
+            if (afterUpdate) {
+                new_or_stable = connection.GetTextFromFile(configJsonLinuxPath_1_2_new);
             }
+            else {
+                new_or_stable = connection.GetTextFromFile(configJsonLinuxPath_1_2_stable);
+            }
+            conf_path = configJsonLinuxPath_1_2_gen + new_or_stable + "/config.json";
         }
         return conf_path;
     }
