@@ -37,13 +37,13 @@ public class SimulateLFMandVerify extends GenericTest {
     right_result1 = data.get("ExpectedResult1");
     right_result2 = data.get("ExpectedResult2");
     JLog.logger.info("log_type: " + log_type + " Expected results: " + right_result1 + " and " + right_result2);
+    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
     String commandSIEM = agent.getVerifySiemCommand();
     String commandLCA = agent.getVerifyLcaCommand();
     String commandLCA2 = agent.getVerifyLca2Command();
     String logFile = agent.getAgentLogPath();
     
-    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-    
+
     prepareDirectories();
 
 
@@ -56,7 +56,7 @@ public class SimulateLFMandVerify extends GenericTest {
     agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
     agent.clearFile(logFile);
     agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-    agent.compareConfigurationToEPConfiguration();
+    agent.compareConfigurationToEPConfiguration(true);
     Thread.sleep(10000);
     createLogs();
     Thread.sleep(schedule_report_timeout);
@@ -80,23 +80,20 @@ public class SimulateLFMandVerify extends GenericTest {
     }
 
      private void prepareDirectories() {
-    /*     String script;
-         if (os == WINDOWS)
-             script = data.get("WinDirscript");
-         else
-             script = data.get("linuxDirscript"); //TBD
-         agent.writeAndExecute(script, os);*/
+         String script_name = agent.getScriptName("LFM_Create_Dir");
+         if (null == script_name)
+             org.testng.Assert.fail("Can't find script : LFM_Create_Dir");
+         String script_text = data.get(script_name);
+         agent.writeAndExecute(script_text);
      }
 
 
      private void createLogs() {
-      /*   String script;
-         if (os == WINDOWS)
-                script = data.get("WIncreateLogs");
-         else
-                script = data.get("LinuxcreateLogs"); //TBD
-
-         agent.writeAndExecute(script);*/
+         String script_name = agent.getScriptName("LFM_Create_Log");
+         if (null == script_name)
+             org.testng.Assert.fail("Can't find script : LFM_Create_Log");
+         String script_text = data.get(script_name);
+         agent.writeAndExecute(script_text);
      }
 
     public boolean handleSIEM(String command) {

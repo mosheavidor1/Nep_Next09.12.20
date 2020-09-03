@@ -2,6 +2,8 @@ package Actions;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
@@ -13,8 +15,10 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     public static final String nepa_caLinuxDotPemPath = "/opt/tw-endpoint/bin/certs/nepa_ca.pem";
     public static final String linuxHostsFile = "/etc/hosts";
     public static final String dbJsonLinuxPath = "/opt/tw-endpoint/data/db.json";
+    public static final String configJsonLinuxPath_1_2_gen = "/opt/tw-endpoint/data/General/";
+    public static final String configJsonLinuxPath_1_2_new = "/opt/tw-endpoint/data/General/new";
     public static final String configJsonLinuxPath_1_1 = "/opt/tw-endpoint/data/config.json";
-    public static final String configJsonLinuxPath_1_2 = "/opt/tw-endpoint/data/General/2/config.json";
+    public static final String configJsonLinuxPath_1_2_stable = "/opt/tw-endpoint/data/General/stable";
     public static final String versionJsonLinuxPath = "/opt/tw-endpoint/bin/version.json";
     private static final String linuxLog = "/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log";
     private static final String command_linuxSIEM = "cat " + linuxLog + " | grep -e \".zip was sent successfully\"";
@@ -23,9 +27,13 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     
     
     public static final String startCommand = "systemctl start tw-endpoint";
-
+    Map<String, String> scriptNamesMap;
     public LinuxAgentActions(String epIp, String epUserName, String epPassword) {
     	super(epIp, epUserName, epPassword);
+        scriptNamesMap = new HashMap<String, String>();
+        scriptNamesMap.put("LFM_Create_Dir", "linuxDirscript");
+        scriptNamesMap.put("LFM_Create_Log", "LinuxcreateLogs");
+        scriptNamesMap.put("key3", "value3");
     }
     
     public String getInstallationFile() {
@@ -164,14 +172,7 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
         }
 
     }
-	
-	public String getConfigPath() {
-	      
-	    if (connection.IsFileExists(configJsonLinuxPath_1_2)) {
-	        return configJsonLinuxPath_1_2;
-	    }
-	    return configJsonLinuxPath_1_1;
-	}
+
 	 
 	public String getDownloadFolder() {
         return PropertiesFile.readProperty("EPDownloadLinuxFolder");
@@ -271,4 +272,23 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
 		return "> ";
 	}
 
+    public String getScriptName(String scriptName) {
+        String nameExcell = scriptNamesMap.get(scriptName);
+        return nameExcell;
+    }
+
+    public String getConfigPath(boolean afterUpdate) {
+        String conf_path;
+        String new_or_stable;
+            if (!connection.IsFileExists(configJsonLinuxPath_1_2_new))
+                return configJsonLinuxPath_1_1;
+            if (afterUpdate) {
+                new_or_stable = connection.GetTextFromFile(configJsonLinuxPath_1_2_new);
+            }
+            else {
+                new_or_stable = connection.GetTextFromFile(configJsonLinuxPath_1_2_stable);
+            }
+            conf_path = configJsonLinuxPath_1_2_gen + new_or_stable + "/config.json";
+        return conf_path;
+    }
 }

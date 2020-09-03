@@ -57,7 +57,7 @@ public class SimulateLLMandVerify extends GenericTest {
 		    manager.SetCustomerConfiguration(confJson);
 		    agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
 		    agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-		    agent.compareConfigurationToEPConfiguration();
+		    agent.compareConfigurationToEPConfiguration(true);
 		
 		    agent.clearFile("/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log");
 		    agent.clearFile(LLM_Syslog_path);

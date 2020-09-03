@@ -164,7 +164,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
     }
 
-    public void compareConfigurationToEPConfiguration (){
+    public void compareConfigurationToEPConfiguration (boolean afterUpdate){
         String configJson=null;
         String sentConfiguration = null;
         try {
@@ -174,7 +174,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
             sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
 
             String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";
-            String configJsonRemotePath = getConfigPath();
+            String configJsonRemotePath = getConfigPath(afterUpdate);
             connection.CopyToLocal(configJsonRemotePath,localFilePath);
 
             FileInputStream inputStream = new FileInputStream(localFilePath);
@@ -319,7 +319,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         try {
 
             stopEPService(serviceStartStopTimeout);
-            String config_file = getConfigPath();
+            String config_file = getConfigPath(false);
             if (!connection.IsFileExists(config_file)) {
                 org.testng.Assert.fail("Could not find config.json; file was not found at: " + config_file);
             }
@@ -455,7 +455,6 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	public String getEpPassword() {
 		return epPassword;
 	}
-    
-    
+
 
 }

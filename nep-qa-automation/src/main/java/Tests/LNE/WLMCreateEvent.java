@@ -55,7 +55,7 @@ public class WLMCreateEvent extends GenericTest {
             agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 
             Thread.sleep(10000);
-            agent.compareConfigurationToEPConfiguration();
+            agent.compareConfigurationToEPConfiguration(true);
             manager.clearFile(syslogFileName);
             createEvents();
             Thread.sleep(schedule_report_timeout);
@@ -147,11 +147,11 @@ public class WLMCreateEvent extends GenericTest {
 
     public void createEvents() {
                String[][] obj = {
-                {"information", "111","Microsoft-Windows-Windows Defender/Operational", "Windows Defender","WLM test log included - win defender info"},
+/*                {"information", "111","Microsoft-Windows-Windows Defender/Operational", "Windows Defender","WLM test log included - win defender info"},
                 {"error", "555","Microsoft-Windows-Windows Defender/Operational", "Windows Defender","WLM test log included - win defender error" },
                 {"information", "110","Microsoft-Windows-Windows Defender/Operational", "WLM test log excluded - win defender info" },
                 {"error", "556","Microsoft-Windows-Windows Defender/Operational", "WLM test log excluded - win defender error" },
-                {"error", "111","application", "wlm_test_source","WLM test log included - application error"},
+     */           {"error", "111","application", "wlm_test_source","WLM test log included - application error"},
                 {"warning", "333","application", "wlm_test_source","WLM test log included - application warning" },
                 {"error", "110","application", "wlm_test_source","WLM test log excluded - application error" },
                 {"error", "111","application", "wlm_test_source2","WLM test log excluded - application error"},
@@ -159,11 +159,11 @@ public class WLMCreateEvent extends GenericTest {
                 {"information", "111","system", "TestSource2","WLM test log included - system information" },
                 {"error", "111","system", "TestSource2","WLM test log excluded - system error"},
                 {"information", "333","system", "TestSource1","WLM test log excluded - system information" },
-                {"error", "999","setup", "SetupTestSource","WLM test log included - setup error" },
+  /*              {"error", "999","setup", "SetupTestSource","WLM test log included - setup error" },
                 {"error", "1000","setup", "SetupTestSource","WLM test log included - setup error" },
                 {"warning", "999","setup", "SetupTestSource","WLM test log excluded - setup warning" },
                 {"error", "123","setup", "SetupTestSource1","WLM test log excluded - setup error" },
-               };
+       */        };
 
         for (int i = 0; i < obj.length; i++) {
             LogEntry lent = new LogEntry(obj[i][0],obj[i][1],obj[i][2],obj[i][3],obj[i][4],true);

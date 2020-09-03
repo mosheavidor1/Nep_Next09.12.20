@@ -30,7 +30,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     public void ChangeStandaloneEPconfigurationVerify()  {
         try {
         	//data.get("AnotherEP_Type")
-         //   agent2 = new AgentActionsInterface(data.get("AnotherEP_IP"), data.get("AnotherEP_User"), data.get("AnotherEP_Password"));
+         //   agent2 = new AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
         } catch (Exception e) {
             org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify: This test requires usage of more than 1 EP. Need to configure another EP" + "\n" + e.toString());
             org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify Failed");
@@ -102,7 +102,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
 
     String verifyPatternInConfig(BaseAgentActions agent, String pattern) {
         String result;
-        String conf_path = agent.getConfigPath();
+        String conf_path = agent.getConfigPath(true);
         result = agent.findInText(conf_path, pattern);
         return result;
     }

@@ -21,8 +21,7 @@ public interface AgentActionsInterface  {
     public String getInstallationFile();
     
     public String getRemoteCaFile();
-    
-    public String getConfigPath();
+
     
     public String getHostsFile();
     
@@ -37,6 +36,7 @@ public interface AgentActionsInterface  {
     public void writeAndExecute(String text );
     
     public boolean endpointServiceRunning();
-    
+    public String getScriptName(String scriptName);
+    public String getConfigPath(boolean afterUpdate);
 }
 

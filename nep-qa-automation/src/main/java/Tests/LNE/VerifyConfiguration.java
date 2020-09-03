@@ -26,7 +26,7 @@ public class VerifyConfiguration extends GenericTest {
         agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
         agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-        agent.compareConfigurationToEPConfiguration();
+        agent.compareConfigurationToEPConfiguration(false);
 
     }
 
