@@ -1,6 +1,7 @@
 package Tests.LNE;
 
-import Actions.AgentActions;
+import Actions.AgentActionsFactory;
+import Actions.BaseAgentActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;
@@ -14,7 +15,7 @@ import org.testng.annotations.Test;
 public class DeleteEndpoint extends GenericTest {
 
     private LNEActions manager;
-    private AgentActions endpoint1, endpoint2;
+    private BaseAgentActions agent1, agent2;
 
     @Factory(dataProvider = "getData")
     public DeleteEndpoint(Object dataToSet) {
@@ -22,25 +23,25 @@ public class DeleteEndpoint extends GenericTest {
     }
 
     @Test(groups = { "DeleteEndpoint" } )
-    public void DeleteEndpoint()  {
+    public void deleteEndpoint()  {
 
         try {
             JLog.logger.info("Starting DeleteEndpoint test ...");
 
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-            endpoint1 = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"), data.get("EP_Type_1"));
-            endpoint2 = new AgentActions(data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"), data.get("EP_Type_2"));
+            agent1 = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+            agent2 = AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
 
             // Set the endpoint name in the revoke configuration
-            String deleteStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("deleteStandAlone"), "epName", endpoint1.getEpName());
-            String originalEndpointId = endpoint1.GetEpIdFromDbJson();
+            String deleteStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("deleteStandAlone"), "epName", agent1.getEpName());
+            String originalEndpointId = agent1.getEpIdFromDbJson();
 
             manager.delete(deleteStandAloneWithEpNameConfigForEp1);
-            endpoint1.CheckDeleted(Integer.parseInt(general.get("EP Service Timeout")));
-            endpoint2.CheckNotDeleted();
+            agent1.checkDeleted(Integer.parseInt(general.get("EP Service Timeout")));
+            agent2.checkNotDeleted();
 
-            endpoint1.InstallEPIncludingRequisites(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
-            String newEndpointId = endpoint1.GetEpIdFromDbJson();
+            agent1.installEPIncludingRequisites(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
+            String newEndpointId = agent1.getEpIdFromDbJson();
 
             if(originalEndpointId.compareTo(newEndpointId) == 0){
                 org.testng.Assert.fail("RevokeEndpoint test failed, the unique id is the same after the installation.");
@@ -59,11 +60,11 @@ public class DeleteEndpoint extends GenericTest {
         if(manager!=null){
             manager.Close();
         }
-        if(endpoint1!=null){
-            endpoint1.Close();
+        if(agent1!=null){
+            agent1.close();
         }
-        if(endpoint2!=null){
-            endpoint2.Close();
+        if(agent2!=null){
+            agent2.close();
         }
     }
 

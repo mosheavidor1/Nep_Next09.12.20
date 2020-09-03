@@ -1,6 +1,8 @@
 package Tests.LNE;
 
-import Actions.AgentActions;
+import Actions.AgentActionsFactory;
+import Actions.AgentActionsInterface;
+import Actions.BaseAgentActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
@@ -16,16 +18,9 @@ import java.util.Vector;
 public class SimulateLFMandVerify extends GenericTest {
 
     private LNEActions manager;
-    private AgentActions endpoint;
-    static final String linuxLog = "/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log";
-    static final String WinLog = "C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log";
+    private BaseAgentActions agent;
+    
     static final String scp_path = "/work/services/siem/var/siem/data/nep/";
-    static final String command_winSIEM = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".zip was sent successfully\"";
-    static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
-    static final String command_winLCA = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".log-tag.log was sent\"";
-    static final String command_winLCA2 = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".txt-tag.log was sent\"";
-    static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".log-tag.log was sent\"";
-    static final String command_linuxLCA2 = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt-tag.log was sent\"";
     static final int schedule_report_timeout = 120000; //ms
 
     String right_result1, right_result2;
@@ -42,22 +37,14 @@ public class SimulateLFMandVerify extends GenericTest {
     right_result1 = data.get("ExpectedResult1");
     right_result2 = data.get("ExpectedResult2");
     JLog.logger.info("log_type: " + log_type + " Expected results: " + right_result1 + " and " + right_result2);
-    String commandSIEM;
-    String commandLCA,commandLCA2, logFile;
-    endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-    AgentActions.EP_OS epOs = data.get("EP_Type_1").contains("win") ? AgentActions.EP_OS.WINDOWS : AgentActions.EP_OS.LINUX;
-    if (epOs == AgentActions.EP_OS.WINDOWS) {
-        commandSIEM = command_winSIEM;
-        commandLCA = command_winLCA;
-        commandLCA2 = command_winLCA2;
-        logFile = WinLog;
-    } else {
-        commandSIEM = command_linuxSIEM;
-        commandLCA = command_linuxLCA;
-        commandLCA2 = command_linuxLCA2;
-        logFile = linuxLog;
-    }
-    prepareDirectories(epOs);
+    String commandSIEM = agent.getVerifySiemCommand();
+    String commandLCA = agent.getVerifyLcaCommand();
+    String commandLCA2 = agent.getVerifyLca2Command();
+    String logFile = agent.getAgentLogPath();
+    
+    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+    
+    prepareDirectories();
 
 
     manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
@@ -66,12 +53,12 @@ public class SimulateLFMandVerify extends GenericTest {
 
     manager.SetCustomerConfiguration(confJson);
     Thread.sleep(10000);
-    endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-    endpoint.clearFile(logFile, epOs);
-    endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-    endpoint.CompareConfigurationToEPConfiguration( epOs);
+    agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
+    agent.clearFile(logFile);
+    agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
+    agent.compareConfigurationToEPConfiguration();
     Thread.sleep(10000);
-    createLogs(epOs);
+    createLogs();
     Thread.sleep(schedule_report_timeout);
 
         boolean res = false;
@@ -92,31 +79,31 @@ public class SimulateLFMandVerify extends GenericTest {
      }
     }
 
-     private void prepareDirectories(AgentActions.EP_OS os) {
-         String script;
-         if (os == AgentActions.EP_OS.WINDOWS)
+     private void prepareDirectories() {
+    /*     String script;
+         if (os == WINDOWS)
              script = data.get("WinDirscript");
          else
              script = data.get("linuxDirscript"); //TBD
-         endpoint.writeAndExecute(script, os);
+         agent.writeAndExecute(script, os);*/
      }
 
 
-     private void createLogs(AgentActions.EP_OS os) {
-         String script;
-         if (os == AgentActions.EP_OS.WINDOWS)
+     private void createLogs() {
+      /*   String script;
+         if (os == WINDOWS)
                 script = data.get("WIncreateLogs");
          else
                 script = data.get("LinuxcreateLogs"); //TBD
 
-         endpoint.writeAndExecute(script, os);
+         agent.writeAndExecute(script);*/
      }
 
     public boolean handleSIEM(String command) {
         // Here we have 2 zip files sent to LNE
         boolean result = false;
         String patt = ".zip was sent successfully";
-        String res = endpoint.findPattern(command, patt);
+        String res = agent.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -160,7 +147,7 @@ public class SimulateLFMandVerify extends GenericTest {
         boolean result = false;
 
         String patt = ".log-tag.log was sent successfully";
-        String res = endpoint.findPattern(command1, patt);
+        String res = agent.findPattern(command1, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -180,7 +167,7 @@ public class SimulateLFMandVerify extends GenericTest {
         // now searching for .txt.tag-log
         String command = command2;
         patt = ".txt-tag.log was sent successfully";
-        res = endpoint.findPattern(command, patt);
+        res = agent.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -201,8 +188,8 @@ public class SimulateLFMandVerify extends GenericTest {
     @AfterMethod
     public void Close(){
         JLog.logger.info("Closing...");
-        if (endpoint!=null) {
-            endpoint.Close();
+        if (agent!=null) {
+            agent.close();
         }
         if(manager!=null){
             manager.Close();

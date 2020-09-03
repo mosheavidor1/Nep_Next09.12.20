@@ -1,6 +1,7 @@
 package Tests.LNE;
 
-import Actions.AgentActions;
+import Actions.AgentActionsFactory;
+import Actions.BaseAgentActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
@@ -15,7 +16,7 @@ import java.util.Vector;
 public class SimulateLLMandVerify extends GenericTest {
 
     private LNEActions manager;
-    private AgentActions endpoint;
+    private BaseAgentActions agent;
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
@@ -26,6 +27,7 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent %s events.\"";
     static final int schedule_report_timeout = 120000; //ms
     String right_result;
+    
     @Factory(dataProvider = "getData")
     public SimulateLLMandVerify(Object dataToSet) {
         super(dataToSet);
@@ -33,55 +35,57 @@ public class SimulateLLMandVerify extends GenericTest {
 
     @Test()
     public void SimulateLLMandVerifyDelivery()  {
-    try {
-    JLog.logger.info("Opening...");
-    String log_type = data.get("Log_Type");
-    right_result = data.get("ExpectedResult");
-    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + right_result);
-    String commandSIEM;
-    String commandLCA;
-    endpoint = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-    AgentActions.EP_OS epOs = AgentActions.EP_OS.LINUX;
+    	try {
+    		if (!data.get("EP_Type_1").equals("lnx")) {
+    	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
+    	    	return;
+    	    }
+    		
+		    String log_type = data.get("Log_Type");
+		    right_result = data.get("ExpectedResult");
+		    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + right_result);
+		    
+		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+		
+		    String commandSIEM = command_linuxSIEM;
+		    String commandLCA = command_linuxLCA;
+		
+		    manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+		
+		    String confJson = data.get("Settings Json");
+		
+		    manager.SetCustomerConfiguration(confJson);
+		    agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
+		    agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
+		    agent.compareConfigurationToEPConfiguration();
+		
+		    agent.clearFile("/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log");
+		    agent.clearFile(LLM_Syslog_path);
+		    Thread.sleep(10000);
+		    createLLM_input();
+		    if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {
+		        JLog.logger.info("pattern " + EP_Syslog_pattern + " was not found in " + LLM_Syslog_path);
+		        org.testng.Assert.fail("Test LLM for " + log_type + "failed");
+		    }
+		    Thread.sleep(schedule_report_timeout);
+	
+	        boolean res = false;
+	
+	        if (log_type.equalsIgnoreCase( "SIEM")) {
+	            res = handleSIEM(commandSIEM);
+	        } else if (log_type.equalsIgnoreCase("LCA")) {
+	            res = handleLCA(commandLCA);
+	        } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
+	            String command = String.format(command_linuxLCA_SYSLOG, right_result);
+	            res = handleLCA_SYSLOG(command);
+	        }else {
+	            org.testng.Assert.fail("Unknown server log_type: " +  log_type);
+	        }
+	
+	        if (!res)
+	            org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: ");
 
-    commandSIEM = command_linuxSIEM;
-    commandLCA = command_linuxLCA;
-
-    manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-
-    String confJson = data.get("Settings Json");
-
-    manager.SetCustomerConfiguration(confJson);
-    endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-    endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), epOs);
-    endpoint.CompareConfigurationToEPConfiguration(epOs);
-
-    endpoint.clearFile("/opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log", epOs);
-    endpoint.clearFile(LLM_Syslog_path, epOs);
-    Thread.sleep(10000);
-    createLLM_input();
-    if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {
-        JLog.logger.info("pattern " + EP_Syslog_pattern + " was not found in " + LLM_Syslog_path);
-        org.testng.Assert.fail("Test LLM for " + log_type + "failed");
-    }
-    Thread.sleep(schedule_report_timeout);
-
-        boolean res = false;
-
-        if (log_type.equalsIgnoreCase( "SIEM")) {
-            res = handleSIEM(commandSIEM);
-        } else if (log_type.equalsIgnoreCase("LCA")) {
-            res = handleLCA(commandLCA);
-        } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
-            String command = String.format(command_linuxLCA_SYSLOG, right_result);
-            res = handleLCA_SYSLOG(command);
-        }else {
-            org.testng.Assert.fail("Unknown server log_type: " +  log_type);
-        }
-
-        if (!res)
-            org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: ");
-
-    } catch (Exception e) {
+    	} catch (Exception e) {
         org.testng.Assert.fail("SimulateLLMandVerifyDelivery failed" + "\n" + e.toString());
      }
     }
@@ -89,14 +93,14 @@ public class SimulateLLMandVerify extends GenericTest {
      private void createLLM_input() {
          String script;
          script = data.get("LLMScript");
-         endpoint.writeAndExecute(script, AgentActions.EP_OS.LINUX);
+         agent.writeAndExecute(script);
      }
 
     public boolean handleSIEM(String command) {
         // Here we have 2 zip files sent to LNE
         boolean result = false;
         String patt = ".zip was sent successfully";
-        String res = endpoint.findPattern(command, patt);
+        String res = agent.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -137,7 +141,7 @@ public class SimulateLLMandVerify extends GenericTest {
 
     private boolean checkEPSyslog(String filename, String pattern) {
         boolean result = false;
-        String res = endpoint.findInText(filename, pattern);
+        String res = agent.findInText(filename, pattern);
         if (res != null) {
             int num_of_patterns = res.split(pattern,-1).length - 1;
             JLog.logger.info("Found " + num_of_patterns + " patterns: " + pattern);
@@ -152,7 +156,7 @@ public class SimulateLLMandVerify extends GenericTest {
         boolean result = false;
 
         String patt = ".txt was sent successfully";
-        String res = endpoint.findPattern(command, patt);
+        String res = agent.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -174,7 +178,7 @@ public class SimulateLLMandVerify extends GenericTest {
         boolean result = true;
 
         String patt = String.format(EP_LCA_SYSLOG_log_pattern, right_result);
-        String res = endpoint.findPattern(command, patt);
+        String res = agent.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -193,8 +197,8 @@ public class SimulateLLMandVerify extends GenericTest {
     @AfterMethod
     public void Close(){
         JLog.logger.info("Closing...");
-        if (endpoint!=null) {
-            endpoint.Close();
+        if (agent!=null) {
+            agent.close();
         }
         if(manager!=null){
             manager.Close();

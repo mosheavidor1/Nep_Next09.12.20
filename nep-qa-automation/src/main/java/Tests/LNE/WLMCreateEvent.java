@@ -1,30 +1,22 @@
 package Tests.LNE;
 
-import Actions.AgentActions;
-import Actions.BrowserActions;
+import Actions.AgentActionsFactory;
+import Actions.BaseAgentActions;
 import Actions.LNEActions;
-import Actions.BrowserActions.*;
-import Actions.ManagerActions;
 import Tests.GenericTest;
 import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
-import Utils.Remote.SSHManager;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.IOException;
-
-import static Actions.ManagerActions.execCmd;
 
 
 public class WLMCreateEvent extends GenericTest {
 
     private LNEActions manager;
-    private AgentActions endpoint;
-    private BrowserActions action;
+    private BaseAgentActions agent;
 
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
@@ -41,7 +33,11 @@ public class WLMCreateEvent extends GenericTest {
     @Test()
     public void WLMCreateEventAndVerify()  {
         try {
-            String ret;
+            
+            if (!data.get("EP_Type_1").equals("win")) {
+    	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
+    	    	return;
+    	    }
 
             JLog.logger.info("Opening...");
             String log_type = data.get("Log_Type");
@@ -50,15 +46,16 @@ public class WLMCreateEvent extends GenericTest {
             syslogFileName = syslog_path + data.get("EP_HostName_1") + "/user.log";
 
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-            endpoint = new AgentActions(data.get("EP_HostName_1"),data.get("EP_UserName_1"), data.get("EP_Password_1"));
+            agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+            
             String confJson =data.get("Settings Json");
             manager.SetCustomerConfiguration(confJson);
-            endpoint.StopEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
-            endpoint.clearFile("C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log", AgentActions.EP_OS.WINDOWS);
-            endpoint.StartEPService(Integer.parseInt(general.get("EP Service Timeout")), AgentActions.EP_OS.WINDOWS);
+            agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
+            agent.clearFile(agent.getAgentLogPath());
+            agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 
             Thread.sleep(10000);
-            endpoint.CompareConfigurationToEPConfiguration( AgentActions.EP_OS.WINDOWS);
+            agent.compareConfigurationToEPConfiguration();
             manager.clearFile(syslogFileName);
             createEvents();
             Thread.sleep(schedule_report_timeout);
@@ -84,9 +81,9 @@ public class WLMCreateEvent extends GenericTest {
     }
 
     public boolean handleSIEM() {
-        String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".zip was sent successfully\"";
+        String command = agent.getVerifySiemCommand();
         String patt = ".zip was sent successfully";
-        String res = endpoint.findPattern(command, patt);
+        String res = agent.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -109,9 +106,9 @@ public class WLMCreateEvent extends GenericTest {
     }
 
     public boolean handleLCA() {
-        String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \".txt was sent successfully\"";
+        String command = agent.getVerifyLcaCommand();
         String patt = ".txt was sent successfully";
-        String res = endpoint.findPattern(command, patt);
+        String res = agent.findPattern(command, patt);
         JLog.logger.info("res: " + res);
         if (res == null)
             return false;
@@ -133,9 +130,9 @@ public class WLMCreateEvent extends GenericTest {
     }
 
     public boolean handleLCA_SYSLOG() {
-        String command = "type C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log | find /n \"SecureSyslogCollector: sent " + right_result + " events\"";
+        String command = "type " + agent.getAgentLogPath() + " | find /n \"SecureSyslogCollector: sent " + right_result + " events\"";
         String patt = "SecureSyslogCollector: sent " + right_result + " events";
-        String res = endpoint.findPattern(command, patt);
+        String res = agent.findPattern(command, patt);
         if (res == null)
             return false;
 
@@ -170,15 +167,15 @@ public class WLMCreateEvent extends GenericTest {
 
         for (int i = 0; i < obj.length; i++) {
             LogEntry lent = new LogEntry(obj[i][0],obj[i][1],obj[i][2],obj[i][3],obj[i][4],true);
-            endpoint.WriteEvent(lent);
+            agent.writeEvent(lent);
         }
     }
 
     @AfterMethod
     public void Close(){
         JLog.logger.info("Closing...");
-        if (endpoint!=null) {
-            endpoint.Close();
+        if (agent!=null) {
+            agent.close();
         }
         if(manager!=null){
             manager.Close();
