@@ -29,8 +29,8 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     @Test()
     public void ChangeStandaloneEPconfigurationVerify()  {
         try {
-        	//data.get("AnotherEP_Type")
-         //   agent2 = new AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
+
+         agent2 =  AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
         } catch (Exception e) {
             org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify: This test requires usage of more than 1 EP. Need to configure another EP" + "\n" + e.toString());
             org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify Failed");
