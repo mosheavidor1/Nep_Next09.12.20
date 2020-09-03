@@ -1,6 +1,8 @@
 package Tests.Environments;
 
-import Actions.AgentActions;
+import Actions.AgentActionsFactory;
+import Actions.AgentActionsInterface;
+import Actions.BaseAgentActions;
 import Actions.BrowserActions;
 import Tests.GenericTest;
 import Tests.RecordedTest;
@@ -16,7 +18,7 @@ import java.io.IOException;
 
 public class ClientLogToPortalTest extends RecordedTest {
     private BrowserActions browser;
-    private AgentActions endpoint;
+    private BaseAgentActions agent;
 
     @Factory(dataProvider = "getData")
     public ClientLogToPortalTest(Object dataToSet) {
@@ -28,11 +30,11 @@ public class ClientLogToPortalTest extends RecordedTest {
     @Test( groups = { "logs" } )
     public void SendLogsAndVerify () {
         JLog.logger.debug("Test Started. log entry to appear at portal timeout: " + data.get("Log To Appear Timeout"));
-        endpoint = new AgentActions(data.get("EP_HostName_1"),data.get("EP_UserName_1"), data.get("EP_Password_1"));
-        endpoint.ChangeReportInterval(data.get("Report Interval") , 120);
+        agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+        agent.changeReportInterval(data.get("Report Interval") , 120);
 
         LogEntry entry = new LogEntry(data.get("Event Type"),data.get("Event ID"),data.get("Event Log"),data.get("Event Source"),data.get("Event Description"),data.get("Add time stamp to description"));
-        endpoint.WriteEvent(entry);
+        agent.writeEvent(entry);
 
         browser.LaunchApplication(general.get("Browser"));
         browser.SetApplicationUrl(data.get("Fusion Link"));
@@ -52,8 +54,8 @@ public class ClientLogToPortalTest extends RecordedTest {
         if (browser != null) {
             browser.CloseApplication();
         }
-        if (endpoint != null) {
-            endpoint.Close();
+        if (agent != null) {
+            agent.close();
         }
     }
 

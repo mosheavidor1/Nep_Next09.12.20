@@ -1,6 +1,7 @@
 package Tests.LNE;
 
-import Actions.AgentActions;
+import Actions.AgentActionsFactory;
+import Actions.BaseAgentActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;
@@ -10,14 +11,12 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 
 public class RevokeEndpoint extends GenericTest {
 
     private LNEActions manager;
-    private AgentActions endpoint1, endpoint2;
+    private BaseAgentActions agent1, agent2;
 
     @Factory(dataProvider = "getData")
     public RevokeEndpoint(Object dataToSet) {
@@ -25,21 +24,21 @@ public class RevokeEndpoint extends GenericTest {
     }
 
     @Test(groups = { "RevokeEndpoint" } )
-    public void RevokeEndpoint()  {
+    public void revokeEndpoint()  {
 
         try {
             JLog.logger.info("Starting RevokeEndpoint test ...");
 
             manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-            endpoint1 = new AgentActions(data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"), data.get("EP_Type_1"));
-            endpoint2 = new AgentActions(data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"), data.get("EP_Type_2"));
+            agent1 =  AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+            agent2 =  AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
 
             // Set the endpoint name in the revoke configuration
-            String revokeStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("revokeStandAlone"), "epName", endpoint1.getEpName());
+            String revokeStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("revokeStandAlone"), "epName", agent1.getEpName());
 
             manager.revoke(revokeStandAloneWithEpNameConfigForEp1);
-            endpoint1.CheckRevoked(Integer.parseInt(general.get("EP Service Timeout")));
-            endpoint2.CheckNotRevoked();
+            agent1.checkRevoked(Integer.parseInt(general.get("EP Service Timeout")));
+            agent2.checkNotRevoked();
 
             JLog.logger.info("RevokeEndpoint test completed.");
 
@@ -54,11 +53,11 @@ public class RevokeEndpoint extends GenericTest {
         if(manager!=null){
             manager.Close();
         }
-        if(endpoint1!=null){
-            endpoint1.Close();
+        if(agent1!=null){
+            agent1.close();
         }
-        if(endpoint2!=null){
-            endpoint2.Close();
+        if(agent2!=null){
+            agent2.close();
         }
     }
 
