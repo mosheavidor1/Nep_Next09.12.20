@@ -14,22 +14,22 @@ node('WinProdStat_10_85_24_247') {
             REGION: ${REGION}
             """
            // deleteDir()
-        }            
-        stage('Get sources from BitBucket') {			
+        }
+        stage('Get sources from BitBucket') {
 			git branch: "master", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 		}
 
         stage("download jar from nexus") {
             powershell """
 				Get-ChildItem env:
-				
+
 				echo "From: ${MODULE_ARTIFACT_SRC}"
-				echo "To: 	${MODULE_ARTIFACT_DST}" 
-	
+				echo "To: 	${MODULE_ARTIFACT_DST}"
+
 				##### Download artifact from Nexus
 				echo "curl -o ${MODULE_ARTIFACT_DST} ${MODULE_ARTIFACT_SRC}"
 				curl -o "${MODULE_ARTIFACT_DST}" "$MODULE_ARTIFACT_SRC"
-				
+
 				if ( -Not (Test-Path "${MODULE_ARTIFACT_DST}")) {
 					Write-host "${MODULE_ARTIFACT_DST} file can't be downloaded"
 					exit 1
@@ -37,15 +37,15 @@ node('WinProdStat_10_85_24_247') {
 			"""
         }
 
-        stage("Check prod status") {    
+        stage("Check prod status") {
             bat """
-				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${REGION}" 
+				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${REGION}"
 				if ERRORLEVEL 1  set test_result=false
-				
+
 				xcopy ${WORKSPACE}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K /Y
 				mkdir ${WORKSPACE}\\test-output\\tmp\\pics
 				xcopy ${WORKSPACE}\\test-output\\capture\\*.png ${WORKSPACE}\\test-output\\tmp\\pics\\  /O /X /E /H /K /Y
-				
+
 				if "%test_result%" == "false" EXIT 1
 			"""
         }
@@ -53,7 +53,7 @@ node('WinProdStat_10_85_24_247') {
         stage('Send Email') {
 			sendEmail("Success")
         }
-        
+
     } //global try
     catch (exc) {
         currentBuild.result = "FAILURE"
@@ -67,7 +67,7 @@ node('WinProdStat_10_85_24_247') {
 }
 
 def sendEmail(status) {
-	emailext attachmentsPattern: "test-output/emailable-report.html, test-output/tmp/**/*.png", 
+	emailext attachmentsPattern: "test-output/emailable-report.html, test-output/tmp/**/*.png",
 		body: '${SCRIPT, template="groovy-html.template"}, ${FILE,path="test-output/emailable-report.html"}',
 		subject: "${env.JOB_NAME}- TEST # ${DISPLAY_VERSION} - " + status,
 		mimeType: 'text/html',
