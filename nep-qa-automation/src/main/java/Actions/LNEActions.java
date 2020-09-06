@@ -295,16 +295,17 @@ public class LNEActions extends ManagerActions  {
                 List<String> list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
-                        String currentInstaller = clientFolder + "/" + list.get(i);
-                        connection.DeleteFile(currentInstaller);
-                        break;
+                    if ( !list.get(i).contains(backupIdentifier)) {
+                        if (list.get(i).contains(windowsInstallationFile) || list.get(i).contains(linuxInstallationFile) || list.get(i).contains(linuxSha256InstallationFile) ) {
+                            String currentInstaller = clientFolder + "/" + list.get(i);
+                            connection.DeleteFile(currentInstaller);
+                        }
                     }
                 }
             }
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not delete current installer contains: " + windowsInstallationFile + " for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
+            org.testng.Assert.fail("Could not delete current installers for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString());
         }
     }
 
