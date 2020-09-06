@@ -363,7 +363,7 @@ public class BrowserActions extends ManagerActions {
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
             JLog.logger.debug("customerNameBy - Before wait to be clickable ");
-            //up.WaitUntilObjectClickable(up.customerNameBy);
+            up.WaitUntilObjectClickable(up.customerNameBy);
             JLog.logger.debug("customerNameBy - After wait to be clickable ");
             up.customerName.click();
             JLog.logger.debug("customerName - After click ");
