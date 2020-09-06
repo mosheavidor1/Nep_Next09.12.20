@@ -33,7 +33,7 @@ public class UpperMenu extends GenericPage{
 	public WebElement searchText_element;
 
 	//private static final String customerNameCSS=".customer-name";
-	private static final String customerNameXpath="//twa-select-item";
+	private static final String customerNameXpath="//twa-select-item[1]//org-selector-renderer";
 	public static final By customerNameBy = By.xpath(customerNameXpath);
 	@FindBy(how = How.XPATH, using = customerNameXpath)
 	public WebElement customerName;
