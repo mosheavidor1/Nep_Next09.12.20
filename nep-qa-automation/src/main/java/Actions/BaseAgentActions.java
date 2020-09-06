@@ -370,7 +370,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
     public void clearFile(String fileName) {
         String ClearCmd = getClearFileCommand();
-        connection.Execute(ClearCmd);
+        connection.Execute(ClearCmd + fileName);
     }
 
     public String getEPBinaryVersion() {

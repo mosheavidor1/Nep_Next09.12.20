@@ -342,24 +342,32 @@ public class BrowserActions extends ManagerActions {
             up.WaitUntilObjectClickable(up.customerSelectorBy);
             up.customerSelector_element.click();
 
+            JLog.logger.debug("customerSelector_element clicked");
+
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
             up.WaitUntilObjectClickable(up.searchTextBy);
             up.searchText_element.clear();
+            JLog.logger.debug("searchText_element cleared");
 
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
             up.WaitUntilObjectClickable(up.searchTextBy);
 
             up.searchText_element.sendKeys(customerName);
+            JLog.logger.debug("searchText_element keys sent: " + customerName);
 
             Thread.sleep(2000); // As there are failures with this click - after several tries got to rock bottom using sleep.
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
             up.WaitUntilObjectDisappear(up.spinnerBy);
             up.WaitUntilPageLoad();
+            JLog.logger.debug("customerNameBy - Before wait to be clickable ");
             up.WaitUntilObjectClickable(up.customerNameBy);
+            JLog.logger.debug("customerNameBy - After wait to be clickable ");
             up.customerName.click();
+            JLog.logger.debug("customerName - After click ");
+
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not select customer at portal. Customer: " + customerName + "\n" + e.toString());
