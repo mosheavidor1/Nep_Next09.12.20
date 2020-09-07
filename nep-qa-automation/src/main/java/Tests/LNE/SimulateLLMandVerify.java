@@ -27,6 +27,7 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent %s events.\"";
     static final int schedule_report_timeout = 120000; //ms
     String right_result;
+    String LNEtxtFile;
     
     @Factory(dataProvider = "getData")
     public SimulateLLMandVerify(Object dataToSet) {
@@ -40,11 +41,15 @@ public class SimulateLLMandVerify extends GenericTest {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
     	    	return;
     	    }
-    		
+
 		    String log_type = data.get("Log_Type");
-		    right_result = data.get("ExpectedResult");
+ /*          if ((log_type.equalsIgnoreCase( "LCA_SYSLOG")) ||  (log_type.equalsIgnoreCase("LCA"))) {
+                JLog.logger.info("Not doing log_type: " + log_type);
+                return;
+            }
+	*/	    right_result = data.get("ExpectedResult");
 		    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + right_result);
-		    
+            LNEtxtFile = syslog_path + data.get("EP_HostName_1") + "/local0.log";
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		
 		    String commandSIEM = command_linuxSIEM;
@@ -56,12 +61,15 @@ public class SimulateLLMandVerify extends GenericTest {
 		
 		    manager.SetCustomerConfiguration(confJson);
 		    agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
+            Thread.sleep(5000);
+            agent.clearFile(LLM_Syslog_path);
+            Thread.sleep(5000);
 		    agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 		    agent.compareConfigurationToEPConfiguration(true);
-		
-		    agent.clearFile(agent.getAgentLogPath());
-		    agent.clearFile(LLM_Syslog_path);
-		    Thread.sleep(10000);
+		    Thread.sleep(30000);
+            agent.clearFile(agent.getAgentLogPath());
+
+            manager.clearFile(LNEtxtFile);
 		    createLLM_input();
 		    if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {
 		        JLog.logger.info("pattern " + EP_Syslog_pattern + " was not found in " + LLM_Syslog_path);
@@ -186,7 +194,7 @@ public class SimulateLLMandVerify extends GenericTest {
         String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/local0.log";
         res = manager.numLinesinFile(txtFileMane, EP_Syslog_pattern);
         JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains(patt)))
+        if ((null != res) && (res.contains(right_result)))
             result = true;
         else {
             result = false;
