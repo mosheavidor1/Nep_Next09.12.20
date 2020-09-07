@@ -61,10 +61,10 @@ node('nep-build-centos7') {
                 try {
                     switch (LNE_INSTALL_TYPE) {
                     case "skip" :
-                        echo "skip LNE installation part"
+                        echo "skip LNE setup part"
                         break
                     case "install" :
-                        echo "external LNE installation part"
+                        echo "full LNE reinstall"
 
                         /*********
                          call LNE install :
@@ -452,7 +452,7 @@ def prepareMailBody() {
                     <td><b>LNE</b></td>
                 </tr>
                 <tr>
-                    <td>Install LNE:</td>
+                    <td>Setup LNE:</td>
                     <td><b>${RES.INSTALL}</b></td>
                 </tr>
                 <tr>
@@ -460,7 +460,7 @@ def prepareMailBody() {
                     <td><b>${RES.LNE_TESTS}</b></td>
                 </tr>
                 <tr>
-                    <td>Win agent smoke:</td>
+                    <td>Agents smoke:</td>
                     <td><b> ${RES.WIN_TESTS} </b></td>
                 </tr>
                 <tr>
