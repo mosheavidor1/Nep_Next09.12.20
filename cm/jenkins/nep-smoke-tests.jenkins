@@ -57,7 +57,7 @@ node('nep-build-centos7') {
                  """
             }
 
-            stage("LNE install part") {
+            stage("LNE setup") {
                 try {
                     switch (LNE_INSTALL_TYPE) {
                     case "skip" :
@@ -103,6 +103,38 @@ node('nep-build-centos7') {
 
                     case "upgrade" :
                             echo "upgrade LNE"
+                            
+                            if (DS_VERSION.isEmpty() || DS_MGMT_VERSION.isEmpty() || IS_VERSION.isEmpty() ) {
+                                build job: 'tools-tst-bin-update-services',
+                                       parameters: [
+                                           //string(name: 'IS_VERSION', value: ''),
+                                           //string(name: 'DS_VERSION', value: ''),
+                                           //string(name: 'DS_MGMT_VERSION', value: ''), 
+                                           //string(name: 'NEPA_CENTCOM_CLIENT_VERSION', value: ''), 
+                                           //string(name: 'DUMMY_PORTAL_SERVICES_VERSION', value: ''), 
+                                           string(name: 'SERVICE', value: 'is,ds,ds-mgmt,dummy-portal-services,nepa-centcom-client'), 
+                                           string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
+                                           string(name: 'HOST_IP', value: "${HOST_IP}" ),
+                                           //string(name: 'USERNAME', value: ''), 
+                                           //password(name: 'PASSWORD', description: '', value: '')
+                                           ]
+                            }
+                            else {
+                                build job: 'tools-tst-bin-update-services',
+                                       parameters: [
+                                           string(name: 'DS_VERSION', value: "${DS_VERSION}"),
+                                           string(name: 'DS_MGMT_VERSION', value: "${DS_MGMT_VERSION}"),
+                                           string(name: 'IS_VERSION', value: "${IS_VERSION}"),
+                                           //string(name: 'NEPA_CENTCOM_CLIENT_VERSION', value: ''), 
+                                           //string(name: 'DUMMY_PORTAL_SERVICES_VERSION', value: ''), 
+                                           string(name: 'SERVICE', value: 'is,ds,ds-mgmt,dummy-portal-services,nepa-centcom-client'), 
+                                           string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
+                                           string(name: 'HOST_IP', value: "${HOST_IP}" ),
+                                           //string(name: 'USERNAME', value: ''), 
+                                           //password(name: 'PASSWORD', description: '', value: '')
+                                           ]
+
+                            }
                             RES.INSTALL = 'OK'
                             break;
                     }
