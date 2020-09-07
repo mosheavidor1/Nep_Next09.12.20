@@ -3,7 +3,9 @@ package Tests.LNE;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;
+import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -38,4 +40,13 @@ public class VerifyFileCabinetOldInstallers extends GenericTest {
         manager.DownloadInstallerWithoutAdditions(customerId,Integer.parseInt(data.get("Download timeout")));
 
     }
+
+    @AfterMethod
+    public void Close(){
+        JLog.logger.info("Closing...");
+        if(manager!=null){
+            manager.Close();
+        }
+    }
+
 }
