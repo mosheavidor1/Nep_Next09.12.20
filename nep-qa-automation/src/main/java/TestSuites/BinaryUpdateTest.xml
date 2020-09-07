@@ -12,7 +12,7 @@
         </groups>
 
         <classes>
-            <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>
+<!--            <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>-->
             <class name = "Tests.LNE.BinaryUpdate" />
         </classes>
     </test>

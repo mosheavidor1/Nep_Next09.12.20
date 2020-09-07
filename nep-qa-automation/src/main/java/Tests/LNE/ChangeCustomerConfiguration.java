@@ -21,7 +21,7 @@ public class ChangeCustomerConfiguration extends GenericTest {
     @Test(groups = { "ChangeConfiguration" } )
     public void ChangeCustomerConfiguration()  {
 
-        JLog.logger.info("Opening...");
+        JLog.logger.info("Starting ChangeCustomerConfiguration...");
 
         manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         String confJson =data.get("Settings Json");

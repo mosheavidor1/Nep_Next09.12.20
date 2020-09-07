@@ -64,17 +64,28 @@ public class SSHManager  {
         try {
             channelExecute = (ChannelExec)jschSession.openChannel("exec");
             InputStream in = channelExecute.getInputStream();
+            InputStream err = channelExecute.getErrStream();
             channelExecute.setCommand(command);
             channelExecute.connect();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String response ="";
+            String errResponse ="";
             String line="";
 
             while ((line = reader.readLine()) != null) {
                 response += "\n" + line;
             }
+
             System.out.println(response);
+
+            BufferedReader errReader = new BufferedReader(new InputStreamReader(err));
+            while ((line = errReader.readLine()) != null) {
+                errResponse += "\n" + line;
+            }
+            if(!errResponse.isEmpty()) {
+                System.out.println("Error response: " + errResponse);
+            }
 
             System.out.println("Execute " + command + " done!");
             return response;
