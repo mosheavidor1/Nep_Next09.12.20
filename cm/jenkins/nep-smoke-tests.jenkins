@@ -32,6 +32,7 @@ node('nep-build-centos7') {
                 ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
                 VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
                 LIN_AGENT_IP = (NEP_BRANCH == 'master') ? '10.85.24.204' : '10.85.24.202'
+                S3_BUCKET_ID = VM_NAME.toLowerCase()
 
                 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
                 deleteDir()
@@ -153,7 +154,30 @@ node('nep-build-centos7') {
                 }
 
             } // stage
+            stage('Create S3 Bucket') {
+                if ( SKIP_TESTS_WIN.contains('true') ) {
+                    echo "DEBUG: skip stage Windows side tests"
+                    return
+                }
 
+                echo "S3 Bucket"
+                build job: 'tools-tst-bin-s3tools',
+                                  parameters:  [
+                                  string(name: 'BUCKET_ID', value: "${S3_BUCKET_ID}"),
+	                              string(name: 'BUCKET_REGION', value: 'Europe (Ireland)'),
+                                  string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
+                                  string(name: 'HOST_IP', value: "${HOST_IP}" ),
+                                  string(name: 'S3_OPERATIONS', value: 'create_bucket'),
+                                  string(name: 'NEP_PLATFORM', value: 'wnd')
+                                  //---- omit default parameters ------------------
+                                  // string(name: 'AWS_ACCESS_KEY_ID', value: "${XXX}"),
+                                  // string(name: 'AWS_SECRET_ACCESS_KEY', value: "${XXX}"),
+                                  // string(name: 'USERNAME', value: "${XXX}"),
+                                  // string(name: 'PASSWORD', value: "${XXX}"),
+                                  // string(name: 'NEP_UPDATE_VERSION', value: "${XXX}")
+                                  // --------------------------------------------------
+                                  ]
+            }
             stage('Run EndPoint tests') {
                 timeout(time: 20, unit: 'MINUTES') {
 
