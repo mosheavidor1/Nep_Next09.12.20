@@ -29,6 +29,11 @@ public class LNEActions extends ManagerActions  {
     public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
     public static final String caCertificateFileName = "cacertificate.txt";
 
+    public LNEActions ()
+    {
+        LNE_IP = PropertiesFile.readProperty("ClusterToTest");
+        SetLNEBaseURI(LNE_IP);
+    }
 
     private String LNE_IP, userNameLNE, passwordLNE;
     int LNE_SSH_port;
@@ -106,13 +111,6 @@ public class LNEActions extends ManagerActions  {
         if (connection!=null) {
             connection.Close();
         }
-    }
-
-
-    public LNEActions ()
-    {
-        LNE_IP = PropertiesFile.readProperty("ClusterToTest");
-        SetLNEBaseURI(LNE_IP);
     }
 
     public void SetLNEBaseURI(String LNE_IP){
