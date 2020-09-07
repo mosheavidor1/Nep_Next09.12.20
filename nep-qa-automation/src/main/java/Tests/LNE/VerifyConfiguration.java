@@ -20,8 +20,8 @@ public class VerifyConfiguration extends GenericTest {
 
     @Test(groups = { "VerifyConfiguration" } )
     public void VerifyEndpointConfiguration()  {
-
-        JLog.logger.info("Opening...");
+    	
+    	JLog.logger.info("Starting test VerifyEndpointConfiguration");
 
         agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
@@ -32,7 +32,7 @@ public class VerifyConfiguration extends GenericTest {
 
     @AfterMethod
     public void Close(){
-        JLog.logger.info("Closing...");
+        
         if (agent!=null) {
             agent.close();
         }

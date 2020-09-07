@@ -54,3 +54,5 @@ target/
 *.avi
 *.png
 /nep-qa-automation/test-output/*
+/nep-qa-automation/.settings/org.eclipse.core.resources.prefs
+/nep-qa-automation/.settings/org.eclipse.jdt.core.prefs
