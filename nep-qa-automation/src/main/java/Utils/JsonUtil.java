@@ -30,7 +30,7 @@ public class JsonUtil {
 //        }
 //    }
 
-    public static String ChangeTagConfiguration(String configurationJson, Map<String,Object> tagsNewValues) {
+    public static String ChangeTagsConfiguration(String configurationJson, Map<String,Object> tagsNewValues) {
         try {
             JSONObject json = new JSONObject(configurationJson);
             for(String tag: tagsNewValues.keySet()) {
