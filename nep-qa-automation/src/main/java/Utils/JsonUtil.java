@@ -19,6 +19,18 @@ public class JsonUtil {
         }
     }
 
+    public static String GetCheckUpdatesAction (String checkUpdatesResponse) {
+        try {
+            JSONObject json = new JSONObject(checkUpdatesResponse);
+            String action = json.getString("action");
+            return action;
+        }
+        catch (Exception e){
+            org.testng.Assert.fail("Could not find action from check updates response. " + "\n" + e.toString());
+            return "";
+        }
+    }
+
 //    public static String ChangeTagConfiguration(String configurationJson, String tag, String nameToSet) {
 //        try {
 //            JSONObject json = new JSONObject(configurationJson);
