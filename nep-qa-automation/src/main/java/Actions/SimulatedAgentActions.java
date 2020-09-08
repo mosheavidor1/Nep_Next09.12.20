@@ -182,7 +182,7 @@ public class SimulatedAgentActions {
 		}
 	}
 
-	public void getConf(String epId){
+	public String getConf(String epId){
 
 		JLog.logger.info("Starting SimulatedAgentActions:getConf. Params: epId {}",epId);
 
@@ -199,6 +199,7 @@ public class SimulatedAgentActions {
 							.extract().response().body().asString();
 			JLog.logger.info("get conf succeeded, got conf: '{}'", conf);
 			setConf(conf);
+			return conf;
 
 		} catch (JsonPathException e) {
 			JLog.logger.error("Failed to parse the get conf response {}", (jsonPathEvaluator != null ? jsonPathEvaluator.prettify() : ""), e);
@@ -207,6 +208,7 @@ public class SimulatedAgentActions {
 			JLog.logger.error("Failed to process the get conf request", e);
 			org.testng.Assert.fail("Failed to process the get conf request", e);
 		}
+		return null;
 	}
 	public String getAgentUuid() {
 		return agentUuid;

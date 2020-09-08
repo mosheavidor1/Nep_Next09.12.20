@@ -1,5 +1,6 @@
 package Actions;
 
+import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
@@ -8,16 +9,15 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
@@ -392,11 +392,16 @@ public class LNEActions extends ManagerActions  {
 
     }
 
-    public void setClusterConfig(String configJson) {
+    public void setClusterConfig(long customerId,String clusterName,String configJson) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("customerId",customerId);
+        jsonObject.put("clusterName",clusterName);
+        jsonObject.put("config",new JSONObject(configJson).get("configuration"));
+
         try {
             Response r = given().spec(requestSpecification)
                     .contentType("application/json").
-                            body(configJson).
+                            body(jsonObject.toString()).
                             when().
                             post("setClusterConfig");
 
@@ -415,12 +420,23 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
-
-    public void updateClusterMap(String configJson) {
+   
+    public void updateClusterMap(Long customerId, Map<String, List<String>> assignments) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("customerId",customerId);
+        JSONArray assignmentsArr = new JSONArray();
+        for(String clusterName : assignments.keySet()){
+            List<String> eps = assignments.get(clusterName);
+            JSONObject assignmentObject = new JSONObject();
+            assignmentObject.put("clusterName",clusterName);
+            assignmentObject.put("endpointName",eps);
+            assignmentsArr.put(assignmentObject);
+        }
+        jsonObject.put("assignments",assignmentsArr);
         try {
             Response r = given().spec(requestSpecification)
                     .contentType("application/json").
-                            body(configJson).
+                            body(jsonObject.toString()).
                             when().
                             post("updateClusterMap");
 
@@ -435,7 +451,7 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("Could not update Cluster Map configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not update Cluster Map configuration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not update Cluster Map configuration. LNE machine: " + LNE_IP + " json sent: " + jsonObject.toString()  + "\n" + e.toString());
         }
 
     }
