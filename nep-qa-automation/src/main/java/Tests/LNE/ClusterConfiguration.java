@@ -43,8 +43,8 @@ public class ClusterConfiguration extends GenericTest {
         lneActions.updateClusterMap( customerId,assignments);
 
         Map<String,Object> tagsToChange = new HashMap<>();
-        tagsToChange.put("check_update_period",600);
-        tagsToChange.put("report_period",600);
+        tagsToChange.put("check_update_period",666);
+        tagsToChange.put("report_period",666);
         String updatedClusterConfig = JsonUtil.ChangeTagsConfiguration(confJson, tagsToChange);
 
         lneActions.setClusterConfig(customerId,clusterName,updatedClusterConfig);
@@ -59,16 +59,16 @@ public class ClusterConfiguration extends GenericTest {
 
         String simulatedAgentInClusterConf = simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
 
-        if(!JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 600) ||
-                !JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 600)
+        if(!JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
+                !JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
         ){
             org.testng.Assert.fail("setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
         }
 
         simulatedAgentNotInCluster.getConf(simulatedAgentNotInCluster.getAgentUuid());
         String simulatedAgentNotInClusterConf = simulatedAgentNotInCluster.getConf();
-        if(JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "check_update_period", 600) ||
-                JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "report_period", 600)
+        if(JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "check_update_period", 666) ||
+                JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "report_period", 666)
         ){
             org.testng.Assert.fail("setClusterConfiguration test failed, ep not added to cluster should have not contain this configuration");
         }
@@ -82,8 +82,8 @@ public class ClusterConfiguration extends GenericTest {
 
         simulatedAgentInClusterConf =simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
 
-        if(JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 600) ||
-                JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 600)
+        if(JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
+                JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
         ){
             org.testng.Assert.fail("setClusterConfiguration test failed, ep removed from cluster should have general configuration");
         }
