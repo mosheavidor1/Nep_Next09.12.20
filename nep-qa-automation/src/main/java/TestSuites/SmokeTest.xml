@@ -21,6 +21,9 @@
             <class name = "Tests.LNE.VerifyConfiguration" />
             <class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />
 <!--            <class name = "Tests.LNE.BinaryUpdate" />-->
+
+            <class name = "Tests.LNE.RevokeEndpoint" />
+            <class name = "Tests.LNE.DeleteEndpoint" />
         </classes>
     </test>
 

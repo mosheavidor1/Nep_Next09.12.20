@@ -40,6 +40,8 @@ public class RevokeEndpoint extends GenericTest {
             agent1.checkRevoked(Integer.parseInt(general.get("EP Service Timeout")));
             agent2.checkNotRevoked();
 
+            agent1.installEPIncludingRequisites(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
+
             JLog.logger.info("RevokeEndpoint test completed.");
 
         } catch (Exception e) {
