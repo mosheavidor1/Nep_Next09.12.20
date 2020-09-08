@@ -4,7 +4,9 @@ import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -28,6 +30,8 @@ public class LNEActions extends ManagerActions  {
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/nepa_ca.pem";
     public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
     public static final String caCertificateFileName = "cacertificate.txt";
+    RequestSpecification requestSpecification;// = new RequestSpecBuilder().setBaseUri(url).build();
+
 
     public LNEActions ()
     {
@@ -116,6 +120,8 @@ public class LNEActions extends ManagerActions  {
     public void SetLNEBaseURI(String LNE_IP){
         try {
             RestAssured.baseURI = basePrefix + LNE_IP + baseSuffix;
+            requestSpecification = new RequestSpecBuilder().setBaseUri(basePrefix + LNE_IP + baseSuffix).build();
+
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not set RestAssured.baseURI for machine: " + LNE_IP  + "\n" + e.toString());
@@ -376,7 +382,7 @@ public class LNEActions extends ManagerActions  {
 
     private int InitCustomerSettings (String configJson ) {
 
-        Response r = given()
+        Response r = given().spec(requestSpecification)
                 .contentType("application/json").
                         body(configJson).
                         when().
@@ -386,10 +392,56 @@ public class LNEActions extends ManagerActions  {
 
     }
 
+    public void setClusterConfig(String configJson) {
+        try {
+            Response r = given().spec(requestSpecification)
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("setClusterConfig");
 
+            int response = r.getStatusCode();
+
+            if (response == 200) {
+                JLog.logger.info("Success. LNE setClusterConfig response: " + response);
+//                String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
+//                FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
+            }
+            else
+                org.testng.Assert.fail("Could not set Cluster Config configuration. LNE response status code received is: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not set customer Cluster Config. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
+
+    public void updateClusterMap(String configJson) {
+        try {
+            Response r = given().spec(requestSpecification)
+                    .contentType("application/json").
+                            body(configJson).
+                            when().
+                            post("updateClusterMap");
+
+            int response = r.getStatusCode();
+
+            if (response == 200) {
+                JLog.logger.info("Success. LNE updateClusterMap response: " + response);
+                //                String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
+                //                FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
+            }
+            else
+                org.testng.Assert.fail("Could not update Cluster Map configuration. LNE response status code received is: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not update Cluster Map configuration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+        }
+
+    }
     public void SetCustomerConfiguration (String configJson) {
         try {
-            Response r = given()
+            Response r = given().spec(requestSpecification)
                     .contentType("application/json").
                             body(configJson).
                             when().
@@ -413,7 +465,7 @@ public class LNEActions extends ManagerActions  {
 
     public void revokeEpConfiguration (String configJson) {
         try {
-            Response r = given()
+            Response r = given().spec(requestSpecification)
                     .contentType("application/json").
                             body(configJson).
                             when().
@@ -434,7 +486,7 @@ public class LNEActions extends ManagerActions  {
 
     public void revoke(String configJson) {
         try {
-            Response r = given()
+            Response r = given().spec(requestSpecification)
                     .contentType("application/json").
                             body(configJson).
                             when().
@@ -455,7 +507,7 @@ public class LNEActions extends ManagerActions  {
 
     public void delete(String configJson) {
         try {
-            Response r = given()
+            Response r = given().spec(requestSpecification)
                     .contentType("application/json").
                             body(configJson).
                             when().
@@ -476,8 +528,9 @@ public class LNEActions extends ManagerActions  {
 
     public String GetCACertificate () {
         try {
-            RestAssured.baseURI = basePrefix + LNE_IP + ":8000/ca/CA_get.sh?ca";
-            Response r = given()
+//            RestAssured.baseURI = basePrefix + LNE_IP + ":8000/ca/CA_get.sh?ca";
+            RequestSpecification requestSpecification = new RequestSpecBuilder().setBaseUri(basePrefix + LNE_IP + ":8000/ca/CA_get.sh?ca").build();
+            Response r = given().spec(requestSpecification)
                     .contentType("text/plain").
                             when().
                             post("CA_get.sh?ca");
@@ -842,4 +895,109 @@ public class LNEActions extends ManagerActions  {
         }
     }
 
+    //DO we want to use the jenkins job?
+    public void uploadLinuxFilesToBucket(String s3Bucket, List<String> linuxFiles) {
+
+        String linuxUpdFolderLNE = "/home/binaries/linux/";
+
+        String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
+        String localFolderForLinuxFiles = masterDownloadDirectory + "/linux/";
+
+        // Create folders on LNE machine
+        if (!connection.IsFileExists("/home/binaries/")) {
+            connection.CreateDirectory("/home/binaries/");
+        }
+        if (!connection.IsFileExists(linuxUpdFolderLNE)) {
+            connection.CreateDirectory(linuxUpdFolderLNE);
+        }
+
+        // Copy all files from local folders to LNE
+        for (String file : linuxFiles) {
+            connection.CopyToRemote(localFolderForLinuxFiles + file, linuxUpdFolderLNE);
+        }
+
+        for (String file : linuxFiles) {
+            String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
+                    "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
+                    "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
+                    "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
+                    ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
+                    " cut -d '=' -f 2` ; cd /home/; s3_cmd upload_file " + s3Bucket + " binaries" +
+                    "/linux/" + file);
+            JLog.logger.info("Response: " + response);
+        }
+    }
+
+    //DO we want to use the jenkins job?
+    public void uploadWindowsFilesToBucket(String s3Bucket, List<String> windowsFiles) {
+
+        String windowsUpdFolderLNE = "/home/binaries/windows/";
+
+        String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
+        String localFolderForWindowsFiles = masterDownloadDirectory + "/windows/";
+
+        // Create folders on LNE machine
+        if (!connection.IsFileExists("/home/binaries/")) {
+            connection.CreateDirectory("/home/binaries/");
+        }
+        if (!connection.IsFileExists(windowsUpdFolderLNE)) {
+            connection.CreateDirectory(windowsUpdFolderLNE);
+        }
+
+        // Copy all files from local folders to LNE
+        for (String file : windowsFiles) {
+            connection.CopyToRemote(localFolderForWindowsFiles + file, windowsUpdFolderLNE);
+        }
+
+        for (String file : windowsFiles) {
+            String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
+                    "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
+                    "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
+                    "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
+                    ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
+                    " cut -d '=' -f 2` ; cd /home/; s3_cmd upload_file " + s3Bucket + " binaries" +
+                    "/windows/" + file);
+            JLog.logger.info("Response: " + response);
+        }
+    }
+
+    public void restartDsService() {
+        JLog.logger.info("Restarting DS...");
+        String response = connection.Execute("nep_service ds restart");
+        JLog.logger.debug("Response: " + response);
+    }
+
+    //TODO do we want to use the existing jenkins job?
+    public void cleanLinuxBucket(String s3Bucket, List<String> linuxFiles) {
+/*
+    	JLog.logger.info("Cleaning the bucket now...");
+
+    	for (String file : linuxFiles) {
+            String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
+                    "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
+                    "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
+                    "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
+                    ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
+                    " cut -d '=' -f 2` ; cd /home/; s3_cmd delete_file " + s3Bucket + " binaries" +
+                    "/linux/" + file);
+            JLog.logger.info("Response: " + response);
+        } */
+    }
+
+    //TODO do we want to use the existing jenkins job?
+    public void cleanWindowsBucket(String s3Bucket, List<String> windowsFiles) {
+/*
+    	JLog.logger.info("Cleaning the bucket now...");
+
+    	for (String file : windowsFiles) {
+            String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
+                    "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
+                    "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
+                    "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
+                    ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
+                    " cut -d '=' -f 2` ; cd /home/; s3_cmd delete_file " + s3Bucket + " binaries" +
+                    "/windows/" + file);
+            JLog.logger.info("Response: " + response);
+        } */
+    }
 }

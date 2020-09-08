@@ -20,6 +20,7 @@
             <class name = "Tests.LNE.ChangeCustomerConfiguration" />
             <class name = "Tests.LNE.VerifyConfiguration" />
             <class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />
+<!--            <class name = "Tests.LNE.BinaryUpdate" />-->
         </classes>
     </test>
 

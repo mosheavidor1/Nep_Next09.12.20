@@ -1,13 +1,11 @@
 package Tests.LNE;
 
+import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.apache.commons.io.FileUtils;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Factory;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
@@ -35,18 +33,27 @@ public class BinaryUpdate extends GenericTest {
     private BaseAgentActions endpointWin;
     private BaseAgentActions endpointLinux;
 
-    //private LNEActions manager;
-  //  private SSHManager connection;
+    private LNEActions lneActions;
+    private String s3Bucket;
 
     @Factory(dataProvider = "getData")
     public BinaryUpdate(Object dataToSet) {
         super(dataToSet);
     }
-    
+
     @BeforeTest
-    private void FetchFilesFromNexusToLocal(String windowsNewVer, String linuxNewVer) throws IOException {
-        //String windowsNewVer = data.get("update_win_ver");
-        //String linuxNewVer = data.get("update_linux_ver");
+    private void Init() {
+        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+        s3Bucket = data.get("s3Bucket");
+        endpointLinux = AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
+        endpointWin = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+    }
+
+    @BeforeTest
+    private void FetchFilesFromNexusToLocal() throws IOException {
+
+        String windowsNewVer = data.get("update_win_ver");
+        String linuxNewVer = data.get("update_linux_ver");
 
         List<String> windowsFiles = WindowsFilesList(windowsNewVer);
         List<String> linuxFiles = LinuxFilesList(linuxNewVer);
@@ -112,7 +119,7 @@ public class BinaryUpdate extends GenericTest {
     @Test()
     public void checkBinaryUpdateOnLinuxOnly() {
 
-    	if (!data.get("EP_Type_1").equals("lnx")) {
+    	if (!data.get("EP_Type_2").equals("lnx")) {
 	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
 	    	return;
 	    }
@@ -120,17 +127,19 @@ public class BinaryUpdate extends GenericTest {
     	String linuxNewVer = data.get("update_linux_ver");
          
          try {
-	         // restart all services
-	      /*   connection = new SSHManager(general.get("LNE User Name"), general.get("LNE Password"),
-	                 PropertiesFile.readProperty("ClusterToTest"), Integer.parseInt(general.get("LNE SSH port")));
-	*/
-	
-        	 
-	         endpointLinux = AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
-	
-	         String s3Bucket = data.get("s3Bucket");
-	       //  uploadLinuxFilesToBucket(s3Bucket, linuxNewVer);
-	
+
+	         lneActions.uploadLinuxFilesToBucket(s3Bucket, LinuxFilesList(linuxNewVer));
+
+	         // Restarting ds so it will know new binary package is uploaded
+             // (instead of waiting for 15 minutes)
+             lneActions.restartDsService();
+             // Sleep for 1 minute - so ds will start
+             try {
+                 JLog.logger.info("Sleeping for 1 minute so ds restart will finish...");
+                 Thread.sleep(60000);
+             } catch (InterruptedException e) {
+                 JLog.logger.error("Error in checkBinaryUpdateOnLinuxOnly");
+             }
 	   
 	         JLog.logger.info("Installing linux EP...");
 	
@@ -160,11 +169,68 @@ public class BinaryUpdate extends GenericTest {
              org.testng.Assert.fail("Failure in CheckSuccessfulBinaryUpdate" + "\n" + ex.toString());
          }finally {
              // Clean the bucket
-             cleanLinuxBucket(linuxNewVer);
-             JLog.logger.info("s3bucket cleaned...");
+             lneActions.cleanLinuxBucket(s3Bucket, LinuxFilesList(linuxNewVer));
+             JLog.logger.info("s3Bucket cleaned...");
          }
     }
-    
+
+    @Test()
+    public void checkBinaryUpdateOnWindowsOnly() {
+
+        if (!data.get("EP_Type_1").equals("win")) {
+            JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
+            return;
+        }
+
+        String windowsNewVer = data.get("update_win_ver");
+
+        try {
+
+            lneActions.uploadWindowsFilesToBucket(s3Bucket, WindowsFilesList(windowsNewVer));
+
+            // Restarting ds so it will know new binary package is uploaded
+            // (instead of waiting for 15 minutes)
+            lneActions.restartDsService();
+            // Sleep for 1 minute - so ds will start
+            try {
+                JLog.logger.info("Sleeping for 1 minute so ds restart will finish...");
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                JLog.logger.error("Error in checkBinaryUpdateOnWindowsOnly");
+            }
+
+            JLog.logger.info("Installing windows EP...");
+
+            endpointWin.installEPIncludingRequisites(Integer.parseInt(general.get("EP " +
+                            "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
+                    Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+
+            // Sleep for 2 minutes - so the EPs will check updates and be updated
+            JLog.logger.info("Sleeping for 2 minutes so check updates would update the EPs...");
+            Thread.sleep(120000);
+
+            if(!endpointWin.endpointServiceRunning())
+                org.testng.Assert.fail("Binary update failed. Trustwave Endpoint Agent Service not running on the windows EP.");
+            else
+                JLog.logger.info("Trustwave Endpoint Agent Service is running on the windows machine");
+
+
+            String windowsBinVer = endpointWin.getEPBinaryVersion();
+
+            JLog.logger.info("Windows version is: " + windowsBinVer);
+
+            org.testng.Assert.assertEquals(windowsBinVer, windowsNewVer, "Versions don't match");
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            org.testng.Assert.fail("Failure in CheckSuccessfulBinaryUpdate" + "\n" + ex.toString());
+        }finally {
+            // Clean the bucket
+            lneActions.cleanWindowsBucket(s3Bucket, WindowsFilesList(windowsNewVer));
+            JLog.logger.info("s3Bucket cleaned...");
+        }
+    }
     
 /*
    
@@ -215,48 +281,12 @@ public class BinaryUpdate extends GenericTest {
             JLog.logger.info("Trustwave Endpoint Agent Service is running on the linux machine");
     }
 
-    
-        
-        //DO we want to use the jenkins job?
-        private void uploadLinuxFilesToBucket(String s3Bucket, String version) {
-        	/*
-        	List<String> linuxFiles = LinuxFilesList(version);
-        	
-        	String linuxUpdFolderLNE = "/home/binaries/linux/";
-        	
-        	String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
-            String localFolderForLinuxFiles = masterDownloadDirectory + "/linux/";
+*/
 
-            String fullPathToNexusLinuxVer = "https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/tmp/" + version + "/linux/";
-
-         // Create folders on LNE machine
-            if (!connection.IsFileExists("/home/binaries/")) {
-                connection.CreateDirectory("/home/binaries/");
-            }
-            if (!connection.IsFileExists(linuxUpdFolderLNE)) {
-                connection.CreateDirectory(linuxUpdFolderLNE);
-            }
-            
-            // Copy all files from local folders to LNE
-            for (String file : linuxFiles) {
-                connection.CopyToRemote(localFolderForLinuxFiles + file, linuxUpdFolderLNE);
-            }
-            
-            for (String file : linuxFiles) {
-                String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
-                        "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
-                        "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
-                        "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
-                        ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
-                        " cut -d '=' -f 2` ; cd /home/; s3_cmd upload_file " + s3Bucket + " binaries" +
-                        "/linux/" + file);
-                JLog.logger.info("Response: " + response);
-            }
-        }
      
         // String s3Bucket = data.get("s3Bucket");
         private void uploadWindowsFilesToBucket(String s3Bucket, String version) {
-
+/*
         List<String> windowsFiles = WindowsFilesList(version);
 
         
@@ -287,28 +317,7 @@ public class BinaryUpdate extends GenericTest {
                     " cut -d '=' -f 2` ; cd /home/; s3_cmd upload_file " + s3Bucket + " binaries" +
                     "/windows/" + file);
             JLog.logger.info("Response: " + response);
-        }        */
- //   }
-       
-      //TODO do we want to use the existing jenkins job?
-    private void cleanLinuxBucket(String linuxNewVer) {
-    	/*
-    	 String s3Bucket = data.get("s3Bucket");
-    
-    	List<String> linuxFiles = LinuxFilesList(linuxNewVer);
-    	
-    	JLog.logger.info("Cleaning the bucket now...");
-    	
-    	for (String file : linuxFiles) {
-            String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
-                    "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
-                    "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
-                    "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
-                    ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
-                    " cut -d '=' -f 2` ; cd /home/; s3_cmd delete_file " + s3Bucket + " binaries" +
-                    "/linux/" + file);
-            JLog.logger.info("Response: " + response);
-        }*/
+        } */
     }
 
     //TODO do we want to use the existing jenkins job?
@@ -396,7 +405,7 @@ public class BinaryUpdate extends GenericTest {
 
     
 
-    @AfterMethod
+    @AfterTest
     public void Close() {
         if (endpointWin != null) {
             JLog.logger.info("Closing windows EP");
