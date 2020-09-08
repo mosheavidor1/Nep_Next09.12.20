@@ -26,7 +26,7 @@ import DataModel.DbJson;
 public abstract class BaseAgentActions implements AgentActionsInterface{
 	
 	private static final String configJsonReportInterval = "\"report_period\":";
-
+    private static final String LfmData = "LfmData";
     protected static final int checkInterval = 5000;
     public static final String nepa_caDotPemFileName = "nepa_ca.pem";
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/";
@@ -343,6 +343,42 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
         catch (Exception e) {
             org.testng.Assert.fail("Could not change endpoint report interval." + "\n" + e.toString());
+        }
+
+
+    }
+
+    public void deleteLFMData() {
+	    FileWriter file;
+        try {
+
+            String dbJsonRemoteFile = getDbJsonPath();
+            if (!connection.IsFileExists(dbJsonRemoteFile)) {
+                org.testng.Assert.fail("Could not find db.json; file was not found at: " + dbJsonRemoteFile);
+            }
+
+            String text = connection.GetTextFromFile(dbJsonRemoteFile);
+
+            if (!text.contains(LfmData)) {
+                return;
+            }
+            JSONObject dbFile = new JSONObject(text);
+            dbFile.remove(LfmData);
+            JSONObject newNode = new JSONObject();
+            dbFile.append(LfmData, newNode);
+            String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
+            String localDbFile = masterDownloadDirectory +"/" + ManagerActions.customerDbFile;
+            file = new FileWriter(localDbFile);
+            file.write(dbFile.toString());
+            file.flush();
+            file.close();
+            connection.CopyToRemote(localDbFile, dbJsonRemoteFile);
+            File deleteLocal = new File(localDbFile);
+            deleteLocal.delete();
+        }
+
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not remove LFM data from db.json." + "\n" + e.toString());
         }
 
 

@@ -43,11 +43,7 @@ public class SimulateLLMandVerify extends GenericTest {
     	    }
 
 		    String log_type = data.get("Log_Type");
- /*          if ((log_type.equalsIgnoreCase( "LCA_SYSLOG")) ||  (log_type.equalsIgnoreCase("LCA"))) {
-                JLog.logger.info("Not doing log_type: " + log_type);
-                return;
-            }
-	*/	    right_result = data.get("ExpectedResult");
+  	        right_result = data.get("ExpectedResult");
 		    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + right_result);
             LNEtxtFile = syslog_path + data.get("EP_HostName_1") + "/local0.log";
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));

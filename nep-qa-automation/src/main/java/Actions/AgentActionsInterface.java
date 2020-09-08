@@ -13,7 +13,8 @@ public interface AgentActionsInterface  {
     public String getVerifySiemCommand();
     public String getVerifyLcaCommand();
     public String getVerifyLca2Command();
-    
+    public String getVerifyLFMLca2Command();
+
     public String getAgentLogPath();
     
     public String getDownloadFolder();

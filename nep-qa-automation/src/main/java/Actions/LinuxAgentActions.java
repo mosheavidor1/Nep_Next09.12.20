@@ -69,7 +69,7 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     public String getVerifyLca2Command() {
     	return command_linuxLCA2;
     }
-    
+    public String getVerifyLFMLca2Command() {return command_linuxLCA;}
     public String getAgentLogPath() {
     	return linuxLog;
     }

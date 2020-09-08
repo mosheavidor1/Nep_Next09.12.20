@@ -36,25 +36,31 @@ public class SimulateLFMandVerify extends GenericTest {
     String log_type = data.get("Log_Type");
     right_result1 = data.get("ExpectedResult1");
     right_result2 = data.get("ExpectedResult2");
+
+
     JLog.logger.info("log_type: " + log_type + " Expected results: " + right_result1 + " and " + right_result2);
     agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
     String commandSIEM = agent.getVerifySiemCommand();
-    String commandLCA = agent.getVerifyLcaCommand();
+    String commandLCA = agent.getVerifyLFMLca2Command();
     String commandLCA2 = agent.getVerifyLca2Command();
     String logFile = agent.getAgentLogPath();
     
 
-    prepareDirectories();
+
 
 
     manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
     String confJson = data.get("Settings Json");
-
-    manager.SetCustomerConfiguration(confJson);
-    Thread.sleep(10000);
     agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
+    Thread.sleep(5000);
+    manager.SetCustomerConfiguration(confJson);
+
+
+    prepareDirectories();
     agent.clearFile(logFile);
+    clearLFMDataromDB();
+    Thread.sleep(10000);
     agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
     agent.compareConfigurationToEPConfiguration(true);
     Thread.sleep(10000);
@@ -180,6 +186,10 @@ public class SimulateLFMandVerify extends GenericTest {
             }
         }
         return result;
+    }
+
+    public void clearLFMDataromDB() {
+        agent.deleteLFMData();
     }
 
     @AfterMethod

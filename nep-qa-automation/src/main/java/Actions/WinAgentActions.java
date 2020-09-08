@@ -20,6 +20,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     private static final String command_winSIEM = "type " + winLog + " | find /n \".zip was sent successfully\"";
     private static final String command_winLCA = "type " + winLog + " | find /n \".txt was sent\"";
     private static final String command_winLCA2 = "type " + winLog + " | find /n \".txt-tag.log was sent\"";
+    private static final String command_winLCA3 = "type " + winLog + " | find /n \".log-tag.log was sent\"";
     public static final String configJsonWindowsPath_1_1 = "/C:/ProgramData/Trustwave/NEPAgent/config.json";
     public static final String configJsonWindowsPath_1_2_gen = "/C:/ProgramData/Trustwave/NEPAgent/General/";
     public static final String configJsonWindowsPath_1_2_new = "/C:/ProgramData/Trustwave/NEPAgent/General/new";
@@ -71,6 +72,9 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     }
     public String getVerifyLca2Command() {
     	return command_winLCA2;
+    }
+    public String getVerifyLFMLca2Command() {
+        return command_winLCA3;
     }
     public String getAgentLogPath() {
     	return winLog;
