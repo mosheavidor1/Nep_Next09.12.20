@@ -21,6 +21,10 @@
             <class name = "Tests.LNE.VerifyConfiguration" />
             <class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />
             <class name = "Tests.LNE.ClusterConfiguration" />
+            <class name = "Tests.LNE.WLMCreateEvent"/>
+            <class name = "Tests.LNE.SimulateLLMandVerify"/>
+            <class name = "Tests.LNE.SimulateLFMandVerify"/>
+            <class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
 <!--            <class name = "Tests.LNE.BinaryUpdate" />-->
 
             <class name = "Tests.LNE.RevokeEndpoint" />
