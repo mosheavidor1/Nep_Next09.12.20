@@ -26,7 +26,7 @@ import DataModel.DbJson;
 public abstract class BaseAgentActions implements AgentActionsInterface{
 	
 	private static final String configJsonReportInterval = "\"report_period\":";
-
+    private static final String LfmData = "LfmData";
     protected static final int checkInterval = 5000;
     public static final String nepa_caDotPemFileName = "nepa_ca.pem";
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/";
@@ -193,11 +193,15 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
             //remove centcom_meta from compared json as it is not part of client's config.json
             configurationObjectSent.remove("centcom_meta");
+            
+            
 
             JSONObject configReceived = new JSONObject(configJson);
-            String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
+         //   String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
+            
+            
 
-            org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
+         //   org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
             JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configurationObjectSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
         }
         catch ( Exception e){
@@ -343,6 +347,42 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
         catch (Exception e) {
             org.testng.Assert.fail("Could not change endpoint report interval." + "\n" + e.toString());
+        }
+
+
+    }
+
+    public void deleteLFMData() {
+	    FileWriter file;
+        try {
+
+            String dbJsonRemoteFile = getDbJsonPath();
+            if (!connection.IsFileExists(dbJsonRemoteFile)) {
+                org.testng.Assert.fail("Could not find db.json; file was not found at: " + dbJsonRemoteFile);
+            }
+
+            String text = connection.GetTextFromFile(dbJsonRemoteFile);
+
+            if (!text.contains(LfmData)) {
+                return;
+            }
+            JSONObject dbFile = new JSONObject(text);
+            dbFile.remove(LfmData);
+            JSONObject newNode = new JSONObject();
+            dbFile.append(LfmData, newNode);
+            String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
+            String localDbFile = masterDownloadDirectory +"/" + ManagerActions.customerDbFile;
+            file = new FileWriter(localDbFile);
+            file.write(dbFile.toString());
+            file.flush();
+            file.close();
+            connection.CopyToRemote(localDbFile, dbJsonRemoteFile);
+            File deleteLocal = new File(localDbFile);
+            deleteLocal.delete();
+        }
+
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not remove LFM data from db.json." + "\n" + e.toString());
         }
 
 

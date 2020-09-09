@@ -13,39 +13,42 @@ import java.util.Map;
 
 public class VerifyFileCabinetOldInstallers extends GenericTest {
 
-    private LNEActions manager;
+    private LNEActions lennyActions;
+    private String customerId;
     
     @Factory(dataProvider = "getData")
     public VerifyFileCabinetOldInstallers(Object dataToSet) {
         super(dataToSet);
+        customerId = general.get("Customer Id");
     }
 
     @Test(groups = { "VerifyFileCabinetOldInstallers" } )
     public void verifyFileCabinetOldInstallers () {
+    	
+    	JLog.logger.info("Starting verifyFileCabinetOldInstallers test ...");
 
-        manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+        lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         String confJson =data.get("Settings Json");
-        long customerId = JsonUtil.GetCustomerIDFromSentConfiguration(confJson);
 
         //retrieve doc ids of installers
-        Map<String, String> docIds = manager.getInstallersDocIds(customerId, Integer.parseInt(data.get("Download timeout")));
+        Map<String, String> docIds = lennyActions.getInstallersDocIds(Long.valueOf(customerId), Integer.parseInt(data.get("Download timeout")));
         
         //init customer
-        manager.InitCustomerSettings(confJson,Integer.parseInt(data.get("From LNE up until response OK timeout")));
+        lennyActions.InitCustomerSettingsWithDuration(customerId, confJson,Integer.parseInt(data.get("From LNE up until response OK timeout")));
 
         //verify that the doc ids retrieved previously are now backup files
-        manager.VerifyInstallerBackup(customerId ,docIds, Integer.parseInt(data.get("Download timeout")));
+        lennyActions.VerifyInstallerBackup(Long.valueOf(customerId) ,docIds, Integer.parseInt(data.get("Download timeout")));
 
         //make sure new installers exist
-        manager.DownloadInstallerWithoutAdditions(customerId,Integer.parseInt(data.get("Download timeout")));
+        lennyActions.DownloadInstallerWithoutAdditions(Long.valueOf(customerId), Integer.parseInt(data.get("Download timeout")));
 
     }
 
     @AfterMethod
     public void Close(){
         JLog.logger.info("Closing...");
-        if(manager!=null){
-            manager.Close();
+        if(lennyActions!=null){
+            lennyActions.Close();
         }
     }
 

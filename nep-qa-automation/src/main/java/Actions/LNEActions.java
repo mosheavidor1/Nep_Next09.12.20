@@ -1,5 +1,6 @@
 package Actions;
 
+import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
@@ -8,16 +9,19 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
@@ -32,6 +36,33 @@ public class LNEActions extends ManagerActions  {
     public static final String caCertificateFileName = "cacertificate.txt";
     RequestSpecification requestSpecification;// = new RequestSpecBuilder().setBaseUri(url).build();
 
+    
+    //scan the document from the end and stop after 1 match
+    public static final String verifyCallToCentcomCommand = "tac /work/services/stub-srv/var/log/nep/nep_dummy_services.log | grep -m 1 \"Method '%s'\"";
+    
+    public static ObjectMapper objectMapper = new ObjectMapper();
+    
+    public enum CentcomMethods{
+    	REGISTER("registerEndpoint"),
+    	REQUEST_UPGRADE("requestUpgrade"),
+    	UPDATE_ENDPOINT("updateEndpoint"),
+    	REVOKE_ENDPOINT("revokeEndpoint"),
+    	RENAME_ENDPOINT("renameEndpoint"),
+    	UPDATE_ENDPOINT_STATE("updateEndpointState");
+    	
+    	private String methodName;
+    	
+    	private CentcomMethods(String methodName){
+    		this.methodName = methodName;
+    	}
+
+		public String getMethodName() {
+			return methodName;
+		}
+    	
+    	
+    	
+    }
 
     public LNEActions ()
     {
@@ -39,15 +70,15 @@ public class LNEActions extends ManagerActions  {
         SetLNEBaseURI(LNE_IP);
     }
 
-    private String LNE_IP, userNameLNE, passwordLNE;
+    private String LNE_IP;
     int LNE_SSH_port;
     private SSHManager connection;
 
 
     public LNEActions (String LNE_IP, String userNameLNE, String passwordLNE, int LNE_SSH_port) {
         this.LNE_IP = LNE_IP;
-        this.userNameLNE = userNameLNE;
-        this.passwordLNE = passwordLNE;
+       // this.userNameLNE = userNameLNE;
+       // this.passwordLNE = passwordLNE;
         this.LNE_SSH_port =LNE_SSH_port;
         SetLNEBaseURI(LNE_IP);
         connection = new SSHManager(userNameLNE,passwordLNE,LNE_IP, LNE_SSH_port );
@@ -330,9 +361,8 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
-
-
-    public void InitCustomerSettings (String configJson, int fromLNEStartUntilLNEResponseOKTimeout) {
+    
+    public void InitCustomerSettingsWithDuration(String customerId, String configJson, int fromLNEStartUntilLNEResponseOKTimeout) {
         try {
 
             LocalDateTime start = LocalDateTime.now();
@@ -346,7 +376,7 @@ public class LNEActions extends ManagerActions  {
 
                 exception = false;
                 try {
-                    response = InitCustomerSettings(configJson);
+                    response = sendInitCustomerSettings(customerId, configJson);
                 }
                 catch (Exception e){
                     JLog.logger.info("Retrying... LNE InitCustomerSettings response exception: " + e.toString());
@@ -379,48 +409,119 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
+    
+    private String buildJsonBody(List<String> paramNames, List<String> paramValues) {
+    
+    	JsonNode jsonNode = objectMapper.createObjectNode();
+    	for (int i = 0; i < paramNames.size(); i++) {
+    		((ObjectNode) jsonNode).put(paramNames.get(i), paramValues.get(i));
+    	}
 
-    private int InitCustomerSettings (String configJson ) {
+    	return jsonNode.toPrettyString();
+    }
 
+
+
+    public void InitCustomerSettings(String customerId, String configJson) {
+
+        try {
+            int response = sendInitCustomerSettings(customerId, configJson);
+            if (response == 200 ) {
+                JLog.logger.info("Success. LNE InitCustomerSettings response: " + response);
+                return;
+            }
+            JLog.logger.error("LNE InitCustomerSettings response: " + response );
+            org.testng.Assert.fail("Could not init customer settings. LNE response status code received is: " + response + ". LNE machine: " + LNE_IP);
+        }
+        catch (Exception e){
+            JLog.logger.error("Could not init customer setting.", e);
+            org.testng.Assert.fail("Could not init customer settings. Json sent:  {}", e );
+        }
+
+    }
+
+    private int sendInitCustomerSettings (String customerId, String configJson ) {
+
+    	String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configJson));
+    	
         Response r = given().spec(requestSpecification)
-                .contentType("application/json").
-                        body(configJson).
-                        when().
-                        post("initCustomerSettings");
+                		.contentType("application/json")
+                        .body(body)
+                        .when()
+                        .post("initCustomerSettings");
 
         return r.getStatusCode();
 
     }
 
-    public void setClusterConfig(String configJson) {
+    public void setClusterConfig(String customerId, String clusterName, String configJson) {
+     
+        String body = buildJsonBody( Arrays.asList("customerId", "clusterName", "config"), Arrays.asList(customerId, clusterName, configJson));
+    	
+
+
         try {
             Response r = given().spec(requestSpecification)
-                    .contentType("application/json").
-                            body(configJson).
-                            when().
-                            post("setClusterConfig");
+                    		.contentType("application/json")
+                            .body(body)
+                            .when()
+                            .post("setClusterConfig");
 
             int response = r.getStatusCode();
 
             if (response == 200) {
                 JLog.logger.info("Success. LNE setClusterConfig response: " + response);
-//                String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
-//                FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
             }
             else
                 org.testng.Assert.fail("Could not set Cluster Config configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer Cluster Config. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not set customer Cluster Config.", e);
         }
 
     }
+    
+    public void setEndpointConfig(String customerId, String endpointName, String configuration) {
+    	
+    	String body = buildJsonBody( Arrays.asList("customerId", "endpointName", "configuration"), Arrays.asList(customerId, endpointName, configuration));
+    	
+        try {
+            Response r = given().spec(requestSpecification)
+                    		.contentType("application/json")
+                            .body(body)
+                            .when()
+                            .post("setClusterConfig");
 
-    public void updateClusterMap(String configJson) {
+            int response = r.getStatusCode();
+
+            if (response == 200) {
+                JLog.logger.info("Success. LNE setClusterConfig response: " + response);
+            }
+            else
+                org.testng.Assert.fail("Could not set Cluster Config configuration. LNE response status code received is: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not set customer Cluster Config.", e);
+        }
+
+    }
+   
+    public void updateClusterMap(Long customerId, Map<String, List<String>> assignments) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("customerId",customerId);
+        JSONArray assignmentsArr = new JSONArray();
+        for(String clusterName : assignments.keySet()){
+            List<String> eps = assignments.get(clusterName);
+            JSONObject assignmentObject = new JSONObject();
+            assignmentObject.put("clusterName",clusterName);
+            assignmentObject.put("endpointName",eps);
+            assignmentsArr.put(assignmentObject);
+        }
+        jsonObject.put("assignments",assignmentsArr);
         try {
             Response r = given().spec(requestSpecification)
                     .contentType("application/json").
-                            body(configJson).
+                            body(jsonObject.toString()).
                             when().
                             post("updateClusterMap");
 
@@ -435,41 +536,45 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("Could not update Cluster Map configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not update Cluster Map configuration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not update Cluster Map configuration.", e);
         }
 
     }
-    public void SetCustomerConfiguration (String configJson) {
-        try {
+    public void SetCustomerConfiguration (String customerId, String configuration) {
+    	
+    	String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configuration));
+        
+    	try {
             Response r = given().spec(requestSpecification)
-                    .contentType("application/json").
-                            body(configJson).
-                            when().
-                            post("setConfig");
+                    		.contentType("application/json")
+                            .body(body)
+                            .when()
+                            .post("setConfig");
 
             int response = r.getStatusCode();
 
             if (response == 200) {
                 JLog.logger.info("Success. LNE setConfig response: " + response);
-                String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
-                FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
             }
             else
                 org.testng.Assert.fail("Could not set customer configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer configuration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not set customer configuration.", e);
         }
 
     }
 
-    public void revokeEpConfiguration (String configJson) {
+    public void revokeEpConfiguration (String customerId, String epName) {
+    	
+    	String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
+    	
         try {
             Response r = given().spec(requestSpecification)
-                    .contentType("application/json").
-                            body(configJson).
-                            when().
-                            post("revokeEpConfiguration");
+                    		.contentType("application/json")
+                            .body(body)
+                            .when()
+                            .post("revokeEpConfiguration");
 
             int response = r.getStatusCode();
 
@@ -479,18 +584,21 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("Could not revokeEpConfiguration  . LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not revokeEpConfiguration. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Could not revokeEpConfiguration.", e);
         }
 
     }
 
-    public void revoke(String configJson) {
+    public void revoke(String customerId, String epName) {
+    	
+    	String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
+    	
         try {
             Response r = given().spec(requestSpecification)
-                    .contentType("application/json").
-                            body(configJson).
-                            when().
-                            post("revoke");
+                    		.contentType("application/json")
+                            .body(body)
+                            .when()
+                            .post("revoke");
 
             int response = r.getStatusCode();
 
@@ -500,18 +608,21 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("Failure. LNE revoke failed with response status code: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Revoke action failed. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Revoke action failed.", e);
         }
 
     }
 
-    public void delete(String configJson) {
+    public void delete(String customerId, String epName) {
+    	
+    	String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
+    	
         try {
             Response r = given().spec(requestSpecification)
-                    .contentType("application/json").
-                            body(configJson).
-                            when().
-                            post("delete");
+                    		.contentType("application/json")
+                            .body(body)
+                            .when()
+                            .post("delete");
 
             int response = r.getStatusCode();
 
@@ -521,7 +632,7 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("Failure. LNE delete failed with response status code: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Delete action failed. LNE machine: " + LNE_IP + " json sent: " + configJson  + "\n" + e.toString());
+            org.testng.Assert.fail("Delete action failed.", e);
         }
 
     }
@@ -965,6 +1076,20 @@ public class LNEActions extends ManagerActions  {
         JLog.logger.info("Restarting DS...");
         String response = connection.Execute("nep_service ds restart");
         JLog.logger.debug("Response: " + response);
+    }
+    
+    public void verifyCallToCentcom(CentcomMethods method, String... params) {
+    	String response = connection.Execute(String.format(verifyCallToCentcomCommand,  method.getMethodName()));
+    	if (response == null) {
+    		return;
+    	}
+    	if (response.isEmpty()) {
+    		 org.testng.Assert.fail("Failed to found Centcom call for method " + method.getMethodName());
+    	}
+    	for (String param : params) {
+    		org.testng.Assert.assertTrue(response.contains(param), String.format("Param '%s' wasn't found in the dummy services log for method '%s'", param, method.getMethodName()));
+    	}
+    	JLog.logger.info("Found centcom call for method '{}' in the dummy services log!", method.getMethodName());
     }
 
     //TODO do we want to use the existing jenkins job?

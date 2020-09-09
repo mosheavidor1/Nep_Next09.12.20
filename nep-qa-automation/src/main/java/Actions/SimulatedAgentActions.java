@@ -43,13 +43,13 @@ public class SimulatedAgentActions {
 		@JsonProperty("OsTypeAndVersion")
 		private String os;
 		@JsonProperty("CustomerId")
-		private long customerId;
+		private String customerId;
 		@JsonProperty("EndpointIp")
 		private String ip;
 		@JsonProperty("MacAddress")
 		private String macAddress;
 
-		public RegisterBody(long customerId, String ip, String name, String macAddress, String os) {
+		public RegisterBody(String customerId, String ip, String name, String macAddress, String os) {
 			this.customerId = customerId;
 			this.ip = ip;
 			this.name = name;
@@ -74,11 +74,11 @@ public class SimulatedAgentActions {
 			this.os = os;
 		}
 
-		public long getCustomerId() {
+		public String getCustomerId() {
 			return customerId;
 		}
 
-		public void setCustomerId(long customerId) {
+		public void setCustomerId(String customerId) {
 			this.customerId = customerId;
 		}
 
@@ -100,7 +100,7 @@ public class SimulatedAgentActions {
 
 	}
 
-	public SimulatedAgentActions(long customerId, String ip, String name, String macAddress, String osType) {
+	public SimulatedAgentActions(String customerId, String ip, String name, String macAddress, String osType) {
 		try {
 			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest"))).build();
 //			RestAssured.baseURI = String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest"));
@@ -111,7 +111,7 @@ public class SimulatedAgentActions {
 		}
 	}
 
-	public String checkUpdates(String epName, String binVersion, String confVersion, int reportingStatus, String schemaVersion) {
+	public String checkUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
 
 		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version "
 				, getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion);
@@ -141,7 +141,7 @@ public class SimulatedAgentActions {
 		}
 	}
 
-	public void register(long customerId, String ip, String hostname, String osType, String macAddress) {
+	public void register(String customerId, String ip, String hostname, String osType, String macAddress) {
 
 		JLog.logger.info("Starting SimulatedAgentActions:register. Params: customer {} ip {} hostname {} os {} macAddress {}",
 				customerId, ip, hostname, osType, macAddress);
@@ -182,7 +182,7 @@ public class SimulatedAgentActions {
 		}
 	}
 
-	public void getConf(String epId){
+	public String getConf(String epId){
 
 		JLog.logger.info("Starting SimulatedAgentActions:getConf. Params: epId {}",epId);
 
@@ -199,6 +199,7 @@ public class SimulatedAgentActions {
 							.extract().response().body().asString();
 			JLog.logger.info("get conf succeeded, got conf: '{}'", conf);
 			setConf(conf);
+			return conf;
 
 		} catch (JsonPathException e) {
 			JLog.logger.error("Failed to parse the get conf response {}", (jsonPathEvaluator != null ? jsonPathEvaluator.prettify() : ""), e);
@@ -207,6 +208,7 @@ public class SimulatedAgentActions {
 			JLog.logger.error("Failed to process the get conf request", e);
 			org.testng.Assert.fail("Failed to process the get conf request", e);
 		}
+		return null;
 	}
 	public String getAgentUuid() {
 		return agentUuid;

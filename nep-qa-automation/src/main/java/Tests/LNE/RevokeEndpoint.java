@@ -3,6 +3,7 @@ package Tests.LNE;
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
 import Actions.LNEActions;
+import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;
 import Utils.Logs.JLog;
@@ -15,12 +16,15 @@ import org.testng.annotations.Test;
 
 public class RevokeEndpoint extends GenericTest {
 
-    private LNEActions manager;
-    private BaseAgentActions agent1, agent2;
+    private LNEActions lennyActions;
+    private BaseAgentActions agent;
+    private SimulatedAgentActions simulatedAgent;
+    private String customerId;
 
     @Factory(dataProvider = "getData")
     public RevokeEndpoint(Object dataToSet) {
         super(dataToSet);
+        customerId = general.get("Customer Id");
     }
 
     @Test(groups = { "RevokeEndpoint" } )
@@ -29,16 +33,22 @@ public class RevokeEndpoint extends GenericTest {
         try {
             JLog.logger.info("Starting RevokeEndpoint test ...");
 
-            manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-            agent1 =  AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-            agent2 =  AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
+            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+            agent =  AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 
-            // Set the endpoint name in the revoke configuration
-            String revokeStandAloneWithEpNameConfigForEp1 = JsonUtil.ChangeTagConfiguration(data.get("revokeStandAlone"), "epName", agent1.getEpName());
+            simulatedAgent = new SimulatedAgentActions(customerId, "1.2.3.4", "SimulatedAgentForRevokeTest", "84-7B-EB-21-99-99","Windows 10");
 
-            manager.revoke(revokeStandAloneWithEpNameConfigForEp1);
-            agent1.checkRevoked(Integer.parseInt(general.get("EP Service Timeout")));
-            agent2.checkNotRevoked();
+            lennyActions.revoke(customerId, agent.getEpName());
+            agent.checkRevoked(Integer.parseInt(general.get("EP Service Timeout")));
+
+            String checkUpdatesResponse = simulatedAgent.checkUpdates("simulatedAgentName", "1.1.1", 3, 0, "1.1.2");
+            String action = JsonUtil.GetCheckUpdatesAction(checkUpdatesResponse);
+
+            agent.installEPIncludingRequisites(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
+
+            // Assert after installing the agent back
+            // Verify the other agent didn't get uninstall command
+            org.testng.Assert.assertEquals(action, "no update", String.format("check update result assertion failure. Expected: 'no update', got '%s' ", action));
 
             JLog.logger.info("RevokeEndpoint test completed.");
 
@@ -50,14 +60,11 @@ public class RevokeEndpoint extends GenericTest {
     @AfterMethod
     public void Close(){
         JLog.logger.info("Closing...");
-        if(manager!=null){
-            manager.Close();
+        if(lennyActions!=null){
+            lennyActions.Close();
         }
-        if(agent1!=null){
-            agent1.close();
-        }
-        if(agent2!=null){
-            agent2.close();
+        if(agent!=null){
+            agent.close();
         }
     }
 
