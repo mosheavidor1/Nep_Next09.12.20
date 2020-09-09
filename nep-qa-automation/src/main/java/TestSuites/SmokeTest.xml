@@ -11,7 +11,8 @@
                 <group  name= "ChangeConfiguration" depends-on="VerifyInstallation" ></group>
                 <group  name= "VerifyConfiguration" depends-on="ChangeConfiguration" ></group>
                 <group  name= "VerifyFileCabinetOldInstallers" depends-on="InitCustomer" ></group>
-                
+                <group  name= "ClusterConfiguration" depends-on="InitCustomer" ></group>
+
 
                 <group  name= "RevokeEndpoint" depends-on="VerifyInstallation" ></group>
                 <group  name= "DeleteEndpoint" depends-on="VerifyInstallation" ></group>
@@ -24,8 +25,8 @@
              <class name = "Tests.LNE.ChangeCustomerConfiguration" />
             <class name = "Tests.LNE.VerifyConfiguration" />
             <class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />
-     <!--       <class name = "Tests.LNE.ClusterConfiguration" />
-            <class name = "Tests.LNE.WLMCreateEvent"/>
+         <class name = "Tests.LNE.ClusterConfiguration" />
+            <!--         <class name = "Tests.LNE.WLMCreateEvent"/>
                <class name = "Tests.LNE.SimulateLLMandVerify"/>-->
           <!--   <class name = "Tests.LNE.SimulateLFMandVerify"/>-->
            <!-- <class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>-->
