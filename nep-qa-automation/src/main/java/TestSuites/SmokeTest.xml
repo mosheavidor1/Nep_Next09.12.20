@@ -13,11 +13,13 @@
                 <group  name= "VerifyFileCabinetOldInstallers" depends-on="InitCustomer" ></group>
                 
 
+                <group  name= "RevokeEndpoint" depends-on="VerifyInstallation" ></group>
+                <group  name= "DeleteEndpoint" depends-on="VerifyInstallation" ></group>
             </dependencies>
         </groups>
 
         <classes>
-            <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/> 
+            <class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>
             <class name = "Tests.LNE.InstallEP" />
              <class name = "Tests.LNE.ChangeCustomerConfiguration" />
             <class name = "Tests.LNE.VerifyConfiguration" />
@@ -27,9 +29,9 @@
                <class name = "Tests.LNE.SimulateLLMandVerify"/>-->
           <!--   <class name = "Tests.LNE.SimulateLFMandVerify"/>-->
            <!-- <class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>-->
-<!--
+
             <class name = "Tests.LNE.RevokeEndpoint" />
-            <class name = "Tests.LNE.DeleteEndpoint" />-->
+            <class name = "Tests.LNE.DeleteEndpoint" />
         </classes>
     </test>
 
