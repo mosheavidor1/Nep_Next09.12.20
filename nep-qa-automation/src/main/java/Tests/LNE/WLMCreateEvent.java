@@ -15,8 +15,9 @@ import org.testng.annotations.Test;
 
 public class WLMCreateEvent extends GenericTest {
 
-    private LNEActions manager;
+    private LNEActions lennyActions;
     private BaseAgentActions agent;
+    private String customerId;
 
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
@@ -25,15 +26,18 @@ public class WLMCreateEvent extends GenericTest {
     String right_result;
     String syslogFileName;
     static final int schedule_report_timeout = 120000; //ms
+    
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
+        customerId = general.get("Customer Id");
     }
 
     @Test()
     public void WLMCreateEventAndVerify()  {
         try {
-            
+        	JLog.logger.info("Starting WLMCreateEventAndVerify...");
+        	
             if (!data.get("EP_Type_1").equals("win")) {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
     	    	return;
@@ -45,18 +49,18 @@ public class WLMCreateEvent extends GenericTest {
             JLog.logger.info("log_type: " + log_type + " ; Expected result value: " + right_result);
             syslogFileName = syslog_path + data.get("EP_HostName_1") + "/user.log";
 
-            manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
             
             String confJson =data.get("Settings Json");
-            manager.SetCustomerConfiguration(confJson);
+            lennyActions.SetCustomerConfiguration(customerId, confJson);
             agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
             agent.clearFile(agent.getAgentLogPath());
             agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 
             Thread.sleep(10000);
             agent.compareConfigurationToEPConfiguration(true);
-            manager.clearFile(syslogFileName);
+            lennyActions.clearFile(syslogFileName);
             createEvents();
             Thread.sleep(schedule_report_timeout);
             boolean res = false;
@@ -98,7 +102,7 @@ public class WLMCreateEvent extends GenericTest {
         String zipFileMane = res.substring(start, stop + 4);
         JLog.logger.info("zip file Name: " + zipFileMane);
 
-        res = manager.numLinesinFile(scp_path + zipFileMane, null);
+        res = lennyActions.numLinesinFile(scp_path + zipFileMane, null);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(right_result)))
             return true;
@@ -122,7 +126,7 @@ public class WLMCreateEvent extends GenericTest {
             return false;
         String txtFileMane = res.substring(start, stop + 4);
         JLog.logger.info("txt file Name: " + txtFileMane);
-        res = manager.numLinesinFile(scp_path + txtFileMane, null);
+        res = lennyActions.numLinesinFile(scp_path + txtFileMane, null);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(right_result)))
             return true;
@@ -138,7 +142,7 @@ public class WLMCreateEvent extends GenericTest {
 
         String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/user.log";
         JLog.logger.info("txt file Name: " + txtFileMane);
-        res = manager.numLinesinFile(txtFileMane, null);
+        res = lennyActions.numLinesinFile(txtFileMane, null);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(right_result)))
             return true;
@@ -177,8 +181,8 @@ public class WLMCreateEvent extends GenericTest {
         if (agent!=null) {
             agent.close();
         }
-        if(manager!=null){
-            manager.Close();
+        if(lennyActions!=null){
+            lennyActions.Close();
         }
     }
 

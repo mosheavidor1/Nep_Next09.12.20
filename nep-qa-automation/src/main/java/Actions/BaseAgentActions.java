@@ -193,11 +193,15 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
             //remove centcom_meta from compared json as it is not part of client's config.json
             configurationObjectSent.remove("centcom_meta");
+            
+            
 
             JSONObject configReceived = new JSONObject(configJson);
-            String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
+         //   String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
+            
+            
 
-            org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
+         //   org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
             JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configurationObjectSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
         }
         catch ( Exception e){

@@ -16,17 +16,18 @@ import java.util.Map;
 public class ClusterConfiguration extends GenericTest {
 
     private LNEActions lneActions;
+    private String customerId;
 
     @Factory(dataProvider = "getData")
     public ClusterConfiguration(Object dataToSet) {
         super(dataToSet);
+        customerId = general.get("Customer Id");
     }
 
     @Test
     public void setClusterConfiguration() {
         lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         String confJson =data.get("Settings Json");
-        long customerId = JsonUtil.GetCustomerIDFromSentConfiguration(confJson);
         String clusterName = "CraftyCluster";
 
         SimulatedAgentActions simulatedAgentInCluster = new SimulatedAgentActions(customerId, "1.2.3.4", "CraftyEp", "84-7B-EB-21-99-99","Windows 10");
@@ -40,18 +41,18 @@ public class ClusterConfiguration extends GenericTest {
         epsNames.add(simulatedAgentInCluster.getName());
         assignments.put(clusterName,epsNames);
 
-        lneActions.updateClusterMap( customerId,assignments);
+        lneActions.updateClusterMap( Long.valueOf(customerId), assignments);
 
         Map<String,Object> tagsToChange = new HashMap<>();
         tagsToChange.put("check_update_period",666);
         tagsToChange.put("report_period",666);
         String updatedClusterConfig = JsonUtil.ChangeTagsConfiguration(confJson, tagsToChange);
 
-        lneActions.setClusterConfig(customerId,clusterName,updatedClusterConfig);
+        lneActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
 
 
-        String actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", "0", 0, "1.1.1");
-        String actionAgentNotInCluster = simulatedAgentNotInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", "0", 0, "1.1.1");
+        String actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
+        String actionAgentNotInCluster = simulatedAgentNotInCluster.checkUpdates(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
 
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
         org.testng.Assert.assertTrue(!actionAgentNotInCluster.contains("switch"),"setClusterConfiguration test failed, ep not in cluster should not have received configuration switch when checking update");
@@ -74,9 +75,9 @@ public class ClusterConfiguration extends GenericTest {
         }
 
         assignments.put(clusterName,new LinkedList<>());
-        lneActions.updateClusterMap(customerId,assignments);
+        lneActions.updateClusterMap(Long.valueOf(customerId), assignments);
 
-        actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", "0", 0, "1.1.1");
+        actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
 
 

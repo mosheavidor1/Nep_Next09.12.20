@@ -15,13 +15,15 @@ import org.testng.annotations.Test;
 
 public class DeleteEndpoint extends GenericTest {
 
-    private LNEActions manager;
+    private LNEActions lennyActions;
     private BaseAgentActions agent;
     private SimulatedAgentActions simulatedAgent;
+    private String customerId;
 
     @Factory(dataProvider = "getData")
     public DeleteEndpoint(Object dataToSet) {
         super(dataToSet);
+        customerId = general.get("Customer Id");
     }
 
     @Test(groups = { "DeleteEndpoint" } )
@@ -30,20 +32,17 @@ public class DeleteEndpoint extends GenericTest {
         try {
             JLog.logger.info("Starting DeleteEndpoint test ...");
 
-            manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 
-            long customerId = JsonUtil.GetCustomerIDFromSentConfiguration(data.get("Settings Json"));
             simulatedAgent = new SimulatedAgentActions(customerId, "1.2.3.4", "SimulatedAgentForDeleteTest", "84-7B-EB-21-99-99","Windows 10");
 
-            // Set the endpoint name in the delete configuration
-            String deleteStandAloneWithEpNameConfig = JsonUtil.ChangeTagConfiguration(data.get("deleteStandAlone"), "epName", agent.getEpName());
             String originalEndpointId = agent.getEpIdFromDbJson();
 
-            manager.delete(deleteStandAloneWithEpNameConfig);
+            lennyActions.delete(originalEndpointId, agent.getEpName()); 
             agent.checkDeleted(Integer.parseInt(general.get("EP Service Timeout")));
 
-            String checkUpdatesResponse = simulatedAgent.checkUpdates("simulatedAgentName", "1.1.1", "3", 0, "1.1.2");
+            String checkUpdatesResponse = simulatedAgent.checkUpdates("simulatedAgentName", "1.1.1", 3, 0, "1.1.2");
             String action = JsonUtil.GetCheckUpdatesAction(checkUpdatesResponse);
 
             agent.installEPIncludingRequisites(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
@@ -68,8 +67,8 @@ public class DeleteEndpoint extends GenericTest {
     @AfterMethod
     public void Close(){
         JLog.logger.info("Closing...");
-        if(manager!=null){
-            manager.Close();
+        if(lennyActions!=null){
+            lennyActions.Close();
         }
         if(agent !=null){
             agent.close();

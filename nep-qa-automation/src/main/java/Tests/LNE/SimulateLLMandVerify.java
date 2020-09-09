@@ -15,7 +15,7 @@ import java.util.Vector;
 
 public class SimulateLLMandVerify extends GenericTest {
 
-    private LNEActions manager;
+    private LNEActions lennyActions;
     private BaseAgentActions agent;
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
@@ -28,14 +28,19 @@ public class SimulateLLMandVerify extends GenericTest {
     static final int schedule_report_timeout = 120000; //ms
     String right_result;
     String LNEtxtFile;
+    private String customerId;
     
     @Factory(dataProvider = "getData")
     public SimulateLLMandVerify(Object dataToSet) {
         super(dataToSet);
+        customerId = general.get("Customer Id");
     }
 
     @Test()
     public void SimulateLLMandVerifyDelivery()  {
+    	
+    	JLog.logger.info("Starting SimulateLLMandVerifyDelivery test ...");
+    	
     	try {
     		if (!data.get("EP_Type_1").equals("lnx")) {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
@@ -51,11 +56,11 @@ public class SimulateLLMandVerify extends GenericTest {
 		    String commandSIEM = command_linuxSIEM;
 		    String commandLCA = command_linuxLCA;
 		
-		    manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+		    lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 		
 		    String confJson = data.get("Settings Json");
 		
-		    manager.SetCustomerConfiguration(confJson);
+		    lennyActions.SetCustomerConfiguration(customerId, confJson);
 		    agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
             Thread.sleep(5000);
             agent.clearFile(LLM_Syslog_path);
@@ -65,7 +70,7 @@ public class SimulateLLMandVerify extends GenericTest {
 		    Thread.sleep(30000);
             agent.clearFile(agent.getAgentLogPath());
 
-            manager.clearFile(LNEtxtFile);
+            lennyActions.clearFile(LNEtxtFile);
 		    createLLM_input();
 		    if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {
 		        JLog.logger.info("pattern " + EP_Syslog_pattern + " was not found in " + LLM_Syslog_path);
@@ -111,7 +116,7 @@ public class SimulateLLMandVerify extends GenericTest {
         Vector<String> zipFiles = extractFileNames(res, "dla_", ".zip");
 
         for (int i = 0; i < zipFiles.size(); i++) {
-            res = manager.numLinesinFile(scp_path + zipFiles.elementAt(i), EP_Syslog_pattern);
+            res = lennyActions.numLinesinFile(scp_path + zipFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
             if ((null != res) && (res.contains(right_result)))
                 result = true;
@@ -166,7 +171,7 @@ public class SimulateLLMandVerify extends GenericTest {
             return false;
         Vector<String> logFiles = extractFileNames(res, "dla_", ".txt");
         for (int i = 0; i < logFiles.size(); i++) {
-            res = manager.numLinesinFile(scp_path + logFiles.elementAt(i), EP_Syslog_pattern);
+            res = lennyActions.numLinesinFile(scp_path + logFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
             if ((null != res) && (res.contains(right_result)))
                 result = true;
@@ -188,7 +193,7 @@ public class SimulateLLMandVerify extends GenericTest {
             return false;
         // now check on LNE
         String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/local0.log";
-        res = manager.numLinesinFile(txtFileMane, EP_Syslog_pattern);
+        res = lennyActions.numLinesinFile(txtFileMane, EP_Syslog_pattern);
         JLog.logger.info("res: " + res);
         if ((null != res) && (res.contains(right_result)))
             result = true;
@@ -204,8 +209,8 @@ public class SimulateLLMandVerify extends GenericTest {
         if (agent!=null) {
             agent.close();
         }
-        if(manager!=null){
-            manager.Close();
+        if(lennyActions!=null){
+            lennyActions.Close();
         }
     }
 

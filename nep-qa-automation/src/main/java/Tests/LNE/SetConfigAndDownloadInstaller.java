@@ -12,30 +12,32 @@ import org.testng.annotations.Test;
 
 public class SetConfigAndDownloadInstaller extends GenericTest {
 
-    private LNEActions manager;
+    private LNEActions lennyActions;
+    private String customerId;
 
     @Factory(dataProvider = "getData")
     public SetConfigAndDownloadInstaller(Object dataToSet) {
         super(dataToSet);
+        customerId = general.get("Customer Id");
     }
 
     @Test(groups = { "InitCustomer" } )
     public void InitConfigAndDownloadInstaller () {
+    	JLog.logger.info("Starting InitConfigAndDownloadInstaller test ...");
 
-        manager = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+        lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         String confJson =data.get("Settings Json");
-        long customerId = JsonUtil.GetCustomerIDFromSentConfiguration(confJson);
-        manager.DeleteCurrentInstallerFromLNE(customerId);
-        manager.InitCustomerSettings(confJson,Integer.parseInt(data.get("From LNE up until response OK timeout")));
-        manager.DownloadInstallerIncludingRequisites(customerId , Integer.parseInt(data.get("Download timeout")));
+        lennyActions.DeleteCurrentInstallerFromLNE(Long.valueOf(customerId));
+        lennyActions.InitCustomerSettingsWithDuration(customerId, confJson, Integer.parseInt(data.get("From LNE up until response OK timeout")));
+        lennyActions.DownloadInstallerIncludingRequisites(Long.valueOf(customerId) , Integer.parseInt(data.get("Download timeout")));
 
     }
 
     @AfterMethod
     public void Close(){
         JLog.logger.info("Closing...");
-        if(manager!=null){
-            manager.Close();
+        if(lennyActions!=null){
+            lennyActions.Close();
         }
     }
 
