@@ -10,6 +10,8 @@
                 <group  name= "VerifyInstallation" depends-on="InitCustomer" ></group>
                 <group  name= "ChangeConfiguration" depends-on="VerifyInstallation" ></group>
                 <group  name= "VerifyConfiguration" depends-on="ChangeConfiguration" ></group>
+                <group  name= "VerifyFileCabinetOldInstallers" depends-on="InitCustomer" ></group>
+                
 
             </dependencies>
         </groups>
