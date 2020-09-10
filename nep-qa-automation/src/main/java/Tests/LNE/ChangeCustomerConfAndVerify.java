@@ -54,6 +54,9 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
         if(lennyActions!=null){
             lennyActions.Close();
         }
+        if (agent != null) {
+        	agent.close();
+        }
     }
 
 
