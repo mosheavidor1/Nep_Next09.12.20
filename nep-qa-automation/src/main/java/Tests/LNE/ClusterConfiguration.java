@@ -46,6 +46,11 @@ public class ClusterConfiguration extends GenericTest {
 
         }catch (Exception e) {
 
+        }finally {
+            JLog.logger.info("Closing...");
+            if(lneActions!=null){
+                lneActions.Close();
+            }
         }
 
     }
@@ -54,74 +59,74 @@ public class ClusterConfiguration extends GenericTest {
     @Test(groups = { "ClusterConfiguration" } )
     public void setClusterConfiguration() {
 //        try {
-            lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
-            String confJson =data.get("Settings Json");
+        String confJson =data.get("Settings Json");
 
-            //delete simulated agents
-            Map<String,List<String>> assignments = new HashMap<>();
+        //delete simulated agents
+        Map<String,List<String>> assignments = new HashMap<>();
 
-            simulatedAgentInCluster = new SimulatedAgentActions(customerId, "1.2.3.4", ep1Name, "84-7B-EB-21-99-99","Windows 10");
-            simulatedAgentNotInCluster = new SimulatedAgentActions(customerId, "1.2.3.5", ep2Name, "85-7B-EB-21-99-99","Windows 10");
+        simulatedAgentInCluster = new SimulatedAgentActions(customerId, "1.2.3.4", ep1Name, "84-7B-EB-21-99-99","Windows 10");
+        simulatedAgentNotInCluster = new SimulatedAgentActions(customerId, "1.2.3.5", ep2Name, "85-7B-EB-21-99-99","Windows 10");
 //            JLog.logger.info("sleeping 60 seconds until finish registering");
 //            Thread.sleep(1);
 
-            lneActions.setClusterConfig(customerId,clusterName, confJson);
+        lneActions.setClusterConfig(customerId,clusterName, confJson);
 
 
-            List<String> epsNames = new LinkedList<>();
-            epsNames.add(simulatedAgentInCluster.getName());
-            assignments.put(clusterName,epsNames);
+        List<String> epsNames = new LinkedList<>();
+        epsNames.add(simulatedAgentInCluster.getName());
+        assignments.put(clusterName,epsNames);
 
-            lneActions.updateClusterMap( Long.valueOf(customerId), assignments);
-
-
-            Map<String,Object> tagsToChange = new HashMap<>();
-            tagsToChange.put("check_update_period",666);
-            tagsToChange.put("report_period",666);
-            String updatedClusterConfig = JsonUtil.ChangeTagsConfiguration(confJson, tagsToChange);
-
-            lneActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
+        lneActions.updateClusterMap( Long.valueOf(customerId), assignments);
 
 
-            String actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
-            String actionAgentNotInCluster = simulatedAgentNotInCluster.checkUpdates(simulatedAgentNotInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
+        Map<String,Object> tagsToChange = new HashMap<>();
+        tagsToChange.put("check_update_period",666);
+        tagsToChange.put("report_period",666);
+        String updatedClusterConfig = JsonUtil.ChangeTagsConfiguration(confJson, tagsToChange);
+
+        lneActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
 
 
-            org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update, action: "+actionAgentInCluster);
-            org.testng.Assert.assertTrue(!actionAgentNotInCluster.contains("switch"),"setClusterConfiguration test failed, ep not in cluster should not have received configuration switch when checking update action: "+actionAgentNotInCluster);
+        String actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
+        String actionAgentNotInCluster = simulatedAgentNotInCluster.checkUpdates(simulatedAgentNotInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
 
 
-            String simulatedAgentInClusterConf = simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
-
-            if(!JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
-                    !JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
-            ){
-                org.testng.Assert.fail("setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
-            }
-
-            simulatedAgentNotInCluster.getConf(simulatedAgentNotInCluster.getAgentUuid());
-            String simulatedAgentNotInClusterConf = simulatedAgentNotInCluster.getConf();
-            if(JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "check_update_period", 666) ||
-                    JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "report_period", 666)
-            ){
-                org.testng.Assert.fail("setClusterConfiguration test failed, ep not added to cluster should have not contain this configuration");
-            }
-
-            assignments.put(clusterName,new LinkedList<>());
-            lneActions.updateClusterMap(Long.valueOf(customerId), assignments);
-
-            actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
-            org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
+        org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update, action: "+actionAgentInCluster);
+        org.testng.Assert.assertTrue(!actionAgentNotInCluster.contains("switch"),"setClusterConfiguration test failed, ep not in cluster should not have received configuration switch when checking update action: "+actionAgentNotInCluster);
 
 
-            simulatedAgentInClusterConf =simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
+        String simulatedAgentInClusterConf = simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
 
-            if(JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
-                    JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
-            ){
-                org.testng.Assert.fail("setClusterConfiguration test failed, ep removed from cluster should have general configuration");
-            }
+        if(!JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
+                !JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
+        ){
+            org.testng.Assert.fail("setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
+        }
+
+        simulatedAgentNotInCluster.getConf(simulatedAgentNotInCluster.getAgentUuid());
+        String simulatedAgentNotInClusterConf = simulatedAgentNotInCluster.getConf();
+        if(JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "check_update_period", 666) ||
+                JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "report_period", 666)
+        ){
+            org.testng.Assert.fail("setClusterConfiguration test failed, ep not added to cluster should have not contain this configuration");
+        }
+
+        assignments.put(clusterName,new LinkedList<>());
+        lneActions.updateClusterMap(Long.valueOf(customerId), assignments);
+
+        actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
+        org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
+
+
+        simulatedAgentInClusterConf =simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
+
+        if(JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
+                JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
+        ){
+            org.testng.Assert.fail("setClusterConfiguration test failed, ep removed from cluster should have general configuration");
+        }
 
 
 //        } catch (InterruptedException e) {
