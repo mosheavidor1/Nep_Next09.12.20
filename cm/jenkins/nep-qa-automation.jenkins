@@ -12,23 +12,32 @@ node('nep-build-centos7') {
 
 	MODULE_NAME = "nep-qa-automation"
 	MODULE_SRC_PATH = "${WORKSPACE}/${MODULE_NAME}"
-	MODULE_VERSION = "${env.NEP_BRANCH == "next" ? "${MODULE_VERSION_NEXT}.${BUILD_NUMBER}"  :  "${MODULE_VERSION_MASTER}.${BUILD_NUMBER}"}"
 	VERSION_QUALIFIER = "-SNAPSHOT"
 
-	NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}"
-	NEXUS_ARTIFACT_VERSION = "${MODULE_VERSION}"
+	NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}" 
 	NEXUS_SETTINGS_PATH = "${WORKSPACE}/cm/configs/nexus-settings.xml"
 	MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nepa-qa/${MODULE_NAME}"
 	
+	PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 
 	try {	
-		stage('Get sources from BitBucket') {			
-			sh ('set')
-			git branch: "${env.NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
+	
+		node('master') {
+			stage("Read modules versions from  files on Master") {
+				def params = readProperties file: "${PROPERTIES_FILE_PATH}"	
+				PRODUCT_VERSION = params['product_version']
+				NEXUS_ARTIFACT_VERSION = "${PRODUCT_VERSION}.${BUILD_NUMBER}"
+				echo "PRODUCT_VERSION = ${PRODUCT_VERSION}"
+			}
 		}
 
 		stage('Update BUILD_NUMBER') {
 			currentBuild.displayName = NEXUS_ARTIFACT_VERSION
+		}	
+		
+		stage('Get sources from BitBucket') {			
+			sh ('set')
+			git branch: "${env.NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 		}
 		
 		stage('Build') {
@@ -59,8 +68,8 @@ node('nep-build-centos7') {
 					parameters:  [
 						string(name: 'PRODUCT_NAME', value: "${MODULE_NAME}"),
 						string(name: 'PRODUCT_BRANCH', value: "${env.NEP_BRANCH}"),
-						string(name: 'PRODUCT_BUILD', value: "${MODULE_VERSION}"),
-						string(name: 'PRODUCT_ARTIFACT_LOCATION', value: "${MODULE_ARTIFACT_LOCATION}/${MODULE_VERSION}"),
+						string(name: 'PRODUCT_BUILD', value: "${PRODUCT_VERSION}"),
+						string(name: 'PRODUCT_ARTIFACT_LOCATION', value: "${MODULE_ARTIFACT_LOCATION}/${PRODUCT_VERSION}"),
 						string(name: 'PRODUCT_INFO', value: currentBuild.displayName )
 					]				
        		}
