@@ -214,7 +214,7 @@ node('nep-build-centos7') {
                                   ]
             }
             stage('Run EndPoint tests') {
-                timeout(time: 20, unit: 'MINUTES') {
+                timeout(time: 30, unit: 'MINUTES') {
 
                     node( WIN_NODE ) {
                         try {
@@ -249,20 +249,18 @@ node('nep-build-centos7') {
                             }
                             """
                             SETTINGS_XML = "SmokeTest.xml"
-                            timeout(time: 20, unit: 'MINUTES') {
-                                // SmokeTest.xml 10.85.25.76 
-                                // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
-                                bat """
-                                java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave" 
-                                """
-                                
-                                // bat """
-                                // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "lnx]${LIN_AGENT_IP}]root]trustwave"
-                                // """
-                                // bat """
-                                // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
-                                // """
-                            }
+                            // SmokeTest.xml 10.85.25.76 
+                            // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
+                            bat """
+                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave" 
+                            """
+                            
+                            // bat """
+                            // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "lnx]${LIN_AGENT_IP}]root]trustwave"
+                            // """
+                            // bat """
+                            // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
+                            // """
                             RES.WIN_TESTS = 'OK'
                             echo "BEFORE STASH"
                             stash allowEmpty: true, includes: 'test-output/', name: 'win_stash'
