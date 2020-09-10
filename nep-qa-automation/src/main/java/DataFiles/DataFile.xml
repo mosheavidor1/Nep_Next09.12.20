@@ -16,12 +16,12 @@
   <AllowPNG/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
-  <WindowHeight>8976</WindowHeight>
+  <WindowHeight>8400</WindowHeight>
   <WindowWidth>23040</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>7</ActiveSheet>
-  <FirstVisibleSheet>7</FirstVisibleSheet>
+  <ActiveSheet>5</ActiveSheet>
+  <FirstVisibleSheet>5</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -430,7 +430,7 @@
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
     <Cell ss:StyleID="s71" ss:Formula="=Cofigurations!RC"><Data ss:Type="String"> {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 60,&#10;   &quot;report_period&quot;: 50,&#10;   &quot;ds_max_off_period&quot;: 48,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;</Data></Cell>
-    <Cell ss:StyleID="s72"><Data ss:Type="String">180</Data></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">600</Data></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">300</Data></Cell>
    </Row>
   </Table>
@@ -446,11 +446,13 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
+   <TopRowVisible>1</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
      <ActiveCol>1</ActiveCol>
-     <RangeSelection>R1C2:R2C3</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -554,7 +556,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <LeftColumnVisible>4</LeftColumnVisible>
    <Panes>
     <Pane>
