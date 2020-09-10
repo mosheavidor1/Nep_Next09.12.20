@@ -1,5 +1,6 @@
 import groovy.util.XmlSlurper
 import groovy.util.XmlParser
+import java.time.LocalDateTime
 
 //input parameter: codesigner_version
 //input parameter: installerlnx_version
@@ -28,6 +29,8 @@ node('nep-build-centos7') {
 				PRODUCT_VERSION = params['product_version']
 				NEXUS_ARTIFACT_VERSION = "${PRODUCT_VERSION}.${BUILD_NUMBER}"
 				echo "PRODUCT_VERSION = ${PRODUCT_VERSION}"
+				
+				env.currentTime = LocalDateTime.now()
 			}
 		}
 
@@ -68,8 +71,9 @@ node('nep-build-centos7') {
 					parameters:  [
 						string(name: 'PRODUCT_NAME', value: "${MODULE_NAME}"),
 						string(name: 'PRODUCT_BRANCH', value: "${env.NEP_BRANCH}"),
-						string(name: 'PRODUCT_BUILD', value: "${PRODUCT_VERSION}"),
+						string(name: 'PRODUCT_BUILD', value: "${NEXUS_ARTIFACT_VERSION}"),
 						string(name: 'PRODUCT_ARTIFACT_LOCATION', value: "${MODULE_ARTIFACT_LOCATION}/${PRODUCT_VERSION}"),
+						string(name: 'PRODUCT_DATE', value: "${env.currentTime}"),
 						string(name: 'PRODUCT_INFO', value: currentBuild.displayName )
 					]				
        		}
