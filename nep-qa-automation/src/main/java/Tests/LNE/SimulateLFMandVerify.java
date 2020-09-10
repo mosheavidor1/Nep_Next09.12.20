@@ -65,7 +65,8 @@ public class SimulateLFMandVerify extends GenericTest {
 		    clearLFMDataromDB();
 		    Thread.sleep(10000);
 		    agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-		    agent.compareConfigurationToEPConfiguration(true);
+		 //TODO
+		    //   agent.compareConfigurationToEPConfiguration(true);
 		    Thread.sleep(10000);
 		    createLogs();
 		    Thread.sleep(schedule_report_timeout);

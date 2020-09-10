@@ -59,7 +59,8 @@ public class WLMCreateEvent extends GenericTest {
             agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 
             Thread.sleep(10000);
-            agent.compareConfigurationToEPConfiguration(true);
+           // TODO
+            //agent.compareConfigurationToEPConfiguration(true);
             lennyActions.clearFile(syslogFileName);
             createEvents();
             Thread.sleep(schedule_report_timeout);

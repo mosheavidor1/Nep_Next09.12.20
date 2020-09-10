@@ -164,48 +164,50 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
     }
 
-    public void compareConfigurationToEPConfiguration (boolean afterUpdate){
-        String configJson=null;
-        String sentConfiguration = null;
+    public void compareConfigurationToEPConfiguration (boolean afterUpdate, String sentConfiguration){
+        String actualConf = null;
+      //  String sentConfiguration = null;
         try {
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
 
-            String confFile = masterDownloadDirectory+"/" + ManagerActions.customerConfigurationSentSuccessfullyFile;
-            sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
+        //    String confFile = masterDownloadDirectory + "/" + ManagerActions.customerConfigurationSentSuccessfullyFile;
+        //    sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
 
-            String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";
+            //Copy the conf from EP to local file on the manager
+            String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";      
+            
             String configJsonRemotePath = getConfigPath(afterUpdate);
-            connection.CopyToLocal(configJsonRemotePath,localFilePath);
+            connection.CopyToLocal(configJsonRemotePath, localFilePath);
 
             FileInputStream inputStream = new FileInputStream(localFilePath);
-            configJson = IOUtils.toString(inputStream, Charset.defaultCharset());
+        	actualConf = IOUtils.toString(inputStream, Charset.defaultCharset());
             inputStream.close();
 
             JSONObject configSent = new JSONObject(sentConfiguration);
-            long sentCustomerID = configSent.getLong("customerId");
+          //  long sentCustomerID = configSent.getLong("customerId");
 
             //compare only the configuration part of the json sent. Customer ID is checked separately
-            JSONObject configurationObjectSent = configSent.getJSONObject("configuration");
+           // JSONObject configurationObjectSent = configSent.getJSONObject("configuration");
 
             //add schema version to corresponds config.json schema version location at the json checked
-            String schemaVersionSent = configurationObjectSent.getJSONObject("centcom_meta").getString("schema_version");
-            configurationObjectSent.optJSONObject("global_conf").put("schema_version", schemaVersionSent);
+            String schemaVersionSent = configSent.getJSONObject("centcom_meta").getString("schema_version");
+            configSent.optJSONObject("global_conf").put("schema_version", schemaVersionSent);
 
             //remove centcom_meta from compared json as it is not part of client's config.json
-            configurationObjectSent.remove("centcom_meta");
+            configSent.remove("centcom_meta");
             
             
 
-            JSONObject configReceived = new JSONObject(configJson);
+            JSONObject configReceived = new JSONObject(actualConf );
          //   String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
             
             
 
          //   org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
-            JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configurationObjectSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
+            JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
         }
         catch ( Exception e){
-            org.testng.Assert.fail("Could not compare configuration sent to configuration received by endpoint:\n" + e.toString() + "\n Configuration sent:  " + sentConfiguration.replaceAll("\n", "") + "\nConfiguration received: " + configJson );
+            org.testng.Assert.fail("Could not compare configuration sent to configuration received by endpoint:\n" + e.toString() + "\n Configuration sent:  " + sentConfiguration.replaceAll("\n", "") + "\nConfiguration received: " + actualConf  );
 
         }
     }

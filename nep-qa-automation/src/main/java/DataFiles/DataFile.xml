@@ -20,8 +20,8 @@
   <WindowWidth>23040</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>5</ActiveSheet>
-  <FirstVisibleSheet>5</FirstVisibleSheet>
+  <ActiveSheet>11</ActiveSheet>
+  <FirstVisibleSheet>8</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -642,6 +642,13 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
+     <ActiveCol>6</ActiveCol>
+    </Pane>
+   </Panes>
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
@@ -807,38 +814,40 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <TopRowVisible>1</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
+     <ActiveCol>6</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
  </Worksheet>
- <Worksheet ss:Name="ChangeCustomerConfiguration">
-  <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="2" x:FullColumns="1"
+ <Worksheet ss:Name="ChangeCustomerConfAndVerify">
+  <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:AutoFitWidth="0" ss:Width="382.20000000000005"/>
    <Column ss:Width="73.8"/>
    <Column ss:AutoFitWidth="0" ss:Width="82.8"/>
    <Column ss:Width="73.8"/>
    <Column ss:Width="53.400000000000006"/>
+   <Column ss:AutoFitWidth="0" ss:Width="165.6"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
     <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="108.45">
+   <Row ss:AutoFitHeight="0" ss:Height="18">
     <Cell ss:StyleID="s71" ss:Formula="=Cofigurations!RC[1]"><Data ss:Type="String"> {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 33,&#10;   &quot;report_period&quot;: 34,&#10;   &quot;ds_max_off_period&quot;: 24,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -853,56 +862,12 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
      <ActiveRow>1</ActiveRow>
-    </Pane>
-   </Panes>
-   <ProtectObjects>False</ProtectObjects>
-   <ProtectScenarios>False</ProtectScenarios>
-  </WorksheetOptions>
- </Worksheet>
- <Worksheet ss:Name="VerifyConfiguration">
-  <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="73.8"/>
-   <Column ss:AutoFitWidth="0" ss:Width="82.8"/>
-   <Column ss:Width="73.8"/>
-   <Column ss:Width="53.400000000000006"/>
-   <Column ss:Width="137.4"/>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="108.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-   </Row>
-  </Table>
-  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-   <PageSetup>
-    <Header x:Margin="0.3"/>
-    <Footer x:Margin="0.3"/>
-    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
-   </PageSetup>
-   <Unsynced/>
-   <Print>
-    <ValidPrinterInfo/>
-    <HorizontalResolution>600</HorizontalResolution>
-    <VerticalResolution>600</VerticalResolution>
-   </Print>
-   <Panes>
-    <Pane>
-     <Number>3</Number>
-     <ActiveRow>13</ActiveRow>
-     <ActiveCol>2</ActiveCol>
+     <ActiveCol>5</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

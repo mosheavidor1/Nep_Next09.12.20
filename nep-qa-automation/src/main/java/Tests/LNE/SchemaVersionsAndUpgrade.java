@@ -75,6 +75,8 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
             
             //TODO: Send a get-conf-update request with the simEP to verify the new configuration (customer level) in the response
             
+            //TODO delete the endpoints
+            
             JLog.logger.info("SchemaVersionsAndUpgrade::testCustomerEndpoint completed.");
 
         } catch (Exception e) {

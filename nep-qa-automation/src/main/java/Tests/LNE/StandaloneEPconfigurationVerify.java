@@ -3,6 +3,7 @@ package Tests.LNE;
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
 import Actions.LNEActions;
+import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
@@ -13,10 +14,19 @@ import org.testng.annotations.Test;
 public class StandaloneEPconfigurationVerify extends GenericTest {
 
     private LNEActions lennyActions;
-    private BaseAgentActions agent, agent2;
     static final String settings_toVerify_Alone = "\"check_update_period\":53";
     static final String settings_toVerify_Set = "\"check_update_period\":311";
     private String customerId;
+    
+    private static final String simulatedAgentIp1 = "1.2.3.4";
+    private static final String simulatedAgentIp2 = "1.2.3.5";
+    private static final String simulatedAgentOs = "Windows 10";
+    private static final String simulatedAgentMac1 = "84-7B-EB-21-99-100";
+    private static final String simulatedAgentMac2 = "84-7B-EB-21-99-101";
+    private static final String simulatedAgentName1 = "ep1";
+    private static final String simulatedAgentName2 = "ep2";
+    
+    
     
     @Factory(dataProvider = "getData")
     public StandaloneEPconfigurationVerify(Object dataToSet) {
@@ -25,74 +35,35 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     }
 
     @Test()
-    public void ChangeStandaloneEPconfigurationVerify()  {
-    	/*
-    	 JLog.logger.info("Starting ChangeStandaloneEPconfigurationVerify test ...");
-    	
-        try {
+    public void verifyStandaloneEPconfiguration()  {
+    	try {
+            JLog.logger.info("Starting StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration ...");
+	    	
+            SimulatedAgentActions simulatedAgent1 = new SimulatedAgentActions(customerId, simulatedAgentIp1, simulatedAgentName1, 
+            		simulatedAgentMac1, simulatedAgentOs);
+            
+            SimulatedAgentActions simulatedAgent2 = new SimulatedAgentActions(customerId, simulatedAgentIp2, simulatedAgentName2, 
+            		simulatedAgentMac2, simulatedAgentOs);
+            
+          //  lennyActions.SetCustomerConfiguration(customerId, configuration);
+           // lennyActions.setEndpointConfig(customerId, simulatedAgentName2, configuration);
+	        
+	        //In a real environment the following triggers the DS to send request for config upgrade to Centcom
+	        String action = simulatedAgent1.checkUpdates(simulatedAgentName1, "1.1.1", 0, 0, "1.1.1");
+	        org.testng.Assert.assertEquals(action, "config update", String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
+            
+	        action = simulatedAgent2.checkUpdates(simulatedAgentName1, "1.1.1", 0, 0, "1.1.1");
+	        org.testng.Assert.assertEquals(action, "config update", String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
+            
+	        
+	      //TODO delete the endpoints
+	        
+	        JLog.logger.info("SchemaVersionsAndUpgrade::testCustomerEndpoint completed.");
 
-         agent2 =  AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
         } catch (Exception e) {
-            org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify: This test requires usage of more than 1 EP. Need to configure another EP" + "\n" + e.toString());
-            org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify Failed");
+            org.testng.Assert.fail("StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration", e);
         }
-        try {
-           
-            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-            agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-            // 1.set stand alone config to endpoint
-            String StandAloneConfJson = data.get("StandAloneSet");
-           // String ep_name = agent.getEpName();
-           // if (null == ep_name)
-           //     org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify ep_name is invalid: " + ep_name);
-
-
-           // ep_name = ep_name.replaceAll("^\n+", "");
-           // lennyActions.SetCustomerConfiguration(customerId, updatedConfig);
-            //TODO: use setEndpointConfig
-            agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            Thread.sleep(5000);
-
-            // Verify on Stand Alone EP
-             if (null == verifyPatternInConfig(agent, settings_toVerify_Alone))
-                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration was not updated? - " + settings_toVerify_Alone + " was not found");
-            // Verify that configuration on second EP was not updated
-            if (null != verifyPatternInConfig(agent2, settings_toVerify_Alone))
-                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration was update on second EP - Error - " + settings_toVerify_Alone + " was found");
-
-
-            Thread.sleep(10000);
-            // 2.set revoke/ uninstall config to endpoint
-           
-            lennyActions.revokeEpConfiguration(customerId, ep_name);
-            Thread.sleep(10000);
-            agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            Thread.sleep(10000);
-            // Verify that configuration on second EP was not updated
-            if (null != verifyPatternInConfig(agent2, settings_toVerify_Alone))
-                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration was update on second EP - Error - " + settings_toVerify_Alone + " was found");
-
-            // 3.set config to both endpoints
-            String StandAloneSet = data.get("StandAloneSet");
-            lennyActions.SetCustomerConfiguration(customerId, StandAloneSet);
-            Thread.sleep(10000);
-            agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            agent2.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            agent2.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            Thread.sleep(10000);
-            // Verify that configuration on stand alone EP was updated
-            if (null == verifyPatternInConfig(agent, settings_toVerify_Set))
-                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration on stand alone EP was not updated - " + settings_toVerify_Set + " was not found");
-          // Verify that configuration on second EP was updated
-            if (null == verifyPatternInConfig(agent2, settings_toVerify_Set))
-                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify configuration on second EP was not updated - " + settings_toVerify_Set + " was not found");
-        }
-                catch (Exception e) {
-                org.testng.Assert.fail("ChangeStandaloneEPconfigurationVerify failed " + "\n" + e.toString());
-            }*/
+        
     }
 
     String verifyPatternInConfig(BaseAgentActions agent, String pattern) {
@@ -104,13 +75,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
 
     @AfterMethod
     public void Close(){
-        JLog.logger.info("Closing...");
-        if (agent!=null) {
-            agent.close();
-        }
-        if (agent2!=null) {
-            agent2.close();
-        }
+        
         if(lennyActions!=null){
             lennyActions.Close();
         }
