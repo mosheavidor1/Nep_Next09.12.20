@@ -3,7 +3,7 @@
     <groupId>com.trustwave.nep.nep-qa</groupId>
     <artifactId>nep-qa-automation</artifactId>
     <version>${module.version}</version>
-    <properties> 
+    <properties>
     	<module.version>0.0.0</module.version>
 		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
