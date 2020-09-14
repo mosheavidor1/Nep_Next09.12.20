@@ -425,6 +425,10 @@ public class BinaryUpdate extends GenericTest {
             JLog.logger.info("Closing endpoint");
             endpoint.close();
         }
+        if (lneActions != null) {
+            JLog.logger.info("Closing lneActions");
+            lneActions.Close();
+        }
     }
     
     
