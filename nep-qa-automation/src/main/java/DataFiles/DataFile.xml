@@ -1116,7 +1116,6 @@
     <Cell><Data ss:Type="String">EP_Type_2</Data></Cell>
     <Cell><Data ss:Type="String">update_win_ver</Data></Cell>
     <Cell><Data ss:Type="String">update_linux_ver</Data></Cell>
-    <Cell><Data ss:Type="String">s3Bucket</Data></Cell>
     <Cell><Data ss:Type="String">update_bad_win_ver</Data></Cell>
     <Cell><Data ss:Type="String">update_bad_linux_ver</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
@@ -1132,12 +1131,11 @@
     <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">linux</Data></Cell>
-    <Cell><Data ss:Type="String">1.1.1.5000</Data></Cell>
-    <Cell><Data ss:Type="String">1.1.1.5000</Data></Cell>
-    <Cell><Data ss:Type="String">nep-tests-nep-dev-{num}-eu-west-1</Data></Cell>
+    <Cell><Data ss:Type="String">1.2.0.7000</Data></Cell>
+    <Cell><Data ss:Type="String">1.2.0.7000</Data></Cell>
     <Cell><Data ss:Type="String">1.1.1.5001</Data></Cell>
     <Cell><Data ss:Type="String">1.1.1.5002</Data></Cell>
-    <Cell><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">

@@ -1073,8 +1073,20 @@ public class LNEActions extends ManagerActions  {
     }
 
     public void restartDsService() {
-        JLog.logger.info("Restarting DS...");
+        JLog.logger.info("Restarting ds...");
         String response = connection.Execute("nep_service ds restart");
+        JLog.logger.debug("Response: " + response);
+    }
+
+    public void restartStubService() {
+        JLog.logger.info("Restarting stub-srv...");
+        String response = connection.Execute("nep_service stub-srv restart");
+        JLog.logger.debug("Response: " + response);
+    }
+
+    public void restartDsMgmtService() {
+        JLog.logger.info("Restarting ds-mgmt...");
+        String response = connection.Execute("nep_service ds-mgmt restart");
         JLog.logger.debug("Response: " + response);
     }
     
@@ -1094,7 +1106,7 @@ public class LNEActions extends ManagerActions  {
 
     //TODO do we want to use the existing jenkins job?
     public void cleanLinuxBucket(String s3Bucket, List<String> linuxFiles) {
-/*
+
     	JLog.logger.info("Cleaning the bucket now...");
 
     	for (String file : linuxFiles) {
@@ -1106,12 +1118,12 @@ public class LNEActions extends ManagerActions  {
                     " cut -d '=' -f 2` ; cd /home/; s3_cmd delete_file " + s3Bucket + " binaries" +
                     "/linux/" + file);
             JLog.logger.info("Response: " + response);
-        } */
+        }
     }
 
     //TODO do we want to use the existing jenkins job?
     public void cleanWindowsBucket(String s3Bucket, List<String> windowsFiles) {
-/*
+
     	JLog.logger.info("Cleaning the bucket now...");
 
     	for (String file : windowsFiles) {
@@ -1123,6 +1135,42 @@ public class LNEActions extends ManagerActions  {
                     " cut -d '=' -f 2` ; cd /home/; s3_cmd delete_file " + s3Bucket + " binaries" +
                     "/windows/" + file);
             JLog.logger.info("Response: " + response);
-        } */
+        }
+    }
+
+    public void disableGradualUpgrade() {
+
+        JLog.logger.info("Disabling gradual upgrade on LNE");
+
+        String response = connection.Execute("echo \"gradual.upgrade.enable = false\" >> " +
+                "/work/services/stub-srv/etc/nep-properties/nepa-dserver.properties");
+    }
+
+    public String getBucketId() {
+        String response = connection.Execute("grep aws.updates.bucket-id " +
+                "/work/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2");
+
+        return response.trim();
+    }
+
+    public void cleanGlobalVersionsTable() {
+        JLog.logger.debug("Cleaning global_versions table");
+
+        String prevWinVer = connection.Execute("echo 'select version from nep_data.global_versions where " +
+                "component=\"win_binary_update_prev\"' | nep_exec mysql mysql -s -ptrustwave");
+        JLog.logger.debug("windows prev version: " + prevWinVer);
+
+        String response = connection.Execute("echo 'update nep_data.global_versions set version=\"" + prevWinVer + "\" " +
+                "where component=\"win_binary_update\"' | nep_exec mysql mysql -s -ptrustwave");
+        JLog.logger.debug("Reverted win version");
+
+        String prevLinuxVer = connection.Execute("echo 'select version from nep_data.global_versions where " +
+                "component=\"linux_binary_update_prev\"' | nep_exec mysql mysql -s -ptrustwave");
+        JLog.logger.debug("linux prev version: " + prevLinuxVer);
+
+        response = connection.Execute("echo 'update nep_data.global_versions set version=\"" + prevLinuxVer + "\" " +
+                "where component=\"linux_binary_update\"' | nep_exec mysql mysql -s -ptrustwave");
+        JLog.logger.debug("Reverted linux version");
+
     }
 }

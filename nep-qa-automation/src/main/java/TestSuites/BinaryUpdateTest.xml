@@ -7,7 +7,7 @@
 
         <groups>
             <dependencies>
-                <group  name= "VerifyInstallation" depends-on="InitCustomer" ></group>
+<!--                <group  name= "VerifyInstallation" depends-on="InitCustomer" ></group>-->
             </dependencies>
         </groups>
 
