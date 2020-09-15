@@ -7,6 +7,7 @@
 
         <groups>
             <dependencies>
+            	<group  name= "InitCustomer" depends-on="Cleanup" ></group>
                 <group  name= "InstallEP" depends-on="InitCustomer" ></group>
                 <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
                
@@ -19,12 +20,12 @@
                 <group  name= "BinaryUpdate" depends-on="DeleteEndpoint" ></group>
                 
                 <group  name= "StandaloneEPconfiguration" depends-on="InitCustomer" ></group>
-                <group  name= "Cleanup" depends-on="InstallEP" ></group>
                 
             </dependencies>
         </groups>
 
         <classes>
+        		<class name = "Tests.LNE.Cleanup"  />
               	<class name = "Tests.LNE.InitCustomer"/>
               	<class name = "Tests.LNE.InstallEP" />
             	<class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
@@ -37,7 +38,7 @@
                	<class name = "Tests.LNE.RevokeEndpoint" />
 	            <class name = "Tests.LNE.DeleteEndpoint" />
             	<class name = "Tests.LNE.BinaryUpdate" />
-    	        <class name = "Tests.LNE.Cleanup"  />
+    	        
         </classes>
     </test>
 

@@ -1,7 +1,5 @@
 package Tests.LNE;
 
-import Actions.AgentActionsFactory;
-import Actions.BaseAgentActions;
 import Actions.CheckUpdatesActions;
 import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
@@ -26,7 +24,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
     
     private SimulatedAgentActions simulatedAgent;
     
-    private boolean confWasSet = false;
+    private static boolean confWasSet = false;
 
     @Factory(dataProvider = "getData")
     public ChangeCustomerConfAndVerify(Object dataToSet) {
@@ -36,7 +34,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
     }
 
     @Test(groups = { "ChangeCustomerConfAndVerify" } )
-    public void ChangeCustomerConfAndVerify()  {
+    public void changeCustomerConfAndVerify()  {
 
         JLog.logger.info("Starting ChangeCustomerConfAndVerify...");
         

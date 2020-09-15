@@ -36,7 +36,7 @@ public class Cleanup extends GenericTest {
     /**
      * Need to delete endpoints from DS side + check update until we get uninstall action (then entities are actually deleted for DB)
      */
-    @Test(priority = 1000, groups = { "Cleanup" } )
+    @Test(groups = { "Cleanup" } )
     public void cleanup()  {
 
         JLog.logger.info("Starting Cleanup...");
