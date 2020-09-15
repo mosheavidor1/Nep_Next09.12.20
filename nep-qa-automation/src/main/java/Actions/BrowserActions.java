@@ -83,6 +83,7 @@ public class BrowserActions extends ManagerActions {
 
             login.WaitUntilTitleAppearAndPageLoad("Trustwave Fusion");
             login.UserName.SetText(userName);
+            login.Continue.click();
             login.Password.SetText(password);
             login.LoginButton.click();
 

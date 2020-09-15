@@ -14,7 +14,11 @@ public class LoginPage extends GenericPage{
 	 	private WebElement UserName_element;
 	 	public TextBox UserName;
 
-	 @FindBy(how=How.ID,using="login-password--material-input")
+	@FindBy(how=How.ID,using="login-submit-button--div-label")
+		public WebElement Continue;
+
+
+	@FindBy(how=How.ID,using="login-password--material-input")
 	 	private WebElement Password_element;
 	 	public TextBox Password;
 	 	
