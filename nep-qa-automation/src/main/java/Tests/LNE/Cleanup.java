@@ -2,16 +2,12 @@ package Tests.LNE;
 
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
-import Actions.CheckUpdatesActions;
 import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 
-import org.json.JSONObject;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -48,16 +44,14 @@ public class Cleanup extends GenericTest {
         lennyActions.deleteWithoutVerify(customerId, agentActions.getEpName());
         
         try {
-        	Thread.sleep(2000);//Sleep 1 second
+        	Thread.sleep(2000);//Sleep 2 seconds
         }
         catch(InterruptedException ex) {
         	JLog.logger.info("Failed to sleep");
         }
         
         simulatedAgent = new SimulatedAgentActions();
-        String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1");
-        
-        //org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
+        simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1");
     }
 
     @AfterMethod
