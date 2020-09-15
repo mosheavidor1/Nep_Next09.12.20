@@ -157,7 +157,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
 
     }
 	
-	public void installEndpointWithoutAdditions(int timeout) {
+	public void installEndpoint(int timeout) {
         try {
             JLog.logger.info("Installing EP...");
             String installerLocation = getDownloadFolder() + "/" + windowsInstallationFile;

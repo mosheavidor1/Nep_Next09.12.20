@@ -13,7 +13,6 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -38,6 +37,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     protected SSHManager connection;
     public static final int connection_port =22;
 
+    public static final String localFilePath = PropertiesFile.getManagerDownloadFolder() + "/" + "ConfigJsonCopy.txt"; 
 	
 	public BaseAgentActions(String epIp, String epUserName, String epPassword) {
         this.epIp = epIp;
@@ -46,16 +46,31 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         connection = new SSHManager(epUserName, epPassword, epIp, connection_port );
 	}
 	
-	public void installEPIncludingRequisites(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){     
+	/**
+	 * This function performs the following actions:
+	 * Uninstall EP
+	 * Copy new installer
+	 * Edit hosts file
+	 * Run the installer
+	 * Stop the service
+	 * Add CA certificate
+	 * Start the service
+	 * 
+	 * Consider to use the InstallEndpoint directly
+	 * 
+	 * @param installationTimeout
+	 * @param epServiceTimeout
+	 * @param dbJsonToShowActiveTimeout
+	 */
+	public void reinstallEndpoint(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){     
 	        
 		uninstallEndpoint(installationTimeout);                                                                      
 	    copyInstaller();                                                                                           
 	    appendToHostsFile();                                                                                                
-	    installEndpointWithoutAdditions(installationTimeout);                                                             
+	    installEndpoint(installationTimeout);                                                             
 	    stopEPService(epServiceTimeout);
 	    addCaCertificate();                                                                                                 
 	    startEPService(epServiceTimeout);                                                                                 
-	    checkEndPointActiveByDbJson(dbJsonToShowActiveTimeout);                                                           
 	} 
 	
 	public void checkNotRevoked() {
@@ -166,16 +181,8 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
     public void compareConfigurationToEPConfiguration (boolean afterUpdate, String sentConfiguration){
         String actualConf = null;
-      //  String sentConfiguration = null;
         try {
-            String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
-
-        //    String confFile = masterDownloadDirectory + "/" + ManagerActions.customerConfigurationSentSuccessfullyFile;
-        //    sentConfiguration = FileUtils.readFileToString(new File(confFile),Charset.defaultCharset());
-
-            //Copy the conf from EP to local file on the manager
-            String localFilePath = masterDownloadDirectory + "/" + "ConfigJsonCopy.txt";      
-            
+                           
             String configJsonRemotePath = getConfigPath(afterUpdate);
             connection.CopyToLocal(configJsonRemotePath, localFilePath);
 
@@ -184,10 +191,6 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
             inputStream.close();
 
             JSONObject configSent = new JSONObject(sentConfiguration);
-          //  long sentCustomerID = configSent.getLong("customerId");
-
-            //compare only the configuration part of the json sent. Customer ID is checked separately
-           // JSONObject configurationObjectSent = configSent.getJSONObject("configuration");
 
             //add schema version to corresponds config.json schema version location at the json checked
             String schemaVersionSent = configSent.getJSONObject("centcom_meta").getString("schema_version");
@@ -195,15 +198,8 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
             //remove centcom_meta from compared json as it is not part of client's config.json
             configSent.remove("centcom_meta");
-            
-            
 
             JSONObject configReceived = new JSONObject(actualConf );
-         //   String receivedCustomerID = configReceived.getJSONObject("global_conf").getString("customer_id");
-            
-            
-
-         //   org.testng.Assert.assertEquals(sentCustomerID, Long.parseLong(receivedCustomerID), "Customer ID sent is not identical to customer ID appears at config.json file: ");
             JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
         }
         catch ( Exception e){
@@ -240,48 +236,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
     }
 
-    public void checkEndPointActiveByDbJson(int timeout) {
-        try {
-
-            JLog.logger.info("Checking if db.json file is present...");
-
-            String text = "";
-            boolean active = false;
-            //File file = new File(dbJsonPath);
-
-            String dbJsonRemoteFile = null;
-
-            dbJsonRemoteFile = getDbJsonPath();
-
-            LocalDateTime start = LocalDateTime.now();
-            LocalDateTime current = start;
-            Duration durationTimeout = Duration.ofSeconds(timeout);
-            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                if (connection.IsFileExists(dbJsonRemoteFile)) {
-                    text =connection.GetTextFromFile(dbJsonRemoteFile);
-                    if (text.contains("\"EndpointId\": \"") && text.contains("\"DsInitialHost\": ")) {
-                        active = true;
-                        break;
-                    }
-                }
-
-                Thread.sleep(checkInterval);
-                current = LocalDateTime.now();
-
-            }
-
-            if (! connection.IsFileExists(dbJsonRemoteFile))
-                org.testng.Assert.fail("Endpoint is not connected - db.json file was not found at: " + dbJsonRemoteFile + " after timeout(sec): " + timeout);
-
-            if (!active)
-                org.testng.Assert.fail("Endpoint is not connected according to db.json file after timeout(sec): " + timeout + ". Failed to find End Point ID  Or Host in db.json: " + dbJsonRemoteFile + "\ndb.json file content:\n" + text);
-        }
-        catch (Exception e) {
-            org.testng.Assert.fail("Could not check if endpoint is active by db.json file." + "\n" + e.toString(), e);
-        }
-
-
-    }
+    
 
     public String getEpIdFromDbJson() {
 

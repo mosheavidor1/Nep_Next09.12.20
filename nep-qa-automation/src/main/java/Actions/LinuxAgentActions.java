@@ -133,7 +133,7 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
 
     }
 	
-	public void installEndpointWithoutAdditions(int timeout) {
+	public void installEndpoint(int timeout) {
         try {
             JLog.logger.info("Installing EP...");
             String installerLocation = getDownloadFolder() + "/" + linuxInstallationFile;

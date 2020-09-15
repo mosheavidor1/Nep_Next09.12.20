@@ -3,6 +3,7 @@ package Actions;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,7 +33,7 @@ public class SimulatedAgentActions {
 	RequestSpecification requestSpecification;
 
 	private String agentUuid;
-	private String conf;
+	private String lastConf;
 	private String name;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -100,35 +101,75 @@ public class SimulatedAgentActions {
 
 	}
 
-	public SimulatedAgentActions(String customerId, String ip, String name, String macAddress, String osType) {
+	public SimulatedAgentActions() {
 		try {
 			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest"))).build();
-//			RestAssured.baseURI = String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest"));
-			register(customerId, ip, name, osType, macAddress);
+			
 		}
 		catch (Exception e) {
 			org.testng.Assert.fail("Could not set RestAssured.baseURI", e);
 		}
 	}
+	
+	/**
+	 * Sends check updates post request to Lenny with the given params, returns response body as is
+	 * 
+	 * @param epName
+	 * @param binVersion
+	 * @param confVersion
+	 * @param reportingStatus
+	 * @param schemaVersion
+	 * @return
+	 */
+	public String sendCheckUpdatesAndGetResponse(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
+		return sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion);
+	}
+	
+	/**
+	 * Sends check updates post request to Lenny with the given params, returns the action from the response body 
+	 * 
+	 * @param epName
+	 * @param binVersion
+	 * @param confVersion
+	 * @param reportingStatus
+	 * @param schemaVersion
+	 * @return
+	 */
+	public String sendCheckUpdatesAndGetAction(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
+		
+		String response = sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion);
+		
+		try {
+            JSONObject json = new JSONObject(response);
+            String action = json.getString("action");
+            return action;
+        }
+        catch (Exception e){
+            org.testng.Assert.fail("Could not parse action from check updates response.", e);
+            return "";
+        }
+	}
+	
 
-	public String checkUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
+	private String sendCheckUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
 
 		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version "
 				, getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion);
 
 		JsonPath jsonPathEvaluator = null;
 		try {
-			String action=
+			String response=
 					given().spec(requestSpecification)
 							.contentType("application/json")
 							.when()
-							.get(String.format(CHECK_UPDATES, getAgentUuid()/*, epName*/, binVersion, confVersion, reportingStatus,epName ,schemaVersion)).then()
+							.get(String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion)).then()
 							.assertThat()
 							.statusCode(HttpStatus.SC_OK)
 							.extract().response().body().asString();
-			JLog.logger.info("Check updates succeeded, got action: '{}'", action);
+			
+			JLog.logger.info("Check updates succeeded, got response: '{}'", response);
 
-			return action;
+			return response;
 
 		} catch (JsonPathException e) {
 			JLog.logger.error("Failed to parse the check updates response {}", (jsonPathEvaluator != null ? jsonPathEvaluator.prettify() : ""), e);
@@ -141,7 +182,7 @@ public class SimulatedAgentActions {
 		}
 	}
 
-	public void register(String customerId, String ip, String hostname, String osType, String macAddress) {
+	public void register(String customerId, String ip, String hostname, String macAddress, String osType) {
 
 		JLog.logger.info("Starting SimulatedAgentActions:register. Params: customer {} ip {} hostname {} os {} macAddress {}",
 				customerId, ip, hostname, osType, macAddress);
@@ -182,9 +223,9 @@ public class SimulatedAgentActions {
 		}
 	}
 
-	public String getConf(String epId){
+	public String getConf(){
 
-		JLog.logger.info("Starting SimulatedAgentActions:getConf. Params: epId {}",epId);
+		JLog.logger.info("Starting SimulatedAgentActions:getConf. Params: epId {}", agentUuid);
 
 
 		JsonPath jsonPathEvaluator = null;
@@ -193,12 +234,12 @@ public class SimulatedAgentActions {
 					given().spec(requestSpecification)
 							.contentType("application/json")
 							.when()
-							.get(String.format(GET_CONF, epId)).then()
+							.get(String.format(GET_CONF, agentUuid)).then()
 							.assertThat()
 							.statusCode(HttpStatus.SC_OK)
 							.extract().response().body().asString();
 			JLog.logger.info("get conf succeeded, got conf: '{}'", conf);
-			setConf(conf);
+			setLastConf(conf);
 			return conf;
 
 		} catch (JsonPathException e) {
@@ -218,12 +259,12 @@ public class SimulatedAgentActions {
 		this.agentUuid = agentUuid;
 	}
 
-	public String getConf() {
-		return conf;
+	public String getLastConf() {
+		return lastConf;
 	}
 
-	public void setConf(String conf) {
-		this.conf = conf;
+	public void setLastConf(String conf) {
+		this.lastConf = conf;
 	}
 
 	public String getName() {

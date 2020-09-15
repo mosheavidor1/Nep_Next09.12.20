@@ -2,6 +2,7 @@ package Tests.LNE;
 
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
+import Actions.CheckUpdatesActions;
 import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
@@ -39,18 +40,19 @@ public class RevokeEndpoint extends GenericTest {
             lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent =  AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 
-            simulatedAgent = new SimulatedAgentActions(customerId, SimulatedAgentIp, SimulatedAgentName, "84-7B-EB-21-99-99","Windows 10");
+            simulatedAgent = new SimulatedAgentActions();
+            simulatedAgent.register(customerId, SimulatedAgentIp, SimulatedAgentName, "84-7B-EB-21-99-99","Windows 10");
 
             lennyActions.revoke(customerId, agent.getEpName());
             agent.checkRevoked(Integer.parseInt(general.get("EP Service Timeout")));
 
-            String checkUpdatesResponse = simulatedAgent.checkUpdates(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
-            String action = JsonUtil.GetCheckUpdatesAction(checkUpdatesResponse);
+            String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
 
-            agent.installEPIncludingRequisites(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
 
-            lennyActions.delete(customerId, SimulatedAgentName);
-            simulatedAgent.checkUpdates(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
+            agent.reinstallEndpoint(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
+
+            lennyActions.deleteWithoutVerify(customerId, SimulatedAgentName);
+            simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
 
             // Assert after installing the agent back
             // Verify the other agent didn't get uninstall command
@@ -65,7 +67,7 @@ public class RevokeEndpoint extends GenericTest {
 
     @AfterMethod
     public void Close(){
-        JLog.logger.info("Closing...");
+    	
         if(lennyActions!=null){
             lennyActions.Close();
         }

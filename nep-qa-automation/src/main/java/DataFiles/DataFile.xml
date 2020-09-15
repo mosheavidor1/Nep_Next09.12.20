@@ -16,12 +16,12 @@
   <AllowPNG/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
-  <WindowHeight>8400</WindowHeight>
+  <WindowHeight>8976</WindowHeight>
   <WindowWidth>23040</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>11</ActiveSheet>
-  <FirstVisibleSheet>8</FirstVisibleSheet>
+  <ActiveSheet>7</ActiveSheet>
+  <FirstVisibleSheet>7</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -446,7 +446,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <TopRowVisible>1</TopRowVisible>
    <Panes>
     <Pane>
@@ -531,7 +530,7 @@
     <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
-    <Cell><Data ss:Type="String">StandAloneSet</Data></Cell>
+    <Cell><Data ss:Type="String">config</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="108.45">
     <Cell ss:StyleID="s71" ss:Formula="=Cofigurations!RC[5]"><Data ss:Type="String"> {&#10;        &quot;centcom_meta&quot;: {&#10;            &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;        },&#10;        &quot;global_conf&quot;: {&#10;            &quot;log_level&quot;: &quot;info&quot;&#10;        },&#10;        &quot;agent&quot;: {&#10;            &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;            &quot;ds_port&quot;: 443,&#10;            &quot;ds_protocol&quot;: &quot;https&quot;,&#10;            &quot;check_update_period&quot;: 53,&#10;            &quot;report_period&quot;: 60,&#10;            &quot;ds_max_off_period&quot;: 24,&#10;            &quot;modules&quot;: [{&#10;                    &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }, {&#10;                    &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }, {&#10;                    &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }&#10;            ],&#10;            &quot;transport&quot;: {&#10;                &quot;server_type&quot;: 2,&#10;                &quot;syslog&quot;: {&#10;                    &quot;host&quot;: &quot;10.85.25.43&quot;,&#10;                    &quot;port&quot;: 6514,&#10;                    &quot;protocol&quot;: &quot;Secured&quot;&#10;                },&#10;                &quot;scp&quot;: {&#10;                    &quot;host&quot;: &quot;10.85.25.43&quot;,&#10;                    &quot;port&quot;: 2200,&#10;                    &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;                    &quot;user&quot;: &quot;twsiem&quot;,&#10;                    &quot;max_send_folder_size&quot;: 100&#10;                }&#10;            }&#10;        },&#10;        &quot;wlm&quot;: {&#10;            &quot;transport_type&quot;: 2,&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5,&#10;            &quot;monitor_items&quot;: []&#10;        },&#10;        &quot;lfm&quot;: {&#10;            &quot;monitor_items&quot;: [{&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;os_type&quot;: &quot;windows&quot;,&#10;                    &quot;dir_path&quot;: &quot;c:\\test_files&quot;,&#10;                    &quot;filename&quot;: &quot;.*\\.log&quot;,&#10;                    &quot;header_lines&quot;: 0,&#10;                    &quot;only_new_data&quot;: true,&#10;                    &quot;configured_source&quot;: &quot;log-src&quot;,&#10;                    &quot;tag&quot;: &quot;log-tag&quot;,&#10;                    &quot;filters&quot;: [{&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;test&quot;,&#10;                                &quot;line&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;nep&quot;,&#10;                                &quot;file&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;included&quot;&#10;                            ]&#10;                        }&#10;                    ]&#10;                }, {&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;os_type&quot;: &quot;linux&quot;,&#10;                    &quot;dir_path&quot;: &quot;/root/test_files&quot;,&#10;                    &quot;filename&quot;: &quot;.*\\.log&quot;,&#10;                    &quot;header_lines&quot;: 0,&#10;                    &quot;only_new_data&quot;: true,&#10;                    &quot;configured_source&quot;: &quot;log-src&quot;,&#10;                    &quot;tag&quot;: &quot;log-tag&quot;,&#10;                    &quot;filters&quot;: [{&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;test&quot;,&#10;                                &quot;line&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;file&quot;,&#10;                                &quot;nep&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Data&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;included&quot;&#10;                            ]&#10;                        }&#10;                    ]&#10;                }, {&#10;                    &quot;dir_path&quot;: &quot;c:\\test_files2&quot;,&#10;                    &quot;os_type&quot;: &quot;windows&quot;,&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;only_new_data&quot;: false,&#10;                    &quot;filename&quot;: &quot;test_file.txt&quot;,&#10;                    &quot;configured_source&quot;: &quot;txt-src&quot;,&#10;                    &quot;tag&quot;: &quot;txt-tag&quot;,&#10;                    &quot;header_lines&quot;: 0&#10;                }, {&#10;                    &quot;dir_path&quot;: &quot;/root/test_files2&quot;,&#10;                    &quot;os_type&quot;: &quot;linux&quot;,&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;only_new_data&quot;: false,&#10;                    &quot;filename&quot;: &quot;test_file.txt&quot;,&#10;                    &quot;configured_source&quot;: &quot;txt-src&quot;,&#10;                    &quot;tag&quot;: &quot;txt-tag&quot;,&#10;                    &quot;header_lines&quot;: 0&#10;                }&#10;            ],&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5&#10;        },&#10;        &quot;llm&quot;: {&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5,&#10;            &quot;transport_type&quot;: 2,&#10;            &quot;monitor_items&quot;: []&#10;        }&#10;    }&#10;</Data></Cell>
@@ -556,11 +555,11 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
    <LeftColumnVisible>4</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>2</ActiveRow>
      <ActiveCol>7</ActiveCol>
     </Pane>
    </Panes>
@@ -862,7 +861,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
@@ -1076,12 +1074,39 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <LeftColumnVisible>6</LeftColumnVisible>
+   <TopRowVisible>1</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveCol>11</ActiveCol>
-     <RangeSelection>C12</RangeSelection>
+     <ActiveRow>1</ActiveRow>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Cleanup">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="14.4">
+   <Column ss:AutoFitWidth="0" ss:Width="258.60000000000002"/>
+   <Row>
+    <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <RangeSelection>R1C1:R2C1</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -1210,8 +1235,9 @@
    <Panes>
     <Pane>
      <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
      <ActiveCol>9</ActiveCol>
-     <RangeSelection>C10</RangeSelection>
+     <RangeSelection>R1C10:R2C10</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

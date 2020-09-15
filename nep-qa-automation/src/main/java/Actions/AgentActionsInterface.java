@@ -3,7 +3,7 @@ package Actions;
 public interface AgentActionsInterface  {
 
     
-    public void installEndpointWithoutAdditions(int timeout);
+    public void installEndpoint(int timeout);
     
     public void uninstallEndpoint(int timeout);
     

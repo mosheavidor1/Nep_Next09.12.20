@@ -1,11 +1,17 @@
 package Tests.LNE;
 
-import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
+import Actions.CheckUpdatesActions;
 import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
+import Utils.JsonUtil;
 import Utils.Logs.JLog;
+import Utils.PropertiesFile.PropertiesFile;
+
+import org.json.JSONObject;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -14,17 +20,25 @@ import org.testng.annotations.Test;
 public class StandaloneEPconfigurationVerify extends GenericTest {
 
     private LNEActions lennyActions;
-    static final String settings_toVerify_Alone = "\"check_update_period\":53";
-    static final String settings_toVerify_Set = "\"check_update_period\":311";
+    
+    private static final String tag_to_update = "ds_max_off_perios";
+    private static final String customerLevelValue = "10";
+    private static final String endpointLevelValue = "15";
+    
+    private static final String secondCustomerLevelValue = "20";
+    
     private String customerId;
     
     private static final String simulatedAgentIp1 = "1.2.3.4";
     private static final String simulatedAgentIp2 = "1.2.3.5";
     private static final String simulatedAgentOs = "Windows 10";
-    private static final String simulatedAgentMac1 = "84-7B-EB-21-99-100";
-    private static final String simulatedAgentMac2 = "84-7B-EB-21-99-101";
+    private static final String simulatedAgentMac1 = "84-7B-EB-21-22";
+    private static final String simulatedAgentMac2 = "84-7B-EB-21-23";
     private static final String simulatedAgentName1 = "ep1";
     private static final String simulatedAgentName2 = "ep2";
+    
+    SimulatedAgentActions simulatedAgent1;
+    SimulatedAgentActions simulatedAgent2;
     
     
     
@@ -32,38 +46,83 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     public StandaloneEPconfigurationVerify(Object dataToSet) {
         super(dataToSet);
         customerId = general.get("Customer Id");
+        lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
     }
 
-    @Test()
+    @Test(groups = { "StandaloneEPconfiguration" })
     public void verifyStandaloneEPconfiguration()  {
     	try {
             JLog.logger.info("Starting StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration ...");
+            
+            String customerConf = data.get("config");
+            customerConf = JsonUtil.ChangeTagConfiguration(customerConf, tag_to_update, customerLevelValue);
+            
+            //Prepare for verification
+            JSONObject customerConfigSent = new JSONObject(customerConf);
+            customerConfigSent.remove("centcom_meta");
+            
+            String epConf = data.get("config");
+            epConf = JsonUtil.ChangeTagConfiguration(epConf, tag_to_update, endpointLevelValue);
+            
+            //Prepare for verification
+            JSONObject epConfigSent = new JSONObject(epConf);
+            epConfigSent.remove("centcom_meta");
 	    	
-            SimulatedAgentActions simulatedAgent1 = new SimulatedAgentActions(customerId, simulatedAgentIp1, simulatedAgentName1, 
+            simulatedAgent1 = new SimulatedAgentActions();
+            simulatedAgent1.register(customerId, simulatedAgentIp1, simulatedAgentName1, 
             		simulatedAgentMac1, simulatedAgentOs);
             
-            SimulatedAgentActions simulatedAgent2 = new SimulatedAgentActions(customerId, simulatedAgentIp2, simulatedAgentName2, 
+            simulatedAgent2 = new SimulatedAgentActions();
+            simulatedAgent2.register(customerId, simulatedAgentIp2, simulatedAgentName2, 
             		simulatedAgentMac2, simulatedAgentOs);
             
-          //  lennyActions.SetCustomerConfiguration(customerId, configuration);
-           // lennyActions.setEndpointConfig(customerId, simulatedAgentName2, configuration);
-	        
-	        //In a real environment the following triggers the DS to send request for config upgrade to Centcom
-	        String action = simulatedAgent1.checkUpdates(simulatedAgentName1, "1.1.1", 0, 0, "1.1.1");
-	        org.testng.Assert.assertEquals(action, "config update", String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
+            lennyActions.SetCustomerConfiguration(customerId, customerConf);
+            lennyActions.setEndpointConfig(customerId, simulatedAgentName2, epConf);
             
-	        action = simulatedAgent2.checkUpdates(simulatedAgentName1, "1.1.1", 0, 0, "1.1.1");
-	        org.testng.Assert.assertEquals(action, "config update", String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
+            //agent1 expects to get the customer conf
+            sendCheckUpdatesAndGetConfAndVerify(simulatedAgent1, simulatedAgentName1, customerConfigSent, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName());
+            //agent2 expects to get the standalone conf
+            sendCheckUpdatesAndGetConfAndVerify(simulatedAgent2, simulatedAgentName2, epConfigSent, CheckUpdatesActions.CONFIGURATION_SWITCH.getActionName());
             
+	       
+            //Call revoke ep conf for agent 2
+	        lennyActions.revokeEpConfiguration(customerId, simulatedAgentName2);
 	        
-	      //TODO delete the endpoints
+	        //agent2 expects to get the customer conf now
+	        sendCheckUpdatesAndGetConfAndVerify(simulatedAgent2, simulatedAgentName2, customerConfigSent, CheckUpdatesActions.CONFIGURATION_SWITCH.getActionName());
 	        
-	        JLog.logger.info("SchemaVersionsAndUpgrade::testCustomerEndpoint completed.");
+	        
+	        //Updates customer configuration again
+	        customerConf = JsonUtil.ChangeTagConfiguration(customerConf, tag_to_update, secondCustomerLevelValue);
+	        
+	        //Prepare for verification
+            customerConfigSent = new JSONObject(customerConf);
+            customerConfigSent.remove("centcom_meta");
+            
+            //Set the new configuration for customer level
+            lennyActions.SetCustomerConfiguration(customerId, customerConf);
+            
+            //agent1 expects to get the customer conf
+            sendCheckUpdatesAndGetConfAndVerify(simulatedAgent1, simulatedAgentName1, customerConfigSent, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName());
+            //agent2 expects to get the customer conf
+            sendCheckUpdatesAndGetConfAndVerify(simulatedAgent2, simulatedAgentName2, customerConfigSent, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName());
+	        
+	        JLog.logger.info("StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration completed.");
 
         } catch (Exception e) {
             org.testng.Assert.fail("StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration", e);
         }
         
+    }
+    
+    private void sendCheckUpdatesAndGetConfAndVerify(SimulatedAgentActions simAgent, String epName, JSONObject expectedConf, String expectedAction) {
+    	String action = simAgent.sendCheckUpdatesAndGetAction(epName, "1.1.1", 0, 0, "1.1.1");
+        org.testng.Assert.assertEquals(action, expectedAction, "check update result failure, got unexpected action: ");
+        
+        String receivedConf = simAgent.getConf();	        
+        JSONObject receivedConfObj = new JSONObject(receivedConf );
+        JSONAssert.assertEquals("Agent 1 configuration is not as expected. See differences at the following lines:\n ", expectedConf.toString(), receivedConfObj.toString(), JSONCompareMode.LENIENT);
+
     }
 
     String verifyPatternInConfig(BaseAgentActions agent, String pattern) {
@@ -75,6 +134,17 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
 
     @AfterMethod
     public void Close(){
+        
+        
+    	lennyActions.deleteWithoutVerify(customerId, simulatedAgentName1);
+    	lennyActions.deleteWithoutVerify(customerId, simulatedAgentName2);
+    	
+    	String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, "1.2.0.100", 0, 0, "1.1.1");
+    	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
+        
+    	action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, "1.2.0.100", 0, 0, "1.1.1");
+    	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
+        
         
         if(lennyActions!=null){
             lennyActions.Close();

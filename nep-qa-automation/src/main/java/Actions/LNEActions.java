@@ -1,6 +1,5 @@
 package Actions;
 
-import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
@@ -8,7 +7,6 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,9 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.io.File;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -385,8 +381,6 @@ public class LNEActions extends ManagerActions  {
                 }
 
                 if (response == 200 ) {
-                    String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
-                    FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
                     break;
                 }
                 else if (!exception){
@@ -457,8 +451,6 @@ public class LNEActions extends ManagerActions  {
     public void setClusterConfig(String customerId, String clusterName, String configJson) {
      
         String body = buildJsonBody( Arrays.asList("customerId", "clusterName", "config"), Arrays.asList(customerId, clusterName, configJson));
-    	
-
 
         try {
             Response r = given().spec(requestSpecification)
@@ -470,38 +462,38 @@ public class LNEActions extends ManagerActions  {
             int response = r.getStatusCode();
 
             if (response == 200) {
-                JLog.logger.info("Success. LNE setClusterConfig response: " + response);
+                JLog.logger.info("setClusterConfig response: " + response);
             }
             else
-                org.testng.Assert.fail("Could not set Cluster Config configuration. LNE response status code received is: " + response);
+                org.testng.Assert.fail("Could not set cluster configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer Cluster Config.", e);
+            org.testng.Assert.fail("Could not set customer cluster config.", e);
         }
 
     }
     
     public void setEndpointConfig(String customerId, String endpointName, String configuration) {
     	
-    	String body = buildJsonBody( Arrays.asList("customerId", "endpointName", "configuration"), Arrays.asList(customerId, endpointName, configuration));
+    	String body = buildJsonBody( Arrays.asList("customerId", "name", "configuration"), Arrays.asList(customerId, endpointName, configuration));
     	
         try {
             Response r = given().spec(requestSpecification)
                     		.contentType("application/json")
                             .body(body)
                             .when()
-                            .post("setClusterConfig");
+                            .post("setConfig");
 
             int response = r.getStatusCode();
 
             if (response == 200) {
-                JLog.logger.info("Success. LNE setClusterConfig response: " + response);
+                JLog.logger.info("setEndpointConfig response: " + response);
             }
             else
-                org.testng.Assert.fail("Could not set Cluster Config configuration. LNE response status code received is: " + response);
+                org.testng.Assert.fail("Could not set endpoint configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer Cluster Config.", e);
+            org.testng.Assert.fail("Could not set customer endpoint config.", e);
         }
 
     }
@@ -529,8 +521,6 @@ public class LNEActions extends ManagerActions  {
 
             if (response == 200) {
                 JLog.logger.info("Success. LNE updateClusterMap response: " + response);
-                //                String confFile = PropertiesFile.getManagerDownloadFolder()+"/" + customerConfigurationSentSuccessfullyFile;
-                //                FileUtils.writeStringToFile(new File(confFile),configJson, Charset.defaultCharset());
             }
             else
                 org.testng.Assert.fail("Could not update Cluster Map configuration. LNE response status code received is: " + response);
@@ -554,7 +544,7 @@ public class LNEActions extends ManagerActions  {
             int response = r.getStatusCode();
 
             if (response == 200) {
-                JLog.logger.info("Success. LNE setConfig response: " + response);
+                JLog.logger.info("SetCustomerConfiguration response: " + response);
             }
             else
                 org.testng.Assert.fail("Could not set customer configuration. LNE response status code received is: " + response);
@@ -612,8 +602,25 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
+    
+    public void deleteWithoutVerify(String customerId, String epName) {
+    	
+    	sendDelete(customerId, epName);
+    	
+    }
 
-    public void delete(String customerId, String epName) {
+    public void deleteAndVerifyResponse(String customerId, String epName) {
+    	
+    	int response = sendDelete(customerId, epName);
+    	
+    	if (response == 200)
+            JLog.logger.info("Success. LNE delete response: " + response);
+        else
+            org.testng.Assert.fail("Failure. LNE delete failed with response status code: " + response);
+
+    }
+    
+    private int sendDelete(String customerId, String epName) {
     	
     	String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
     	
@@ -624,17 +631,14 @@ public class LNEActions extends ManagerActions  {
                             .when()
                             .post("delete");
 
-            int response = r.getStatusCode();
+            return r.getStatusCode();
 
-            if (response == 200)
-                JLog.logger.info("Success. LNE delete response: " + response);
-            else
-                org.testng.Assert.fail("Failure. LNE delete failed with response status code: " + response);
+            	
         }
         catch (Exception e) {
             org.testng.Assert.fail("Delete action failed.", e);
+            return 500;
         }
-
     }
 
     public String GetCACertificate () {
@@ -1096,7 +1100,7 @@ public class LNEActions extends ManagerActions  {
     		return;
     	}
     	if (response.isEmpty()) {
-    		 org.testng.Assert.fail("Failed to found Centcom call for method " + method.getMethodName());
+    		 org.testng.Assert.fail("Failed to found Centcom call for method " + method.getMethodName() + ". Response is empty");
     	}
     	for (String param : params) {
     		org.testng.Assert.assertTrue(response.contains(param), String.format("Param '%s' wasn't found in the dummy services log for method '%s'", param, method.getMethodName()));

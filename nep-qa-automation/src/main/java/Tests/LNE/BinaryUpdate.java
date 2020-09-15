@@ -162,7 +162,7 @@ public class BinaryUpdate extends GenericTest {
 	   
 	         JLog.logger.info("Installing linux EP...");
 	
-	         endpointLinux.installEPIncludingRequisites(Integer.parseInt(general.get("EP " +
+	         endpointLinux.reinstallEndpoint(Integer.parseInt(general.get("EP " +
 	                         "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
 	                 Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
 	
@@ -215,7 +215,7 @@ public class BinaryUpdate extends GenericTest {
 
             JLog.logger.info("Installing windows EP...");
 
-            endpointWin.installEPIncludingRequisites(Integer.parseInt(general.get("EP " +
+            endpointWin.reinstallEndpoint(Integer.parseInt(general.get("EP " +
                             "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
                     Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
 
@@ -387,7 +387,6 @@ public class BinaryUpdate extends GenericTest {
     }
 
     private void FetchFiles(String nexusPath, List<String> files, String localFolder) throws IOException {
-        String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
 
         for (String file : files) {
             String fileUrl = nexusPath + file;

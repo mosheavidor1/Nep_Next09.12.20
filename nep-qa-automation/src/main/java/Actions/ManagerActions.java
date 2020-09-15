@@ -25,7 +25,6 @@ public class ManagerActions {
     private static final String uninstallFolderName = "uninstall";
     private static final String  sigcheckFile = "sigcheck.exe";
     private static final String  utilsFolderLocation = "C:/home/NepManagerDownloads/Utils/";
-    public static final String customerConfigurationSentSuccessfullyFile = "customer-config.txt";
     public static final String customerDbFile = "customer_db_file.json";
     
     public static final int checkInterval = 5000;

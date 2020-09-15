@@ -7,7 +7,6 @@ import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -33,43 +32,22 @@ public class ClusterConfiguration extends GenericTest {
         customerId = general.get("Customer Id");
     }
 
-    @AfterTest
-    public void close(){
-
-        //delete if exist and clean cluster
-        try {
-            lneActions.updateClusterMap(Long.valueOf(customerId), new HashMap<>());
-            lneActions.delete(customerId, ep1Name);
-            simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
-            lneActions.delete(customerId, ep2Name);
-            simulatedAgentNotInCluster.checkUpdates(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
-
-        }catch (Exception e) {
-
-        }finally {
-            JLog.logger.info("Closing...");
-            if(lneActions!=null){
-                lneActions.Close();
-            }
-        }
-
-    }
-
-
     @Test(groups = { "ClusterConfiguration" } )
     public void setClusterConfiguration() {
-//        try {
-        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+
+    	JLog.logger.info("Starting setClusterConfiguration test ...");
+    	
+    	lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
         String confJson =data.get("Settings Json");
 
         //delete simulated agents
         Map<String,List<String>> assignments = new HashMap<>();
 
-        simulatedAgentInCluster = new SimulatedAgentActions(customerId, "1.2.3.4", ep1Name, "84-7B-EB-21-99-99","Windows 10");
-        simulatedAgentNotInCluster = new SimulatedAgentActions(customerId, "1.2.3.5", ep2Name, "85-7B-EB-21-99-99","Windows 10");
-//            JLog.logger.info("sleeping 60 seconds until finish registering");
-//            Thread.sleep(1);
+        simulatedAgentInCluster = new SimulatedAgentActions();
+        simulatedAgentInCluster.register(customerId, "1.2.3.4", ep1Name, "84-7B-EB-21-30","Windows 10");
+        simulatedAgentNotInCluster = new SimulatedAgentActions();
+        simulatedAgentNotInCluster.register(customerId, "1.2.3.5", ep2Name, "85-7B-EB-21-40","Windows 10");
 
         lneActions.setClusterConfig(customerId,clusterName, confJson);
 
@@ -89,15 +67,15 @@ public class ClusterConfiguration extends GenericTest {
         lneActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
 
 
-        String actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
-        String actionAgentNotInCluster = simulatedAgentNotInCluster.checkUpdates(simulatedAgentNotInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
+        String actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
+        String actionAgentNotInCluster = simulatedAgentNotInCluster.sendCheckUpdatesAndGetAction(simulatedAgentNotInCluster.getName(), "1.2.0.100", 1, 0, "1.1.1");
 
 
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update, action: "+actionAgentInCluster);
         org.testng.Assert.assertTrue(!actionAgentNotInCluster.contains("switch"),"setClusterConfiguration test failed, ep not in cluster should not have received configuration switch when checking update action: "+actionAgentNotInCluster);
 
 
-        String simulatedAgentInClusterConf = simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
+        String simulatedAgentInClusterConf = simulatedAgentInCluster.getConf();
 
         if(!JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
                 !JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
@@ -105,7 +83,7 @@ public class ClusterConfiguration extends GenericTest {
             org.testng.Assert.fail("setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
         }
 
-        simulatedAgentNotInCluster.getConf(simulatedAgentNotInCluster.getAgentUuid());
+        simulatedAgentNotInCluster.getConf();
         String simulatedAgentNotInClusterConf = simulatedAgentNotInCluster.getConf();
         if(JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "check_update_period", 666) ||
                 JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "report_period", 666)
@@ -116,11 +94,11 @@ public class ClusterConfiguration extends GenericTest {
         assignments.put(clusterName,new LinkedList<>());
         lneActions.updateClusterMap(Long.valueOf(customerId), assignments);
 
-        actionAgentInCluster = simulatedAgentInCluster.checkUpdates(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
+        actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"),"setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
 
 
-        simulatedAgentInClusterConf =simulatedAgentInCluster.getConf(simulatedAgentInCluster.getAgentUuid());
+        simulatedAgentInClusterConf =simulatedAgentInCluster.getConf();
 
         if(JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
                 JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
@@ -128,9 +106,28 @@ public class ClusterConfiguration extends GenericTest {
             org.testng.Assert.fail("setClusterConfiguration test failed, ep removed from cluster should have general configuration");
         }
 
+    }
+    
+    
+    @AfterTest
+    public void close(){
 
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        //delete if exist and clean cluster
+        try {
+            lneActions.updateClusterMap(Long.valueOf(customerId), new HashMap<>());
+            lneActions.deleteWithoutVerify(customerId, ep1Name);
+            simulatedAgentInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
+            lneActions.deleteWithoutVerify(customerId, ep2Name);
+            simulatedAgentNotInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
+
+        }catch (Exception e) {
+
+        }finally {
+            JLog.logger.info("Closing...");
+            if(lneActions!=null){
+                lneActions.Close();
+            }
+        }
+
     }
 }

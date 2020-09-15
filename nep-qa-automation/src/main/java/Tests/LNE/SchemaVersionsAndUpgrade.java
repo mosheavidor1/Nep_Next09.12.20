@@ -27,7 +27,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
     
     private static final String simulatedAgentIp = "1.2.3.4";
     private static final String simulatedAgentOs = "Windows 10";
-    private static final String simulatedAgentMac = "84-7B-EB-21-99-99";
+    private static final String simulatedAgentMac = "84-7B-EB-21-96";
     private static final String simulatedAgentName = "ep1";
     
     @Factory(dataProvider = "getData")
@@ -56,11 +56,12 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
             lennyActions.InitCustomerSettings(customerId, confJson);
             
             
-            SimulatedAgentActions simulatedAgent = new SimulatedAgentActions(customerId, simulatedAgentIp, simulatedAgentName, 
+            SimulatedAgentActions simulatedAgent = new SimulatedAgentActions();
+            simulatedAgent.register(customerId, simulatedAgentIp, simulatedAgentName, 
             		simulatedAgentMac, simulatedAgentOs);
             
             //In a real environment the following triggers the DS to send request for config upgrade to Centcom
-            String action = simulatedAgent.checkUpdates(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");
+            String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");
             
             org.testng.Assert.assertEquals(action, "no update", String.format("check update result assertion failure. Expected: 'no update', got '%s' ", action));
             lennyActions.verifyCallToCentcom(CentcomMethods.REQUEST_UPGRADE, customerId, simulatedAgentName);
@@ -70,7 +71,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
             //TODO: replace with setConfig
             lennyActions.InitCustomerSettings(customerId, confJson);
             
-            action = simulatedAgent.checkUpdates(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");
+            action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");
             org.testng.Assert.assertEquals(action, "config update", String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
             
             //TODO: Send a get-conf-update request with the simEP to verify the new configuration (customer level) in the response
@@ -110,13 +111,14 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              //TODO: replace customer id and schema version 1.1.1 in the json
              lennyActions.InitCustomerSettings(customerId, confJson);
              
-             SimulatedAgentActions simulatedAgent = new SimulatedAgentActions(customerId, simulatedAgentIp, simulatedAgentName, 
+             SimulatedAgentActions simulatedAgent = new SimulatedAgentActions();
+             simulatedAgent.register(customerId, simulatedAgentIp, simulatedAgentName, 
              		simulatedAgentMac, simulatedAgentOs);
              
              //TODO: et a standalone config for it, schema ver = 1.1.1
              
              //In a real environment the following triggers the DS to send request for config upgrade to Centcom
-             String action = simulatedAgent.checkUpdates(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");             
+             String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");             
              org.testng.Assert.assertEquals(action, "no update", String.format("check update result assertion failure. Expected: 'no update', got '%s' ", action));
              lennyActions.verifyCallToCentcom(CentcomMethods.REQUEST_UPGRADE, String.valueOf(customerId), simulatedAgentName);
 
@@ -124,7 +126,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              //TODO: Set the standalone config, schema ver = X.X.X+1
             // lennyActions.setc
              
-             action = simulatedAgent.checkUpdates(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");
+             action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");
              org.testng.Assert.assertEquals(action, "config update", String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
              
              //TODO: Send a get-conf-update request with the simEP to verify the new configuration 
