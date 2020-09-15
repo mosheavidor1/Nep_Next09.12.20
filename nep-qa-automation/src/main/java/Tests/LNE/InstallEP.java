@@ -27,7 +27,7 @@ public class InstallEP extends GenericTest {
         customerId = general.get("Customer Id");
     }
 
-    @Test(groups = { "VerifyInstallation" } )
+    @Test(groups = { "InstallEP" } )
     public void InstallEndPoint ()  {
 
     	JLog.logger.info("Starting InstallEndPoint test ...");

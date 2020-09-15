@@ -7,25 +7,25 @@
 
         <groups>
             <dependencies>
-                <group  name= "VerifyInstallation" depends-on="InitCustomer" ></group>
-                <group  name= "ChangeCustomerConfAndVerify" depends-on="VerifyInstallation" ></group>
+                <group  name= "InstallEP" depends-on="InitCustomer" ></group>
+                <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
                
                 <group  name= "VerifyFileCabinetOldInstallers" depends-on="InitCustomer" ></group>
                 <group  name= "ClusterConfiguration" depends-on="InitCustomer" ></group>
 
-                <group  name= "RevokeEndpoint" depends-on="VerifyInstallation" ></group>
-                <group  name= "DeleteEndpoint" depends-on="VerifyInstallation" ></group>
+                <group  name= "RevokeEndpoint" depends-on="InstallEP" ></group>
+                <group  name= "DeleteEndpoint" depends-on="InstallEP" ></group>
                 
                 <group  name= "BinaryUpdate" depends-on="DeleteEndpoint" ></group>
                 
                 <group  name= "StandaloneEPconfiguration" depends-on="InitCustomer" ></group>
-                <group  name= "Cleanup" depends-on="VerifyInstallation" ></group>
+                <group  name= "Cleanup" depends-on="InstallEP" ></group>
                 
             </dependencies>
         </groups>
 
         <classes>
-              	<class name = "Tests.LNE.SetConfigAndDownloadInstaller"/>
+              	<class name = "Tests.LNE.InitCustomer"/>
               	<class name = "Tests.LNE.InstallEP" />
             	<class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
             	<class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />

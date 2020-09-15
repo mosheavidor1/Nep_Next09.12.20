@@ -9,20 +9,20 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 
-public class SetConfigAndDownloadInstaller extends GenericTest {
+public class InitCustomer extends GenericTest {
 
     private LNEActions lennyActions;
     private String customerId;
 
     @Factory(dataProvider = "getData")
-    public SetConfigAndDownloadInstaller(Object dataToSet) {
+    public InitCustomer(Object dataToSet) {
         super(dataToSet);
         customerId = general.get("Customer Id");
     }
 
     @Test(groups = { "InitCustomer" } )
-    public void InitConfigAndDownloadInstaller () {
-    	JLog.logger.info("Starting InitConfigAndDownloadInstaller test ...");
+    public void initCustomerAndDownloadInstaller () {
+    	JLog.logger.info("Starting InitCustomerAndDownloadInstaller test ...");
 
         lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         String confJson = data.get("Settings Json");
