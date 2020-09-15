@@ -25,9 +25,11 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     public static final String configJsonWindowsPath_1_2_gen = "/C:/ProgramData/Trustwave/NEPAgent/General/";
     public static final String configJsonWindowsPath_1_2_new = "/C:/ProgramData/Trustwave/NEPAgent/General/new";
     public static final String configJsonWindowsPath_1_2_stable = "/C:/ProgramData/Trustwave/NEPAgent/General/stable";
-
+    
+    private static final String startCommand = "Net start NepaService";
+    private static final String stopCommand = "Net stop NepaService";
+    
     Map<String, String> scriptNamesMap;
-    public static final String startCommand = "Net start NepaService";
     
     public WinAgentActions(String epIp, String epUserName, String epPassword) {
     	super(epIp, epUserName, epPassword);
@@ -59,11 +61,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     public String getVersionJsonPath() {
     	return versionJsonWindowsPath;
     }
-    
-    public String getStartCommand() {
-    	return startCommand;
-    }
-    
+       
     public String getVerifySiemCommand() {
     	return command_winSIEM;
     }
@@ -245,8 +243,6 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
         try {
 
             JLog.logger.info("Stopping Win EP service...");
-
-            String stopCommand = "Net stop NepaService";
 
             connection.Execute(stopCommand);
 

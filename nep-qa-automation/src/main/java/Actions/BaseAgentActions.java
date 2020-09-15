@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,22 +70,11 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	    addCaCertificate();                                                                                                 
 	    startEPService(epServiceTimeout);                                                                                 
 	} 
-	
-	public void checkNotRevoked() {
-        if(!endpointServiceRunning()){
-            org.testng.Assert.fail("Endpoint not revoked verification failed, the endpoint service is not installed.");
-        }
-    }
-
+		
+	//Waits until check updates will run, and uninstall will be done as a result
     public void checkDeleted(int timeout) {
 
         boolean deleted = false;
-
-        // Restart the endpoint to initiate the config update to perform the revoke action
-        stopEPService(timeout);
-        // Start without verifying the start
-        String startCommand = getStartCommand();
-        connection.Execute(startCommand);
 
         try {
             LocalDateTime start = LocalDateTime.now();
@@ -99,24 +86,18 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
                 current = LocalDateTime.now();
                 if (!endpointServiceRunning()) {
                     deleted = true;
+                    JLog.logger.info("Endpoint service was stopped!");
                     break;
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+        	JLog.logger.info("Got interrupted exception");
         }
 
         if(!deleted){
-            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still installed.");
+            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still running.");
         }
     }
-
-    public void checkNotDeleted() {
-        if(!endpointServiceRunning()){
-            org.testng.Assert.fail("Endpoint not deleted verification failed, the endpoint service is not installed.");
-        }
-    }
-
 
     public void copyInstaller(){
 
@@ -178,36 +159,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         }
 
     }
-
-    public void compareConfigurationToEPConfiguration (boolean afterUpdate, String sentConfiguration){
-        String actualConf = null;
-        try {
-                           
-            String configJsonRemotePath = getConfigPath(afterUpdate);
-            connection.CopyToLocal(configJsonRemotePath, localFilePath);
-
-            FileInputStream inputStream = new FileInputStream(localFilePath);
-        	actualConf = IOUtils.toString(inputStream, Charset.defaultCharset());
-            inputStream.close();
-
-            JSONObject configSent = new JSONObject(sentConfiguration);
-
-            //add schema version to corresponds config.json schema version location at the json checked
-            String schemaVersionSent = configSent.getJSONObject("centcom_meta").getString("schema_version");
-            configSent.optJSONObject("global_conf").put("schema_version", schemaVersionSent);
-
-            //remove centcom_meta from compared json as it is not part of client's config.json
-            configSent.remove("centcom_meta");
-
-            JSONObject configReceived = new JSONObject(actualConf );
-            JSONAssert.assertEquals("Configuration set is not identical to configuration received. See differences at the following lines:\n ", configSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
-        }
-        catch ( Exception e){
-            org.testng.Assert.fail("Could not compare configuration sent to configuration received by endpoint:\n" + e.toString() + "\n Configuration sent:  " + sentConfiguration.replaceAll("\n", "") + "\nConfiguration received: " + actualConf  );
-
-        }
-    }
-
+ 
     public void appendToHostsFile () {
 
         String pathToEPHostsFile = null;
@@ -386,42 +338,6 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         return epVersion;
     }
     
-    public void checkRevoked(int timeout) {
-
-        boolean revoked = false;
-        JLog.logger.info("Starting CheckRevoked verification ...");
-
-        try {
-            Thread.sleep(checkInterval);
-
-            // Restart the endpoint to initiate the config update to perform the revoke action
-            stopEPService(timeout);
-            // Start without verifying the start
-            String startCommand = getStartCommand();
-            connection.Execute(startCommand);
-
-            LocalDateTime start = LocalDateTime.now();
-            LocalDateTime current = start;
-            Duration durationTimeout = Duration.ofSeconds(timeout);
-
-            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                Thread.sleep(checkInterval);
-                current = LocalDateTime.now();
-                if (!endpointServiceRunning()) {
-                    revoked = true;
-                    JLog.logger.info("The endpoint was revoked correctly");
-                    break;
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if(!revoked){
-            org.testng.Assert.fail("Endpoint revoked verification failed, the endpoint service still installed.");
-        }
-    }
-	
 	public String getEpName() {
         if (epName != null) {
         	return epName;

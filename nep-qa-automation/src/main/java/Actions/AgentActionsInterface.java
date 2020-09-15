@@ -32,8 +32,6 @@ public interface AgentActionsInterface  {
     
     public String getVersionJsonPath();
     
-    public String getStartCommand();
-    
     public void writeAndExecute(String text );
     
     public boolean endpointServiceRunning();

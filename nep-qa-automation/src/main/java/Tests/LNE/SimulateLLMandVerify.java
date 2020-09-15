@@ -61,14 +61,12 @@ public class SimulateLLMandVerify extends GenericTest {
 		    String confJson = data.get("Settings Json");
 		
 		    lennyActions.SetCustomerConfiguration(customerId, confJson);
-		    agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
-            Thread.sleep(5000);
             agent.clearFile(LLM_Syslog_path);
-            Thread.sleep(5000);
-		    agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
+            //Thread.sleep(5000);
+		    //agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 		    //TODO
 		    //agent.compareConfigurationToEPConfiguration(true);
-		    Thread.sleep(30000);
+		    Thread.sleep(30000);//TODO: IS it needed, is it enough to wait until check updates occurs?
             agent.clearFile(agent.getAgentLogPath());
 
             lennyActions.clearFile(LNEtxtFile);

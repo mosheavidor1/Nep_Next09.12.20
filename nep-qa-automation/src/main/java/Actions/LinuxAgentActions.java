@@ -25,9 +25,11 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     private static final String command_linuxLCA = "cat " + linuxLog + " | grep -e \".log-tag.log was sent\"";
     private static final String command_linuxLCA2 = "cat " + linuxLog + " | grep -e \".txt-tag.log was sent\"";
     
+    private static final String startCommand = "systemctl start tw-endpoint";
+    private static final String stopCommand = "systemctl stop tw-endpoint";
     
-    public static final String startCommand = "systemctl start tw-endpoint";
     Map<String, String> scriptNamesMap;
+    
     public LinuxAgentActions(String epIp, String epUserName, String epPassword) {
     	super(epIp, epUserName, epPassword);
         scriptNamesMap = new HashMap<String, String>();
@@ -55,11 +57,7 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     public String getVersionJsonPath() {
     	return versionJsonLinuxPath;
     }
-    
-    public String getStartCommand() {
-    	return startCommand;
-    }
-    
+       
     public String getVerifySiemCommand() {
     	return command_linuxSIEM;
     }
@@ -220,8 +218,6 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
         try {
 
             JLog.logger.info("Stopping Linux EP service...");
-
-            String stopCommand = "systemctl stop tw-endpoint";
 
             connection.Execute(stopCommand);
 

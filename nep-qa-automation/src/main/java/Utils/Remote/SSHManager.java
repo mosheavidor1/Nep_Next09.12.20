@@ -1,7 +1,6 @@
 package Utils.Remote;
 
 import Utils.Logs.JLog;
-import Utils.TestFiles;
 import com.jcraft.jsch.*;
 
 import java.io.*;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 public class SSHManager  {
     private String userName, password, hostName;
@@ -77,17 +75,17 @@ public class SSHManager  {
                 response += "\n" + line;
             }
 
-            System.out.println(response);
+            //System.out.println(response);
 
             BufferedReader errReader = new BufferedReader(new InputStreamReader(err));
             while ((line = errReader.readLine()) != null) {
                 errResponse += "\n" + line;
             }
             if(!errResponse.isEmpty()) {
-                System.out.println("Error response: " + errResponse);
+            	JLog.logger.error("Error response: " + errResponse);
             }
 
-            System.out.println("Execute " + command + " done!");
+            JLog.logger.info("Execute " + command + " done!");
             return response;
         } catch (Exception e) {
             org.testng.Assert.fail("Could not execute command: " + command +  ". At machine: " + hostName + "\n" + e.toString());

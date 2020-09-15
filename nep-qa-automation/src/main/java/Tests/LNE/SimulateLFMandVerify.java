@@ -48,23 +48,19 @@ public class SimulateLFMandVerify extends GenericTest {
 		    String commandLCA2 = agent.getVerifyLca2Command();
 		    String logFile = agent.getAgentLogPath();
 		    
-		
-		
-		
-		
 		    lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 		
 		    String confJson = data.get("Settings Json");
-		    agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
-		    Thread.sleep(5000);
+		   // agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
+		   // Thread.sleep(5000);
 		    lennyActions.SetCustomerConfiguration(customerId, confJson);
 		
 		
 		    prepareDirectories();
 		    agent.clearFile(logFile);
 		    clearLFMDataromDB();
-		    Thread.sleep(10000);
-		    agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
+		 //   Thread.sleep(10000); //TODO: IS it needed, is it enough to wait until check updates occurs?
+		  //  agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 		 //TODO
 		    //   agent.compareConfigurationToEPConfiguration(true);
 		    Thread.sleep(10000);

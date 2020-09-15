@@ -54,11 +54,11 @@ public class WLMCreateEvent extends GenericTest {
             
             String confJson =data.get("Settings Json");
             lennyActions.SetCustomerConfiguration(customerId, confJson);
-            agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
+           // agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
             agent.clearFile(agent.getAgentLogPath());
-            agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
+           // agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 
-            Thread.sleep(10000);
+           // Thread.sleep(10000);//TODO: IS it needed, is it enough to wait until check updates occurs?
            // TODO
             //agent.compareConfigurationToEPConfiguration(true);
             lennyActions.clearFile(syslogFileName);

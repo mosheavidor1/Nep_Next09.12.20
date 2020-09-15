@@ -44,7 +44,7 @@ public class DeleteEndpoint extends GenericTest {
             String originalEndpointId = agent.getEpIdFromDbJson();
 
             lennyActions.deleteAndVerifyResponse(customerId, agent.getEpName());
-            agent.checkDeleted(Integer.parseInt(general.get("EP Service Timeout")));
+            agent.checkDeleted(Integer.parseInt(general.get("Check Updates Timeout")));
 
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
 
