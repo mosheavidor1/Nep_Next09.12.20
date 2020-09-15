@@ -37,7 +37,7 @@
           		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
                	<class name = "Tests.LNE.RevokeEndpoint" />
 	            <class name = "Tests.LNE.DeleteEndpoint" />
-            	<class name = "Tests.LNE.BinaryUpdate" />
+            	<!--<class name = "Tests.LNE.BinaryUpdate" />-->
     	        
         </classes>
     </test>
