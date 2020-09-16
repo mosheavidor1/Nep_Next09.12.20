@@ -43,8 +43,9 @@ public class Cleanup extends GenericTest {
         
         String epName = agentActions.getEpName();
         
-        if (epName == null) {
+        if (epName == null || epName.isEmpty()) {
         	JLog.logger.info("EP name is null, skipping cleanup!");
+        	return;
         }
         
         lennyActions.deleteWithoutVerify(customerId, epName);
