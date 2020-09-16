@@ -41,6 +41,7 @@ public class Cleanup extends GenericTest {
         
         agentActions = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         
+        JLog.logger.info("Going to check if agent exists.");
         String epName = agentActions.getEpName();
         
         if (epName == null || epName.isEmpty()) {
@@ -48,6 +49,7 @@ public class Cleanup extends GenericTest {
         	return;
         }
         
+        JLog.logger.info("Agent exists, going to delete it.");
         lennyActions.deleteWithoutVerify(customerId, epName);
         
         try {
