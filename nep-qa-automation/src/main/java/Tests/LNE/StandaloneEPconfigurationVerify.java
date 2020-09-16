@@ -37,8 +37,8 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     private static final String simulatedAgentName1 = "ep1";
     private static final String simulatedAgentName2 = "ep2";
     
-    SimulatedAgentActions simulatedAgent1;
-    SimulatedAgentActions simulatedAgent2;
+    SimulatedAgentActions simulatedAgent1 = null;
+    SimulatedAgentActions simulatedAgent2 = null;
     
     
     
@@ -115,13 +115,14 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
         
     }
     
-    private void sendCheckUpdatesAndGetConfAndVerify(SimulatedAgentActions simAgent, String epName, JSONObject expectedConf, String expectedAction) {
+    private void sendCheckUpdatesAndGetConfAndVerify(SimulatedAgentActions simAgent, String epName, JSONObject expectedConf, String expectedAction) {    	
+    	
     	String action = simAgent.sendCheckUpdatesAndGetAction(epName, "1.1.1", 0, 0, "1.1.1");
         org.testng.Assert.assertEquals(action, expectedAction, "check update result failure, got unexpected action: ");
         
         String receivedConf = simAgent.getConf();	        
         JSONObject receivedConfObj = new JSONObject(receivedConf );
-        JSONAssert.assertEquals("Agent 1 configuration is not as expected. See differences at the following lines:\n ", expectedConf.toString(), receivedConfObj.toString(), JSONCompareMode.LENIENT);
+        JSONAssert.assertEquals("Agent configuration is not as expected. See differences at the following lines:\n ", expectedConf.toString(), receivedConfObj.toString(), JSONCompareMode.LENIENT);
 
     }
 
@@ -135,16 +136,20 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     @AfterMethod
     public void Close(){
         
+    	if (simulatedAgent1 != null) {
+    		lennyActions.deleteWithoutVerify(customerId, simulatedAgentName1);
+    		
+    		String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, "1.2.0.100", 0, 0, "1.1.1");
+        	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
+           
+    	}
         
-    	lennyActions.deleteWithoutVerify(customerId, simulatedAgentName1);
-    	lennyActions.deleteWithoutVerify(customerId, simulatedAgentName2);
+    	if (simulatedAgent2 != null) {
+    		lennyActions.deleteWithoutVerify(customerId, simulatedAgentName2);
     	
-    	String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, "1.2.0.100", 0, 0, "1.1.1");
-    	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
-        
-    	action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, "1.2.0.100", 0, 0, "1.1.1");
-    	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
-        
+    		String action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, "1.2.0.100", 0, 0, "1.1.1");
+    		org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
+    	}
         
         if(lennyActions!=null){
             lennyActions.Close();

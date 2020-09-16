@@ -40,14 +40,15 @@ public class SSHManager  {
             jschSession = jsch.getSession(userName, hostName, port);
             jschSession.setPassword(password);
             jschSession.setConfig("StrictHostKeyChecking", "no");
-            System.out.println("Establishing Connection...");
+            //System.out.println("Establishing Connection...");
             jschSession.connect();
-            System.out.println("Connection established.");
-            System.out.println("Crating SFTP Channel.");
+            //System.out.println("Connection established.");
+            //System.out.println("Crating SFTP Channel.");
 
             sftpChannel = (ChannelSftp) jschSession.openChannel("sftp");
             sftpChannel.connect();
-            System.out.println("SFTP Channel created.");
+            //System.out.println("SFTP Channel created.");
+            JLog.logger.info("Connected Successfully to host {}", hostName);
 
 
 

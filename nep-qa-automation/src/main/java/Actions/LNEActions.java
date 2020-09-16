@@ -447,6 +447,31 @@ public class LNEActions extends ManagerActions  {
         return r.getStatusCode();
 
     }
+    
+    public void setCustomerConfig(String customerId, String configuration) {
+    	
+    	String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configuration));
+    	
+        try {
+            Response r = given().spec(requestSpecification)
+                    		.contentType("application/json")
+                            .body(body)
+                            .when()
+                            .post("setConfig");
+
+            int response = r.getStatusCode();
+
+            if (response == 200) {
+                JLog.logger.info("setCustomerConfig response: " + response);
+            }
+            else
+                org.testng.Assert.fail("Could not set customer configuration. LNE response status code received is: " + response);
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not set customer config.", e);
+        }
+
+    }
 
     public void setClusterConfig(String customerId, String clusterName, String configJson) {
      
@@ -468,7 +493,7 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("Could not set cluster configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer cluster config.", e);
+            org.testng.Assert.fail("Could not set cluster config.", e);
         }
 
     }
@@ -493,7 +518,7 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("Could not set endpoint configuration. LNE response status code received is: " + response);
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not set customer endpoint config.", e);
+            org.testng.Assert.fail("Could not set endpoint config.", e);
         }
 
     }
