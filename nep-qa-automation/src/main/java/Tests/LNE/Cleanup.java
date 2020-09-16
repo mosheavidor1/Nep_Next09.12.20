@@ -32,7 +32,7 @@ public class Cleanup extends GenericTest {
     /**
      * Need to delete endpoints from DS side + check update until we get uninstall action (then entities are actually deleted for DB)
      */
-    @Test(groups = { "Cleanup" } )
+    @Test(groups = { "Cleanup" })
     public void cleanup()  {
 
         JLog.logger.info("Starting Cleanup...");
@@ -41,7 +41,13 @@ public class Cleanup extends GenericTest {
         
         agentActions = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         
-        lennyActions.deleteWithoutVerify(customerId, agentActions.getEpName());
+        String epName = agentActions.getEpName();
+        
+        if (epName == null) {
+        	JLog.logger.info("EP name is null, skipping cleanup!");
+        }
+        
+        lennyActions.deleteWithoutVerify(customerId, epName);
         
         try {
         	Thread.sleep(2000);//Sleep 2 seconds

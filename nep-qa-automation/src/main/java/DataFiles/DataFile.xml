@@ -16,20 +16,12 @@
   <AllowPNG/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
-  <SupBook>
-   <Path> </Path>
-   <SheetName> </SheetName>
-  </SupBook>
-  <SupBook>
-   <Path> </Path>
-   <SheetName> </SheetName>
-  </SupBook>
-  <WindowHeight>8976</WindowHeight>
-  <WindowWidth>23040</WindowWidth>
+  <WindowHeight>5592</WindowHeight>
+  <WindowWidth>15336</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>9</ActiveSheet>
-  <FirstVisibleSheet>8</FirstVisibleSheet>
+  <ActiveSheet>13</ActiveSheet>
+  <FirstVisibleSheet>10</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -245,8 +237,8 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveCol>1</ActiveCol>
-     <RangeSelection>C2</RangeSelection>
+     <ActiveRow>28</ActiveRow>
+     <ActiveCol>9</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -563,8 +555,8 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
-     <ActiveCol>7</ActiveCol>
+     <ActiveCol>6</ActiveCol>
+     <RangeSelection>R1C7:R2C7</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -726,7 +718,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
@@ -988,14 +979,17 @@
   </WorksheetOptions>
  </Worksheet>
  <Worksheet ss:Name="SchemaVersionsAndUpgrade">
-  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:AutoFitWidth="0" ss:Width="191.39999999999998"/>
+   <Column ss:AutoFitWidth="0" ss:Width="173.39999999999998"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
+    <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
     <Cell ss:StyleID="s71" ss:Formula="=Cofigurations!RC"><Data ss:Type="String"> {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;1.1.1&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;endpoint-protection-services.local.tw-test.net&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 30,&#10;   &quot;report_period&quot;: 50,&#10;   &quot;ds_max_off_period&quot;: 48,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: false&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;siem-ingress.trustwave.com&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: []&#10;  }&#10; }&#10;</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1005,10 +999,12 @@
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
    <Unsynced/>
+   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
+     <ActiveCol>1</ActiveCol>
+     <RangeSelection>R1C2:R2C2</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
