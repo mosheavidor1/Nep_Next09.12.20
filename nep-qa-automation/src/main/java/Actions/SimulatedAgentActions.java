@@ -103,6 +103,7 @@ public class SimulatedAgentActions {
 
 	public SimulatedAgentActions() {
 		try {
+			JLog.logger.info("SimulatedAgentActions: {}", String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest")));
 			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest"))).build();
 			
 		}
@@ -153,8 +154,10 @@ public class SimulatedAgentActions {
 
 	private String sendCheckUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
 
-		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version "
+		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version {} "
 				, getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion);
+		
+		JLog.logger.info("Will send request {}", String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion));
 
 		JsonPath jsonPathEvaluator = null;
 		try {
