@@ -49,12 +49,12 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
 
         simulatedAgent = new SimulatedAgentActions();
         simulatedAgent.register(customerId, "1.2.3.4", "epForTest", "84-7B-EB-21","Windows 10");
-        String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1");
+        String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
         
         org.testng.Assert.assertTrue(action.contains(CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName()), "ChangeCustomerConfAndVerify: simulated agent was expected to get conf change, but got a different action: " + action);
         
 
-        String simulatedAgentConf = simulatedAgent.getConf();
+        String simulatedAgentConf = simulatedAgent.getConf(customerId);
         
         JSONObject configSent = new JSONObject(confJson);
         configSent.remove("centcom_meta");
@@ -69,7 +69,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
             lennyActions.Close();
         }
         lennyActions.deleteWithoutVerify(customerId, "epForTest");
-        simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgent.getName(), "1.2.0.100", 0, 0, "1.1.1");
+        simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgent.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
     }
 
 }

@@ -72,7 +72,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
             
             
             //In a real environment the following triggers the DS to send request for config upgrade to Centcom
-            String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue);            
+            String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue, customerId);
             org.testng.Assert.assertEquals(action, CheckUpdatesActions.NO_UPDATE.getActionName(), String.format("check update result assertion failure. Expected: 'no update', got '%s' ", action));
             lennyActions.verifyCallToCentcom(CentcomMethods.REQUEST_UPGRADE, customerId, simulatedAgentName);
 
@@ -83,9 +83,9 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
             JSONObject configSent = new JSONObject(confJson);
             configSent.remove("centcom_meta");
             
-            action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue);
+            action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue, customerId);
             org.testng.Assert.assertEquals(action, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName(), String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
-            String newConf = simulatedAgent.getConf();            
+            String newConf = simulatedAgent.getConf(customerId);
             JSONObject configReceived = new JSONObject(newConf );
             JSONAssert.assertEquals("Agent configuration is not as expected. See differences at the following lines:\n ", configSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
 
@@ -161,7 +161,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              //TODO: et a standalone config for it, schema ver = 1.1.1
              
              //In a real environment the following triggers the DS to send request for config upgrade to Centcom
-             String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");             
+             String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2", customerId);
              org.testng.Assert.assertEquals(action, "no update", String.format("check update result assertion failure. Expected: 'no update', got '%s' ", action));
              lennyActions.verifyCallToCentcom(CentcomMethods.REQUEST_UPGRADE, String.valueOf(customerId), simulatedAgentName);
 
@@ -169,7 +169,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              //TODO: Set the standalone config, schema ver = X.X.X+1
             // lennyActions.setc
              
-             action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2");
+             action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, "1.1.2", customerId);
              org.testng.Assert.assertEquals(action, "config update", String.format("check update result assertion failure. Expected: 'config update', got '%s' ", action));
              
              //TODO: Send a get-conf-update request with the simEP to verify the new configuration 

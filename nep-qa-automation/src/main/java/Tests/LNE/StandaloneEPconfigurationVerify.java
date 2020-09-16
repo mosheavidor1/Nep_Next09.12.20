@@ -117,10 +117,10 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     
     private void sendCheckUpdatesAndGetConfAndVerify(SimulatedAgentActions simAgent, String epName, JSONObject expectedConf, String expectedAction) {    	
     	
-    	String action = simAgent.sendCheckUpdatesAndGetAction(epName, "1.1.1", 0, 0, "1.1.1");
+    	String action = simAgent.sendCheckUpdatesAndGetAction(epName, "1.1.1", 0, 0, "1.1.1", customerId);
         org.testng.Assert.assertEquals(action, expectedAction, "check update result failure, got unexpected action: ");
         
-        String receivedConf = simAgent.getConf();	        
+        String receivedConf = simAgent.getConf(customerId);
         JSONObject receivedConfObj = new JSONObject(receivedConf );
         JSONAssert.assertEquals("Agent configuration is not as expected. See differences at the following lines:\n ", expectedConf.toString(), receivedConfObj.toString(), JSONCompareMode.LENIENT);
 
@@ -139,7 +139,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     	if (simulatedAgent1 != null) {
     		lennyActions.deleteWithoutVerify(customerId, simulatedAgentName1);
     		
-    		String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, "1.2.0.100", 0, 0, "1.1.1");
+    		String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, "1.2.0.100", 0, 0, "1.1.1", customerId);
         	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
            
     	}
@@ -147,7 +147,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     	if (simulatedAgent2 != null) {
     		lennyActions.deleteWithoutVerify(customerId, simulatedAgentName2);
     	
-    		String action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, "1.2.0.100", 0, 0, "1.1.1");
+    		String action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, "1.2.0.100", 0, 0, "1.1.1", customerId);
     		org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
     	}
         

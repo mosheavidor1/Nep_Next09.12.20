@@ -46,13 +46,13 @@ public class RevokeEndpoint extends GenericTest {
             lennyActions.revoke(customerId, agent.getEpName());
             agent.checkDeleted(Integer.parseInt(general.get("Check Updates Timeout")));
 
-            String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
+            String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
 
             agent.reinstallEndpoint(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
 
             lennyActions.deleteWithoutVerify(customerId, SimulatedAgentName);
-            simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
+            simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
             // Assert after installing the agent back
             // Verify the other agent didn't get uninstall command

@@ -46,14 +46,14 @@ public class DeleteEndpoint extends GenericTest {
             lennyActions.deleteAndVerifyResponse(customerId, agent.getEpName());
             agent.checkDeleted(Integer.parseInt(general.get("Check Updates Timeout")));
 
-            String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
+            String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
 
             agent.reinstallEndpoint(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
             String newEndpointId = agent.getEpIdFromDbJson();
 
             lennyActions.deleteWithoutVerify(customerId, SimulatedAgentName);
-            simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2");
+            simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
             // Verify the agent got new unique id to be sure it is a new installation
             if(originalEndpointId.compareTo(newEndpointId) == 0){

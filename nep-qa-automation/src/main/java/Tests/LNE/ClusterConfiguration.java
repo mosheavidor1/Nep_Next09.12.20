@@ -69,15 +69,15 @@ public class ClusterConfiguration extends GenericTest {
         lneActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
 
 
-        String actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 1, 0, "1.1.1");
-        String actionAgentNotInCluster = simulatedAgentNotInCluster.sendCheckUpdatesAndGetAction(simulatedAgentNotInCluster.getName(), "9.9.9.999", 1, 0, "1.1.1");
+        String actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 1, 0, "1.1.1", customerId);
+        String actionAgentNotInCluster = simulatedAgentNotInCluster.sendCheckUpdatesAndGetAction(simulatedAgentNotInCluster.getName(), "9.9.9.999", 1, 0, "1.1.1", customerId);
 
 
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"), "setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update, action: " + actionAgentInCluster);
         org.testng.Assert.assertTrue(!actionAgentNotInCluster.contains("switch"), "setClusterConfiguration test failed, ep not in cluster should not have received configuration switch when checking update action: " + actionAgentNotInCluster);
 
 
-        String simulatedAgentInClusterConf = simulatedAgentInCluster.getConf();
+        String simulatedAgentInClusterConf = simulatedAgentInCluster.getConf(customerId);
 
         if (!JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
                 !JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
@@ -85,8 +85,8 @@ public class ClusterConfiguration extends GenericTest {
             org.testng.Assert.fail("setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
         }
 
-        simulatedAgentNotInCluster.getConf();
-        String simulatedAgentNotInClusterConf = simulatedAgentNotInCluster.getConf();
+        simulatedAgentNotInCluster.getConf(customerId);
+        String simulatedAgentNotInClusterConf = simulatedAgentNotInCluster.getConf(customerId);
         if (JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "check_update_period", 666) ||
                 JsonUtil.CompareKeyValue(simulatedAgentNotInClusterConf, "report_period", 666)
         ) {
@@ -96,11 +96,11 @@ public class ClusterConfiguration extends GenericTest {
         assignments.put(clusterName, new LinkedList<>());
         lneActions.updateClusterMap(Long.valueOf(customerId), assignments);
 
-        actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 0, 0, "1.1.1");
+        actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 0, 0, "1.1.1", customerId);
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"), "setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
 
 
-        simulatedAgentInClusterConf = simulatedAgentInCluster.getConf();
+        simulatedAgentInClusterConf = simulatedAgentInCluster.getConf(customerId);
 
         if (JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
                 JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
@@ -119,9 +119,9 @@ public class ClusterConfiguration extends GenericTest {
         try {
             lneActions.updateClusterMap(Long.valueOf(customerId), new HashMap<>());
             lneActions.deleteWithoutVerify(customerId, ep1Name);
-            simulatedAgentInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
+            simulatedAgentInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
             lneActions.deleteWithoutVerify(customerId, ep2Name);
-            simulatedAgentNotInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1");
+            simulatedAgentNotInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
 
         }catch (Exception e) {
 

@@ -122,8 +122,8 @@ public class SimulatedAgentActions {
 	 * @param schemaVersion
 	 * @return
 	 */
-	public String sendCheckUpdatesAndGetResponse(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
-		return sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion);
+	public String sendCheckUpdatesAndGetResponse(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
+		return sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
 	}
 	
 	/**
@@ -136,9 +136,9 @@ public class SimulatedAgentActions {
 	 * @param schemaVersion
 	 * @return
 	 */
-	public String sendCheckUpdatesAndGetAction(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
+	public String sendCheckUpdatesAndGetAction(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
 		
-		String response = sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion);
+		String response = sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
 		
 		try {
             JSONObject json = new JSONObject(response);
@@ -152,7 +152,7 @@ public class SimulatedAgentActions {
 	}
 	
 
-	private String sendCheckUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion) {
+	private String sendCheckUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
 
 		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version {} "
 				, getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion);
@@ -164,6 +164,7 @@ public class SimulatedAgentActions {
 			String response=
 					given().spec(requestSpecification)
 							.contentType("application/json")
+							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, customerId))
 							.when()
 							.get(String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion)).then()
 							.assertThat()
@@ -226,7 +227,7 @@ public class SimulatedAgentActions {
 		}
 	}
 
-	public String getConf(){
+	public String getConf(String customerId){
 
 		JLog.logger.info("Starting SimulatedAgentActions:getConf. Params: epId {}", agentUuid);
 
@@ -236,6 +237,7 @@ public class SimulatedAgentActions {
 			String conf=
 					given().spec(requestSpecification)
 							.contentType("application/json")
+							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, customerId))
 							.when()
 							.get(String.format(GET_CONF, agentUuid)).then()
 							.assertThat()

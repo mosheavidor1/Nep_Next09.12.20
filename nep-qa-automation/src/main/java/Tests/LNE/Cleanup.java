@@ -60,7 +60,7 @@ public class Cleanup extends GenericTest {
         }
         
         simulatedAgent = new SimulatedAgentActions();
-        simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1");
+        simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
     }
 
     @AfterMethod
