@@ -6,8 +6,7 @@
     <test name = "Download installer, install End Point and verify configuration change" >
 
         <groups>
-            <dependencies>
-            	<group  name= "InitCustomer" depends-on="Cleanup" ></group>
+            <dependencies>            	
                 <group  name= "InstallEP" depends-on="InitCustomer" ></group>
                 <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
                
@@ -25,7 +24,7 @@
         </groups>
 
         <classes>
-        		<class name = "Tests.LNE.Cleanup"  />
+        		
               	<class name = "Tests.LNE.InitCustomer"/>
               	<class name = "Tests.LNE.InstallEP" />
             	<class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
