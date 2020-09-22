@@ -7,6 +7,10 @@ import Tests.GenericTest;
 import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -25,42 +29,50 @@ public class WLMCreateEvent extends GenericTest {
     // currently, number of lines detected by ep is 2.
     String right_result;
     String syslogFileName;
-    static final int schedule_report_timeout = 120000; //ms
+    private static final int schedule_report_timeout = 120000; //120 seconds
+    private static final int checkInterval = 5000; //5 seconds
+    private static int checkUPdatesInterval;
+    
+    private static final String localIP = "127.0.0.1";
     
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
         customerId = general.get("Customer Id");
+        checkUPdatesInterval = Integer.parseInt(general.get("Check Updates Timeout")) * 1000; //35 seconds
     }
 
     @Test()
     public void WLMCreateEventAndVerify()  {
         try {
-        	JLog.logger.info("Starting WLMCreateEventAndVerify...");
         	
             if (!data.get("EP_Type_1").equals("win")) {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
     	    	return;
     	    }
 
-            JLog.logger.info("Opening...");
             String log_type = data.get("Log_Type");
             right_result = data.get("expectedResult");
-            JLog.logger.info("log_type: " + log_type + " ; Expected result value: " + right_result);
-            syslogFileName = syslog_path + data.get("EP_HostName_1") + "/user.log";
+
+            JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, right_result);
+            
+            syslogFileName = syslog_path + getAgentIPFolder() + "/user.log";
 
             lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
             
-            String confJson =data.get("Settings Json");
+            String confJson = data.get("Settings Json");
             lennyActions.SetCustomerConfiguration(customerId, confJson);
+            
+            Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
+            //TODO: how to compare?
+            
            // agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
             agent.clearFile(agent.getAgentLogPath());
            // agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
 
            // Thread.sleep(10000);//TODO: IS it needed, is it enough to wait until check updates occurs?
-           // TODO
-            //agent.compareConfigurationToEPConfiguration(true);
+           
             lennyActions.clearFile(syslogFileName);
             createEvents();
             Thread.sleep(schedule_report_timeout);
@@ -86,37 +98,50 @@ public class WLMCreateEvent extends GenericTest {
     }
 
     public boolean handleSIEM() {
+    	JLog.logger.info("Starting handleSIEM");
+    	
         String command = agent.getVerifySiemCommand();
         String patt = ".zip was sent successfully";
         String res = agent.findPattern(command, patt);
-        JLog.logger.info("res: " + res);
-        if (res == null)
+        
+        if (res == null) {
+        	JLog.logger.error("Find pattern response is null!");
             return false;
+        }
+        JLog.logger.info("Find pattern response: {}", res);
+        
         int start = res.lastIndexOf("dla_");
-        JLog.logger.info("start: " + start);
+        JLog.logger.info("start: {}", start);
         if (start == -1)
             return false;
         int stop = res.lastIndexOf(".zip");
-        JLog.logger.info("stop: " + stop);
+        JLog.logger.info("stop: {}", stop);
         if (stop == -1)
             return false;
         String zipFileMane = res.substring(start, stop + 4);
-        JLog.logger.info("zip file Name: " + zipFileMane);
+        JLog.logger.info("zip file Name: {}", zipFileMane);
 
+        JLog.logger.info("Going to verify number of lines in {}", scp_path + zipFileMane);
         res = lennyActions.numLinesinFile(scp_path + zipFileMane, null);
-        JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains(right_result)))
-            return true;
-        return false;
+        JLog.logger.info("Got: " + res);
+
+        return ((null != res) && (res.contains(right_result)));
     }
 
     public boolean handleLCA() {
+    	JLog.logger.info("Starting handleLCA");
+    	
         String command = agent.getVerifyLcaCommand();
         String patt = ".txt was sent successfully";
         String res = agent.findPattern(command, patt);
-        JLog.logger.info("res: " + res);
-        if (res == null)
+       
+        if (res == null) {
+        	JLog.logger.error("Find pattern response is null!");
             return false;
+        }
+        
+        JLog.logger.info("Find pattern response: {}", res);
+        
         int start = res.lastIndexOf("dla_");
         JLog.logger.info("start: " + start);
         if (start == -1)
@@ -125,33 +150,54 @@ public class WLMCreateEvent extends GenericTest {
         JLog.logger.info("stop: " + stop);
         if (stop == -1)
             return false;
+        
         String txtFileMane = res.substring(start, stop + 4);
         JLog.logger.info("txt file Name: " + txtFileMane);
+        
+        JLog.logger.info("Going to verify number of lines in {}", scp_path + txtFileMane);
         res = lennyActions.numLinesinFile(scp_path + txtFileMane, null);
-        JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains(right_result)))
-            return true;
-        return false;
+        JLog.logger.info("Got: " + res);
+        
+        return ((null != res) && (res.contains(right_result)));
     }
 
     public boolean handleLCA_SYSLOG() {
+    	JLog.logger.info("Starting handleLCA_SYSLOG");
+    	
         String command = "type " + agent.getAgentLogPath() + " | find /n \"SecureSyslogCollector: sent " + right_result + " events\"";
         String patt = "SecureSyslogCollector: sent " + right_result + " events";
         String res = agent.findPattern(command, patt);
-        if (res == null)
+        
+        if (res == null) {
+        	JLog.logger.error("Find pattern response is null!");
             return false;
-
-        String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/user.log";
+        }
+        JLog.logger.info("Find pattern response: {}", res);
+        String txtFileMane = syslog_path + getAgentIPFolder() + "/user.log";
         JLog.logger.info("txt file Name: " + txtFileMane);
+        
+        JLog.logger.info("Going to verify number of lines in {}", txtFileMane);
         res = lennyActions.numLinesinFile(txtFileMane, null);
-        JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains(right_result)))
-            return true;
-        return false;
+        JLog.logger.info("Got: " + res);
+        
+        return ((null != res) && (res.contains(right_result)));
+    }
+    
+    private String getAgentIPFolder() {
+    	String hostIp = data.get("EP_HostName_1");
+    	String lennyIp = PropertiesFile.readProperty("ClusterToTest");
+    	
+    	if (hostIp != null && lennyIp != null && hostIp.equals(lennyIp)) {
+    		return localIP;
+    	}
+    	return hostIp;
+    	
     }
 
     public void createEvents() {
-               String[][] obj = {
+    	JLog.logger.info("Starting writing events.");
+    	
+        String[][] obj = {
 /*                {"information", "111","Microsoft-Windows-Windows Defender/Operational", "Windows Defender","WLM test log included - win defender info"},
                 {"error", "555","Microsoft-Windows-Windows Defender/Operational", "Windows Defender","WLM test log included - win defender error" },
                 {"information", "110","Microsoft-Windows-Windows Defender/Operational", "WLM test log excluded - win defender info" },
@@ -174,7 +220,38 @@ public class WLMCreateEvent extends GenericTest {
             LogEntry lent = new LogEntry(obj[i][0],obj[i][1],obj[i][2],obj[i][3],obj[i][4],true);
             agent.writeEvent(lent);
         }
+        
+        JLog.logger.info("Finished writing events.");
     }
+    
+    //Waits until check updates will run, and uninstall will be done as a result
+    /*
+    public void checkUpdatesUntilConfIsUpdated(String conf) {
+
+        boolean deleted = false;
+
+        try {
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(Integer.parseInt(general.get("Check Updates Timeout")));
+
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (!endpointServiceRunning()) {
+                    deleted = true;
+                    JLog.logger.info("Endpoint service was stopped!");
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+        	JLog.logger.info("Got interrupted exception");
+        }
+
+        if(!deleted){
+            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still running.");
+        }
+    }*/
 
     @AfterMethod
     public void Close(){

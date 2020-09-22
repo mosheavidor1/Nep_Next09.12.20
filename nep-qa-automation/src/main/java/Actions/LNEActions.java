@@ -630,6 +630,8 @@ public class LNEActions extends ManagerActions  {
     
     public void deleteWithoutVerify(String customerId, String epName) {
     	
+    	JLog.logger.info("Going to send delete endpoint request to Centcom client, customer: {}, ep: {}", customerId, epName);
+    	
     	sendDelete(customerId, epName);
     	
     }
@@ -655,7 +657,7 @@ public class LNEActions extends ManagerActions  {
                             .body(body)
                             .when()
                             .post("delete");
-
+            
             return r.getStatusCode();
 
             	

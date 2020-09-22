@@ -15,6 +15,7 @@ import Utils.PropertiesFile.PropertiesFile;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.exception.JsonPathException;
+import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.*;
 
@@ -113,6 +114,21 @@ public class SimulatedAgentActions {
 	}
 	
 	/**
+	 *  Sends check updates post request to Lenny with the given params, without verifying response 200
+	 * 
+	 * @param epName
+	 * @param binVersion
+	 * @param confVersion
+	 * @param reportingStatus
+	 * @param schemaVersion
+	 * @param customerId
+	 * 
+	 */
+	public void sendCheckUpdatesWithoutVerify(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
+		sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
+	}
+	
+	/**
 	 * Sends check updates post request to Lenny with the given params, returns response body as is
 	 * 
 	 * @param epName
@@ -123,7 +139,17 @@ public class SimulatedAgentActions {
 	 * @return
 	 */
 	public String sendCheckUpdatesAndGetResponse(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
-		return sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
+		
+		Response response = sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
+		
+		JLog.logger.info("Check updates succeeded, got response: '{}'", response);
+
+		String responseStr = response.then()
+		.assertThat()
+		.statusCode(HttpStatus.SC_OK)
+		.extract().response().body().asString();
+		
+		return responseStr;
 	}
 	
 	/**
@@ -138,7 +164,7 @@ public class SimulatedAgentActions {
 	 */
 	public String sendCheckUpdatesAndGetAction(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
 		
-		String response = sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
+		String response = sendCheckUpdatesAndGetResponse(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
 		
 		try {
             JSONObject json = new JSONObject(response);
@@ -152,34 +178,24 @@ public class SimulatedAgentActions {
 	}
 	
 
-	private String sendCheckUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
+	private Response sendCheckUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
 
 		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version {} "
 				, getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion);
 		
 		JLog.logger.info("Will send request {}", String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion));
 
-		JsonPath jsonPathEvaluator = null;
 		try {
-			String response=
+			return
 					given().spec(requestSpecification)
 							.contentType("application/json")
 							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, customerId))
 							.when()
-							.get(String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion)).then()
-							.assertThat()
-							.statusCode(HttpStatus.SC_OK)
-							.extract().response().body().asString();
+							.get(String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion));
 			
-			JLog.logger.info("Check updates succeeded, got response: '{}'", response);
+			
 
-			return response;
-
-		} catch (JsonPathException e) {
-			JLog.logger.error("Failed to parse the check updates response {}", (jsonPathEvaluator != null ? jsonPathEvaluator.prettify() : ""), e);
-			org.testng.Assert.fail("Failed to parse the check updates response", e);
-			return null;
-		} catch (Exception e) {
+		}  catch (Exception e) {
 			JLog.logger.error("Failed to process the check updates request", e);
 			org.testng.Assert.fail("Failed to process the check updates request", e);
 			return null;

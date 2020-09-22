@@ -30,7 +30,9 @@ public class Cleanup extends GenericTest {
     }
 
     /**
-     * Need to delete endpoints from DS side + check update until we get uninstall action (then entities are actually deleted for DB)
+     * Need to delete existing endpoints from DS side + check update until we get uninstall action (then entities are actually deleted for DB)
+     * This is required to be sure that the tests really test a new installation flow even if Lenny was just upgraded by update services job
+     * The cleanup is tolerant for errors since we should succeed even if Lenny was re-deployed and we have no leftovers from previous runs
      */
     @Test(groups = { "Cleanup" })
     public void cleanup()  {
@@ -49,7 +51,7 @@ public class Cleanup extends GenericTest {
         	return;
         }
         
-        JLog.logger.info("Agent exists, going to delete it.");
+        JLog.logger.info("Agent exists, going to delete it from DS Mgmt.");
         lennyActions.deleteWithoutVerify(customerId, epName);
         
         try {
@@ -60,7 +62,8 @@ public class Cleanup extends GenericTest {
         }
         
         simulatedAgent = new SimulatedAgentActions();
-        simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
+        simulatedAgent.sendCheckUpdatesWithoutVerify(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
+        
     }
 
     @AfterMethod

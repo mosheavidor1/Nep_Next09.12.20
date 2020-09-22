@@ -42,7 +42,7 @@ public class InstallEP extends GenericTest {
         	JLog.logger.info("Failed to sleep");
         }
         
-        //lneActions.verifyCallToCentcom(CentcomMethods.REGISTER, customerId, agentActions.getEpName());
+        lneActions.verifyCallToCentcom(CentcomMethods.REGISTER, customerId, agentActions.getEpName());
 
     }
 
