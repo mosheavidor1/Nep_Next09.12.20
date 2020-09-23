@@ -51,6 +51,14 @@ public class Cleanup extends GenericTest {
         	return;
         }
         
+        simulatedAgent = new SimulatedAgentActions();
+    //    simulatedAgent.register(customerId, "1.2.3.4", simulatedAgent.getName(), macAddress, osType);
+        String uuid = getDbConnector().getUuidByName(epName);
+        
+        if (uuid == null) {
+        	JLog.logger.info("Endpoint {} was not found in DB, nothing to clean, skipping.", epName);
+        }
+        
         JLog.logger.info("Agent exists, going to delete it from DS Mgmt.");
         lennyActions.deleteWithoutVerify(customerId, epName);
         
@@ -61,8 +69,8 @@ public class Cleanup extends GenericTest {
         	JLog.logger.info("Failed to sleep");
         }
         
-        simulatedAgent = new SimulatedAgentActions();
-        simulatedAgent.sendCheckUpdatesWithoutVerify(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
+        
+        simulatedAgent.sendCheckUpdatesWithoutVerify(uuid, epName,"1.2.0.100", 0, 0, "1.1.1", customerId);
         
     }
 

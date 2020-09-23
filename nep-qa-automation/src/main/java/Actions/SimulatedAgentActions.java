@@ -125,7 +125,11 @@ public class SimulatedAgentActions {
 	 * 
 	 */
 	public void sendCheckUpdatesWithoutVerify(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
-		sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
+		sendCheckUpdates(getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
+	}
+	
+	public void sendCheckUpdatesWithoutVerify(String uuid, String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
+		sendCheckUpdates(uuid, epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
 	}
 	
 	/**
@@ -140,7 +144,7 @@ public class SimulatedAgentActions {
 	 */
 	public String sendCheckUpdatesAndGetResponse(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
 		
-		Response response = sendCheckUpdates(epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
+		Response response = sendCheckUpdates(getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion, customerId);
 		
 		JLog.logger.info("Check updates succeeded, got response: '{}'", response);
 
@@ -178,12 +182,17 @@ public class SimulatedAgentActions {
 	}
 	
 
-	private Response sendCheckUpdates(String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
+	private Response sendCheckUpdates(String uuid, String epName, String binVersion, int confVersion, int reportingStatus, String schemaVersion, String customerId) {
+		
+		if (uuid == null || epName == null) {
+			JLog.logger.info("Can't check updates with uuid/name null, uuid: {}, name: {}", uuid, epName); 
+			return null;
+		}
 
 		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version {} "
-				, getAgentUuid(), epName, binVersion, confVersion, reportingStatus, schemaVersion);
+				, uuid, epName, binVersion, confVersion, reportingStatus, schemaVersion);
 		
-		JLog.logger.info("Will send request {}", String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion));
+		JLog.logger.info("Will send request {}", String.format(CHECK_UPDATES, uuid, binVersion, confVersion, reportingStatus,epName ,schemaVersion));
 
 		try {
 			return
@@ -191,7 +200,7 @@ public class SimulatedAgentActions {
 							.contentType("application/json")
 							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, customerId))
 							.when()
-							.get(String.format(CHECK_UPDATES, getAgentUuid(), binVersion, confVersion, reportingStatus,epName ,schemaVersion));
+							.get(String.format(CHECK_UPDATES, uuid, binVersion, confVersion, reportingStatus,epName ,schemaVersion));
 			
 			
 
