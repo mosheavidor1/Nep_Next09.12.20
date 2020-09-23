@@ -82,6 +82,7 @@ public class LNEActions extends ManagerActions  {
 
     public void clearFile(String fileName) {
         String ClearSyslogCmd = "> " + fileName;
+        JLog.logger.info("Going to clear file, going to run command {}", ClearSyslogCmd);
         connection.Execute(ClearSyslogCmd);
     }
 

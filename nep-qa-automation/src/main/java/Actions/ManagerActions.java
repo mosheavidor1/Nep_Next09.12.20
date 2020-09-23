@@ -142,6 +142,11 @@ public class ManagerActions {
             org.testng.Assert.fail("Could not verify installation files exist." + "\n" + e.toString());
         }
     }
+    
+    public boolean fileExists(String path) {
+    	File file = new File(path);
+    	return file.exists();
+    }
 
 
     public void CreateAndCleanDownloadFolder() {

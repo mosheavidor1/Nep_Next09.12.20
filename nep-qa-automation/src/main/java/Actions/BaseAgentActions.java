@@ -319,6 +319,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
     public void clearFile(String fileName) {
         String ClearCmd = getClearFileCommand();
+        JLog.logger.info("Going to clear file, going to run command {}", ClearCmd + fileName);
         connection.Execute(ClearCmd + fileName);
     }
 

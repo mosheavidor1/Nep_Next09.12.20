@@ -84,6 +84,7 @@ public class SSHManager  {
             }
             if(!errResponse.isEmpty()) {
             	JLog.logger.error("Error response: " + errResponse);
+            	return response;
             }
 
             JLog.logger.info("Execute " + command + " done!");

@@ -11,6 +11,7 @@ import Utils.PropertiesFile.PropertiesFile;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -28,7 +29,6 @@ public class WLMCreateEvent extends GenericTest {
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
     String right_result;
-    String syslogFileName;
     private static final int schedule_report_timeout = 120000; //120 seconds
     private static final int checkInterval = 5000; //5 seconds
     private static int checkUPdatesInterval;
@@ -48,7 +48,7 @@ public class WLMCreateEvent extends GenericTest {
         	
             if (!data.get("EP_Type_1").equals("win")) {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
-    	    	return;
+    	    	throw new SkipException("This test should not run for OS other than Windows, skipping");
     	    }
 
             String log_type = data.get("Log_Type");
@@ -56,9 +56,7 @@ public class WLMCreateEvent extends GenericTest {
 
             JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, right_result);
             
-            syslogFileName = syslog_path + getAgentIPFolder() + "/user.log";
-
-            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+             lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
             
             String confJson = data.get("Settings Json");
@@ -67,13 +65,12 @@ public class WLMCreateEvent extends GenericTest {
             Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
             //TODO: how to compare?
             
-           // agent.stopEPService(Integer.parseInt(general.get("EP Service Timeout")));
             agent.clearFile(agent.getAgentLogPath());
-           // agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
+            if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
+            	clearSyslogFile();
+            }
 
-           // Thread.sleep(10000);//TODO: IS it needed, is it enough to wait until check updates occurs?
            
-            lennyActions.clearFile(syslogFileName);
             createEvents();
             Thread.sleep(schedule_report_timeout);
             boolean res = false;
@@ -96,12 +93,30 @@ public class WLMCreateEvent extends GenericTest {
             }
 
     }
-
+    
+    private void clearSyslogFile() {
+    	JLog.logger.info("Going to clear file 'user.log' on Lenny");
+    	String syslogFileName = syslog_path + getAgentIPFolder() + "/user.log";
+    	if (lennyActions.fileExists(syslogFileName)) {
+    		lennyActions.clearFile(syslogFileName);
+    		JLog.logger.info("Done");
+    		return;
+    	}
+        JLog.logger.info("File on path {} does not exist", syslogFileName);
+        syslogFileName = syslog_path + "127.0.0.1" + "/user.log";
+        if (lennyActions.fileExists(syslogFileName)) {
+        	JLog.logger.info("Cleard on path {}", syslogFileName);
+    		return;
+        }
+        JLog.logger.info("File was not found");
+    }
+    
     public boolean handleSIEM() {
     	JLog.logger.info("Starting handleSIEM");
     	
         String command = agent.getVerifySiemCommand();
         String patt = ".zip was sent successfully";
+        JLog.logger.info("Going to run command {}", command);
         String res = agent.findPattern(command, patt);
         
         if (res == null) {
@@ -130,9 +145,10 @@ public class WLMCreateEvent extends GenericTest {
 
     public boolean handleLCA() {
     	JLog.logger.info("Starting handleLCA");
-    	
         String command = agent.getVerifyLcaCommand();
+        JLog.logger.info("Going to run command {}", command);
         String patt = ".txt was sent successfully";
+        
         String res = agent.findPattern(command, patt);
        
         if (res == null) {
@@ -166,6 +182,7 @@ public class WLMCreateEvent extends GenericTest {
     	
         String command = "type " + agent.getAgentLogPath() + " | find /n \"SecureSyslogCollector: sent " + right_result + " events\"";
         String patt = "SecureSyslogCollector: sent " + right_result + " events";
+        JLog.logger.info("Going to run command {}", command);
         String res = agent.findPattern(command, patt);
         
         if (res == null) {
@@ -174,8 +191,14 @@ public class WLMCreateEvent extends GenericTest {
         }
         JLog.logger.info("Find pattern response: {}", res);
         String txtFileMane = syslog_path + getAgentIPFolder() + "/user.log";
-        JLog.logger.info("txt file Name: " + txtFileMane);
-        
+        if (!lennyActions.fileExists(txtFileMane)) {
+        	JLog.logger.info("File on path {} does not exist", txtFileMane);
+        	txtFileMane = syslog_path + "127.0.0.1" + "/user.log";
+        	if (!lennyActions.fileExists(txtFileMane)) {
+        		JLog.logger.error("File on path {} does not exist either", txtFileMane);
+        		 org.testng.Assert.fail("Could not find user.log file");
+        	}
+        }
         JLog.logger.info("Going to verify number of lines in {}", txtFileMane);
         res = lennyActions.numLinesinFile(txtFileMane, null);
         JLog.logger.info("Got: " + res);
