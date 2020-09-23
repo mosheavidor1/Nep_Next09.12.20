@@ -36,7 +36,7 @@ public class RunTest {
 		if (args.length > 0)
 			currentSuite = args[0];
 		else
-			currentSuite = "DownloadInstallAndSendLogs.xml";
+			throw new IllegalStateException("Test failed, missing test suite name in arguments. Throwing exception for Jenkins to catch.");
 
 		//get cluster to test name
 		if (args.length > 1){

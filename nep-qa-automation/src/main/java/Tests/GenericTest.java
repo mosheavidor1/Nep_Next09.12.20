@@ -3,6 +3,7 @@ package Tests;
 import java.util.HashMap;
 
 import Utils.Main.RunTest;
+import Utils.NepDbConnector;
 import Utils.Capture.VideoCapture;
 import Utils.TestNG.InvokedMethodListener;
 import org.testng.ITestNGMethod;
@@ -19,12 +20,17 @@ public class GenericTest {
 	protected VideoCapture video;
 	protected String screenShot;
 	public static final String generalSettingsIdentifier = "General Settings";
+	private static NepDbConnector dbConnector = new NepDbConnector();
 
 	@SuppressWarnings("unchecked")
 	public GenericTest(Object dataToSet) {
 		data = (HashMap<String, String>) dataToSet;
 		screenShot = "";
 
+	}
+	
+	public NepDbConnector getDbConnector() {
+		return dbConnector;
 	}
 
 	@DataProvider(name = "getData")
