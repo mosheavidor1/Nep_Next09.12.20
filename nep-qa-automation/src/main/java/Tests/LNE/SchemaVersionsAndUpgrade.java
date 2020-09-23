@@ -91,7 +91,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
             configSent.remove("centcom_meta");
             
             action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue, customerId);
-            org.testng.Assert.assertEquals(action, CheckUpdatesActions.CONFIGURATION_SWITCH.getActionName(), "check update result assertion failure.");
+            org.testng.Assert.assertEquals(action, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName(), "check update result assertion failure.");
             String newConf = simulatedAgent.getConf(customerId);
             JSONObject configReceived = new JSONObject(newConf );
             JSONAssert.assertEquals("Agent configuration is not as expected. See differences at the following lines:\n ", configSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);

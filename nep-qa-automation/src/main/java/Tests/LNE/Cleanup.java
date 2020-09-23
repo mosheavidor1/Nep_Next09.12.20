@@ -52,7 +52,6 @@ public class Cleanup extends GenericTest {
         }
         
         simulatedAgent = new SimulatedAgentActions();
-    //    simulatedAgent.register(customerId, "1.2.3.4", simulatedAgent.getName(), macAddress, osType);
         String uuid = getDbConnector().getUuidByName(epName);
         
         if (uuid == null) {
