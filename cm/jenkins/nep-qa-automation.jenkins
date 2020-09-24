@@ -7,8 +7,6 @@ import java.time.LocalDateTime
 	
 node('nep-build-centos7') {
 
-	EMAIL_LIST="mzaytsev@trustwave.com"
-
 	SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 
 	MODULE_NAME = "nep-qa-automation"
