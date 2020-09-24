@@ -15,7 +15,7 @@ node('nep-build-centos7') {
 
 	NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}" 
 	NEXUS_SETTINGS_PATH = "${WORKSPACE}/cm/configs/nexus-settings.xml"
-	MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nepa-qa/${MODULE_NAME}"
+	MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nep-qa/${MODULE_NAME}"
 	
 	PROPERTY_NAME="qaautomation"
 	PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
