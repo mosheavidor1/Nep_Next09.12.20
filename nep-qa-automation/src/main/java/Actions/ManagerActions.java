@@ -143,10 +143,7 @@ public class ManagerActions {
         }
     }
     
-    public boolean fileExists(String path) {
-    	File file = new File(path);
-    	return file.exists();
-    }
+    
 
 
     public void CreateAndCleanDownloadFolder() {

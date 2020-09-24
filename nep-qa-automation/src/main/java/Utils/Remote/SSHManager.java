@@ -87,7 +87,7 @@ public class SSHManager  {
             	return response;
             }
 
-            JLog.logger.info("Execute " + command + " done!");
+            JLog.logger.debug("Execute " + command + " done.");
             return response;
         } catch (Exception e) {
             org.testng.Assert.fail("Could not execute command: " + command +  ". At machine: " + hostName + "\n" + e.toString());

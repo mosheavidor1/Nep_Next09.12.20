@@ -26,7 +26,7 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent %s events.\"";
     static final int schedule_report_timeout = 120000; //ms
-    String right_result;
+    String expectedResult;
     String LNEtxtFile;
     private String customerId;
     
@@ -48,8 +48,8 @@ public class SimulateLLMandVerify extends GenericTest {
     	    }
 
 		    String log_type = data.get("Log_Type");
-  	        right_result = data.get("ExpectedResult");
-		    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + right_result);
+  	        expectedResult = data.get("ExpectedResult");
+		    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + expectedResult);
             LNEtxtFile = syslog_path + data.get("EP_HostName_1") + "/local0.log";
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		
@@ -77,21 +77,16 @@ public class SimulateLLMandVerify extends GenericTest {
 		    }
 		    Thread.sleep(schedule_report_timeout);
 	
-	        boolean res = false;
-	
 	        if (log_type.equalsIgnoreCase( "SIEM")) {
-	            res = handleSIEM(commandSIEM);
+	            handleSIEM(commandSIEM);
 	        } else if (log_type.equalsIgnoreCase("LCA")) {
-	            res = handleLCA(commandLCA);
+	            handleLCA(commandLCA);
 	        } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
-	            String command = String.format(command_linuxLCA_SYSLOG, right_result);
-	            res = handleLCA_SYSLOG(command);
+	            String command = String.format(command_linuxLCA_SYSLOG, expectedResult);
+	            handleLCA_SYSLOG(command);
 	        }else {
 	            org.testng.Assert.fail("Unknown server log_type: " +  log_type);
 	        }
-	
-	        if (!res)
-	            org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: ");
 
     	} catch (Exception e) {
         org.testng.Assert.fail("SimulateLLMandVerifyDelivery failed" + "\n" + e.toString());
@@ -104,27 +99,19 @@ public class SimulateLLMandVerify extends GenericTest {
          agent.writeAndExecute(script);
      }
 
-    public boolean handleSIEM(String command) {
+    public void handleSIEM(String command) {
         // Here we have 2 zip files sent to LNE
-        boolean result = false;
-        String patt = ".zip was sent successfully";
-        String res = agent.findPattern(command, patt);
+        String expectedString = ".zip was sent successfully";
+        String res = agent.verifyExpectedOnCommandResult(command, expectedString);
         JLog.logger.info("res: " + res);
-        if (res == null)
-            return false;
+        org.testng.Assert.assertTrue(res != null);
         Vector<String> zipFiles = extractFileNames(res, "dla_", ".zip");
 
         for (int i = 0; i < zipFiles.size(); i++) {
             res = lennyActions.numLinesinFile(scp_path + zipFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result)))
-                result = true;
-            else {
-                result = false;
-                break;
-            }
+            org.testng.Assert.assertTrue(null != res && res.contains(expectedResult));
         }
-        return result;
     }
 
     public Vector<String> extractFileNames(String lines, String startPattern, String endPattern) {
@@ -132,13 +119,9 @@ public class SimulateLLMandVerify extends GenericTest {
         int file_start = 0;
         for (int i = 0;i < 2; i++) {
             int start = lines.indexOf(startPattern, file_start);
-            JLog.logger.info("start: " + start);
-            if (start == -1)
-                break;
             int stop = lines.indexOf(endPattern, start);
-            JLog.logger.info("stop: " + stop);
-            if (stop == -1)
-                break;
+            JLog.logger.info("start: {}, stop: {}",  start, stop);
+            org.testng.Assert.assertTrue(start != -1 && stop != -1);
             String zipFileMane = lines.substring(start, stop + endPattern.length());
             JLog.logger.info("file[" + i + "] Name: " + zipFileMane);
             fileNames.add(zipFileMane);
@@ -153,53 +136,38 @@ public class SimulateLLMandVerify extends GenericTest {
         if (res != null) {
             int num_of_patterns = res.split(pattern,-1).length - 1;
             JLog.logger.info("Found " + num_of_patterns + " patterns: " + pattern);
-            if (Integer.parseInt(right_result) == num_of_patterns)
+            if (Integer.parseInt(expectedResult) == num_of_patterns)
                 result = true;
         }
         return result;
     }
 
-    public boolean handleLCA(String command) {
+    public void handleLCA(String command) {
         // Here we have 2 log files sent to LNE
-        boolean result = false;
 
         String patt = ".txt was sent successfully";
-        String res = agent.findPattern(command, patt);
+        String res = agent.verifyExpectedOnCommandResult(command, patt);
         JLog.logger.info("res: " + res);
-        if (res == null)
-            return false;
+        org.testng.Assert.assertTrue(res != null);
         Vector<String> logFiles = extractFileNames(res, "dla_", ".txt");
         for (int i = 0; i < logFiles.size(); i++) {
             res = lennyActions.numLinesinFile(scp_path + logFiles.elementAt(i), EP_Syslog_pattern);
             JLog.logger.info("res: " + res);
-            if ((null != res) && (res.contains(right_result)))
-                result = true;
-            else {
-                result = false;
-                break;
-            }
+            org.testng.Assert.assertTrue((null != res) && (res.contains(expectedResult)));
         }
-        return result;
     }
 
-    public boolean handleLCA_SYSLOG(String command) {
-        boolean result = true;
+    public void handleLCA_SYSLOG(String command) {
 
-        String patt = String.format(EP_LCA_SYSLOG_log_pattern, right_result);
-        String res = agent.findPattern(command, patt);
+        String patt = String.format(EP_LCA_SYSLOG_log_pattern, expectedResult);
+        String res = agent.verifyExpectedOnCommandResult(command, patt);
         JLog.logger.info("res: " + res);
-        if (res == null)
-            return false;
+        org.testng.Assert.assertTrue(res != null);
         // now check on LNE
         String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/local0.log";
         res = lennyActions.numLinesinFile(txtFileMane, EP_Syslog_pattern);
         JLog.logger.info("res: " + res);
-        if ((null != res) && (res.contains(right_result)))
-            result = true;
-        else {
-            result = false;
-        }
-        return result;
+        org.testng.Assert.assertTrue(null != res && res.contains(expectedResult));
     }
 
     @AfterMethod

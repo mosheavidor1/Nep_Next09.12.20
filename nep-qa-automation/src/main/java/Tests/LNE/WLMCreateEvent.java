@@ -8,10 +8,6 @@ import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -28,9 +24,9 @@ public class WLMCreateEvent extends GenericTest {
     public static final String syslog_path = "/work/services/siem/var/log/";
     // result depends on filter settings in relevant config.json and on number of created events per config.json
     // currently, number of lines detected by ep is 2.
-    String right_result;
+    String expectedLines;
     private static final int schedule_report_timeout = 120000; //120 seconds
-    private static final int checkInterval = 5000; //5 seconds
+    //private static final int checkInterval = 5000; //5 seconds
     private static int checkUPdatesInterval;
     
     private static final String localIP = "127.0.0.1";
@@ -48,15 +44,15 @@ public class WLMCreateEvent extends GenericTest {
         	
             if (!data.get("EP_Type_1").equals("win")) {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
-    	    	throw new SkipException("This test should not run for OS other than Windows, skipping");
+    	    	return;
     	    }
 
             String log_type = data.get("Log_Type");
-            right_result = data.get("expectedResult");
+            expectedLines = data.get("expectedResult");
 
-            JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, right_result);
+            JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, expectedLines);
             
-             lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
             
             String confJson = data.get("Settings Json");
@@ -65,7 +61,7 @@ public class WLMCreateEvent extends GenericTest {
             Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
             //TODO: how to compare?
             
-            agent.clearFile(agent.getAgentLogPath());
+           // agent.clearFile(agent.getAgentLogPath()); //clear fails since file is in use
             if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
             	clearSyslogFile();
             }
@@ -73,20 +69,17 @@ public class WLMCreateEvent extends GenericTest {
            
             createEvents();
             Thread.sleep(schedule_report_timeout);
-            boolean res = false;
 
             if (log_type.equalsIgnoreCase( "SIEM")) {
-                res = handleSIEM();
+                verifyLogsSentToSiem();
             } else if (log_type.equalsIgnoreCase("LCA")) {
-                res = handleLCA();
+                verifyLogsSentToLCA();
             } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
-                res = handleLCA_SYSLOG();
+                verifyLogsSentToLCA_SYSLOG();
             } else {
                 org.testng.Assert.fail("Unknown server log_type: " +  log_type);
             }
 
-            if (!res)
-                org.testng.Assert.fail("Could not find pattern in Agent.log for: " + log_type + " or number of lines did not match the expected value: " +right_result);
         }
         catch (Exception e) {
                 org.testng.Assert.fail("WLMCreateEventAndVerify ." + "\n" + e.toString());
@@ -103,36 +96,28 @@ public class WLMCreateEvent extends GenericTest {
     		return;
     	}
         JLog.logger.info("File on path {} does not exist", syslogFileName);
-        syslogFileName = syslog_path + "127.0.0.1" + "/user.log";
+        syslogFileName = syslog_path + localIP + "/user.log";
         if (lennyActions.fileExists(syslogFileName)) {
+        	lennyActions.clearFile(syslogFileName);
         	JLog.logger.info("Cleard on path {}", syslogFileName);
     		return;
         }
-        JLog.logger.info("File was not found");
+        JLog.logger.info("File was not found on path {} either", syslogFileName);
     }
     
-    public boolean handleSIEM() {
-    	JLog.logger.info("Starting handleSIEM");
+    public void verifyLogsSentToSiem() {
+    	JLog.logger.info("Starting verifyLogsSentToSiem");
     	
         String command = agent.getVerifySiemCommand();
-        String patt = ".zip was sent successfully";
-        JLog.logger.info("Going to run command {}", command);
-        String res = agent.findPattern(command, patt);
+        String expectedStr = ".zip was sent successfully";
         
-        if (res == null) {
-        	JLog.logger.error("Find pattern response is null!");
-            return false;
-        }
-        JLog.logger.info("Find pattern response: {}", res);
+        String res = agent.verifyExpectedOnCommandResult(command, expectedStr);
         
         int start = res.lastIndexOf("dla_");
-        JLog.logger.info("start: {}", start);
-        if (start == -1)
-            return false;
         int stop = res.lastIndexOf(".zip");
-        JLog.logger.info("stop: {}", stop);
-        if (stop == -1)
-            return false;
+        JLog.logger.info("start: {}, stop: {}",start, stop);
+        org.testng.Assert.assertTrue(start != -1 && stop != -1, "Failed to find txt file name in result");
+        
         String zipFileMane = res.substring(start, stop + 4);
         JLog.logger.info("zip file Name: {}", zipFileMane);
 
@@ -140,80 +125,57 @@ public class WLMCreateEvent extends GenericTest {
         res = lennyActions.numLinesinFile(scp_path + zipFileMane, null);
         JLog.logger.info("Got: " + res);
 
-        return ((null != res) && (res.contains(right_result)));
+        org.testng.Assert.assertTrue(res != null && res.contains(expectedLines));
     }
 
-    public boolean handleLCA() {
-    	JLog.logger.info("Starting handleLCA");
-        String command = agent.getVerifyLcaCommand();
-        JLog.logger.info("Going to run command {}", command);
+    public void verifyLogsSentToLCA() {
+    	JLog.logger.info("Starting verifyLogsSentToLCA");
+    	
+        String command = agent.getVerifyLcaCommand();       
         String patt = ".txt was sent successfully";
         
-        String res = agent.findPattern(command, patt);
-       
-        if (res == null) {
-        	JLog.logger.error("Find pattern response is null!");
-            return false;
-        }
-        
-        JLog.logger.info("Find pattern response: {}", res);
+        String res = agent.verifyExpectedOnCommandResult(command, patt);
         
         int start = res.lastIndexOf("dla_");
-        JLog.logger.info("start: " + start);
-        if (start == -1)
-            return false;
         int stop = res.lastIndexOf(".txt");
-        JLog.logger.info("stop: " + stop);
-        if (stop == -1)
-            return false;
+        JLog.logger.info("start: {}, stop: {}",start, stop);
+        org.testng.Assert.assertTrue(start != -1 && stop != -1, "Failed to find txt file name in result");
         
         String txtFileMane = res.substring(start, stop + 4);
-        JLog.logger.info("txt file Name: " + txtFileMane);
-        
         JLog.logger.info("Going to verify number of lines in {}", scp_path + txtFileMane);
         res = lennyActions.numLinesinFile(scp_path + txtFileMane, null);
         JLog.logger.info("Got: " + res);
         
-        return ((null != res) && (res.contains(right_result)));
+        org.testng.Assert.assertTrue(res != null && res.contains(expectedLines));
     }
 
-    public boolean handleLCA_SYSLOG() {
-    	JLog.logger.info("Starting handleLCA_SYSLOG");
+    public void verifyLogsSentToLCA_SYSLOG() {
+    	JLog.logger.info("Starting verifyLogsSentToLCA_SYSLOG");
     	
-        String command = "type " + agent.getAgentLogPath() + " | find /n \"SecureSyslogCollector: sent " + right_result + " events\"";
-        String patt = "SecureSyslogCollector: sent " + right_result + " events";
-        JLog.logger.info("Going to run command {}", command);
-        String res = agent.findPattern(command, patt);
+        String command = "type " + agent.getAgentLogPath() + " | find /n \"SecureSyslogCollector: sent " + expectedLines + " events\"";
+        String expectedStr = "SecureSyslogCollector: sent " + expectedLines + " events";
         
-        if (res == null) {
-        	JLog.logger.error("Find pattern response is null!");
-            return false;
-        }
-        JLog.logger.info("Find pattern response: {}", res);
+        String res = agent.verifyExpectedOnCommandResult(command, expectedStr);
+                
         String txtFileMane = syslog_path + getAgentIPFolder() + "/user.log";
         if (!lennyActions.fileExists(txtFileMane)) {
         	JLog.logger.info("File on path {} does not exist", txtFileMane);
-        	txtFileMane = syslog_path + "127.0.0.1" + "/user.log";
+        	txtFileMane = syslog_path + localIP + "/user.log";
         	if (!lennyActions.fileExists(txtFileMane)) {
         		JLog.logger.error("File on path {} does not exist either", txtFileMane);
         		 org.testng.Assert.fail("Could not find user.log file");
         	}
         }
-        JLog.logger.info("Going to verify number of lines in {}", txtFileMane);
+        JLog.logger.info("Going to verify number of lines in {} and expect {} lines", txtFileMane, expectedLines);
         res = lennyActions.numLinesinFile(txtFileMane, null);
         JLog.logger.info("Got: " + res);
         
-        return ((null != res) && (res.contains(right_result)));
+        org.testng.Assert.assertTrue(res != null && res.contains(expectedLines));
     }
     
     private String getAgentIPFolder() {
-    	String hostIp = data.get("EP_HostName_1");
-    	String lennyIp = PropertiesFile.readProperty("ClusterToTest");
     	
-    	if (hostIp != null && lennyIp != null && hostIp.equals(lennyIp)) {
-    		return localIP;
-    	}
-    	return hostIp;
+    	return PropertiesFile.readProperty("ClusterToTest");
     	
     }
 

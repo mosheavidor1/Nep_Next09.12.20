@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -58,6 +59,10 @@ public class LNEActions extends ManagerActions  {
     	
     	
     	
+    }
+    
+    public boolean fileExists(String path) {
+    	return connection.IsFileExists(path);
     }
 
     public LNEActions ()

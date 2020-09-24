@@ -297,14 +297,18 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
     }
 
-    public String findPattern(String comm, String pattern) {
-        String result = connection.Execute(comm);
-        if (result.contains(pattern)) {
-            return result;
-        }
-        else {
-            return null;
-        }
+    /**
+     * Verifies that output of command contains the expectedStr
+     */
+    public String verifyExpectedOnCommandResult(String command, String expectedStr) {
+    	
+    	JLog.logger.info("Going to run command '{}' and expect '{}' in result", command, expectedStr);
+        String result = connection.Execute(command);
+        
+        org.testng.Assert.assertFalse(result == null || result.isEmpty(), "Result of command should not be empty.");        
+        org.testng.Assert.assertTrue(result.contains(expectedStr), "Output of command doesn't contain expected string");       
+        JLog.logger.info("Found expected string!");
+        return result;
     }
 
     public String findInText(String filePath, String pattern) {
