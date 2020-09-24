@@ -1,5 +1,6 @@
 import groovy.util.XmlSlurper
 import groovy.util.XmlParser
+import java.time.LocalDateTime
 
 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 DISPLAY_VERSION = "${env.NEP_BRANCH == "next" ? "${BUILD_NUMBER}-${env.NEP_BRANCH}"  :  "${BUILD_NUMBER}"}"
@@ -20,6 +21,7 @@ node('nep-qa-nightly-25.187') {
 				NEP_QA_AUTOMATION_VERSION = params['qaautomation_version']
 				MODULE_ARTIFACT_SRC = "https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
 				
+				echo "PROPERTIES_FILE_PATH = ${PROPERTIES_FILE_PATH}"
 				echo "NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}"
 				
 				env.currentTime = LocalDateTime.now()
