@@ -17,11 +17,10 @@ node('nep-qa-nightly-25.187') {
 		node('master') {
 			stage("Read modules versions from  files on Master") {
 				def params = readProperties file: "${PROPERTIES_FILE_PATH}"	
-				PRODUCT_VERSION = params['product_version']
-				NEXUS_ARTIFACT_VERSION = "${PRODUCT_VERSION}.${BUILD_NUMBER}"
-				MODULE_ARTIFACT_SRC = "https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEXUS_ARTIFACT_VERSION}/nep-qa-automation-${NEXUS_ARTIFACT_VERSION}-jar-with-dependencies.jar"
+				NEP_QA_AUTOMATION_VERSION = params['qaautomation_version']
+				MODULE_ARTIFACT_SRC = "https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
 				
-				echo "PRODUCT_VERSION = ${PRODUCT_VERSION}"
+				echo "NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}"
 				
 				env.currentTime = LocalDateTime.now()
 			}
