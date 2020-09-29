@@ -7,8 +7,6 @@ import java.time.LocalDateTime
 	
 node('nep-build-centos7') {
 
-	EMAIL_LIST="mzaytsev@trustwave.com"
-
 	SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 
 	MODULE_NAME = "nep-qa-automation"
@@ -17,8 +15,9 @@ node('nep-build-centos7') {
 
 	NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}" 
 	NEXUS_SETTINGS_PATH = "${WORKSPACE}/cm/configs/nexus-settings.xml"
-	MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nepa-qa/${MODULE_NAME}"
+	MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nep-qa/${MODULE_NAME}"
 	
+	PROPERTY_NAME="qaautomation"
 	PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 
 	try {	
@@ -67,6 +66,18 @@ node('nep-build-centos7') {
 			sendEmail("Successful")
 
 			if ( params.RELEASE ) {
+				build job: 'update-param-on-master', 
+					parameters:  [
+						string(name: 'PROPERTY_NAME', value: "${PROPERTY_NAME}_version"),
+						string(name: 'PROPERTY_VALUE', value: "${NEXUS_ARTIFACT_VERSION}"),
+						string(name: 'PROPERTIES_FILE_PATH', value: "${PROPERTIES_FILE_PATH}")
+					]
+				build job: 'update-param-on-master', 
+					parameters:  [
+						string(name: 'PROPERTY_NAME', value: "${PROPERTY_NAME}_date"),
+						string(name: 'PROPERTY_VALUE', value: "${env.currentTime}"),
+						string(name: 'PROPERTIES_FILE_PATH', value: "${PROPERTIES_FILE_PATH}")
+					]
 				build job: 'cm-last-released-builds', 
 					parameters:  [
 						string(name: 'PRODUCT_NAME', value: "${MODULE_NAME}"),
