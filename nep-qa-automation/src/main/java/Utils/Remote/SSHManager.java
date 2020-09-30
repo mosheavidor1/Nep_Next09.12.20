@@ -94,7 +94,9 @@ public class SSHManager  {
             return null;
         }
         finally {
-            channelExecute.disconnect();
+        	if (channelExecute != null) {
+        		channelExecute.disconnect();
+        	}
         }
 
     }

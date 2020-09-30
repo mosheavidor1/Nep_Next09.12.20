@@ -7,16 +7,16 @@ import Tests.GenericTest;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import java.util.Vector;
 
-
+//https://jira.trustwave.com/browse/NEP-1214
 public class SimulateLLMandVerify extends GenericTest {
 
-    private LNEActions lennyActions;
     private BaseAgentActions agent;
+    private LNEActions lennyActions;
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
@@ -25,154 +25,153 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String EP_LCA_SYSLOG_log_pattern = "Sent %s events.";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent %s events.\"";
-    static final int schedule_report_timeout = 120000; //ms
-    String expectedResult;
-    String LNEtxtFile;
-    private String customerId;
+    private static final int schedule_report_timeout = 120000; //120 seconds
+    private static int checkUPdatesInterval;
+    String expectedNumberOfMessages;
+    String lcaSyslogOnLenny;
+    private static String customerId;
+    
+    private static final String host_value_to_update = "\\{lenny-ip\\}";
     
     @Factory(dataProvider = "getData")
     public SimulateLLMandVerify(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+    }
+    
+    @BeforeTest
+    public void init() {
+    	customerId = general.get("Customer Id");
+        checkUPdatesInterval = Integer.parseInt(general.get("Check Updates Timeout")) * 1000; //35 seconds
     }
 
     @Test()
     public void SimulateLLMandVerifyDelivery()  {
-    	
-    	JLog.logger.info("Starting SimulateLLMandVerifyDelivery test ...");
     	
     	try {
     		if (!data.get("EP_Type_1").equals("lnx")) {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
     	    	return;
     	    }
-
 		    String log_type = data.get("Log_Type");
-  	        expectedResult = data.get("ExpectedResult");
-		    JLog.logger.info("log_type: " + log_type + " ; Expected number of messages in log is: " + expectedResult);
-            LNEtxtFile = syslog_path + data.get("EP_HostName_1") + "/local0.log";
+  	        expectedNumberOfMessages = data.get("ExpectedResult");
+  	        
+  	        JLog.logger.info("Starting SimulateLLMandVerifyDelivery. Log type: {}.  Expected number of messages in log: {}.", log_type, expectedNumberOfMessages);
+
+  	        lcaSyslogOnLenny = syslog_path + data.get("EP_HostName_1") + "/local0.log";
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-		
-		    String commandSIEM = command_linuxSIEM;
-		    String commandLCA = command_linuxLCA;
-		
 		    lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 		
-		    String confJson = data.get("Settings Json");
-		
+		    agent.clearFile(agent.getAgentLogPath()); 
+            agent.clearFile(LLM_Syslog_path);  
+            agent.clearFile(agent.getDbJsonPath());
+            
+		    //Read configuration and update the host tags
+		    String confJson = data.get("Settings Json");		    
+            confJson = confJson.replaceAll(host_value_to_update, PropertiesFile.readProperty("ClusterToTest"));
+            		
 		    lennyActions.SetCustomerConfiguration(customerId, confJson);
-            agent.clearFile(LLM_Syslog_path);
-            //Thread.sleep(5000);
-		    //agent.startEPService(Integer.parseInt(general.get("EP Service Timeout")));
-		    //TODO
-		    //agent.compareConfigurationToEPConfiguration(true);
-		    Thread.sleep(30000);//TODO: IS it needed, is it enough to wait until check updates occurs?
-            agent.clearFile(agent.getAgentLogPath());
-
-            lennyActions.clearFile(LNEtxtFile);
+		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
+		    //TODO: compare json cofniguration on agent
+	         
+            if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
+            	lennyActions.clearFile(lcaSyslogOnLenny);
+            }
 		    createLLM_input();
-		    if (false == checkEPSyslog(LLM_Syslog_path, EP_Syslog_pattern)) {
-		        JLog.logger.info("pattern " + EP_Syslog_pattern + " was not found in " + LLM_Syslog_path);
-		        org.testng.Assert.fail("Test LLM for " + log_type + "failed");
-		    }
+		    verifySyslogInAgent(LLM_Syslog_path, EP_Syslog_pattern);
+		    
 		    Thread.sleep(schedule_report_timeout);
 	
 	        if (log_type.equalsIgnoreCase( "SIEM")) {
-	            handleSIEM(commandSIEM);
+	            verifyLogsSentToSiem(command_linuxSIEM);
 	        } else if (log_type.equalsIgnoreCase("LCA")) {
-	            handleLCA(commandLCA);
+	            verifyLogsSentToLca(command_linuxLCA);
 	        } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
-	            String command = String.format(command_linuxLCA_SYSLOG, expectedResult);
-	            handleLCA_SYSLOG(command);
+	            String command = String.format(command_linuxLCA_SYSLOG, expectedNumberOfMessages);
+	            verifyLogsSentToLcaSyslog(command);
 	        }else {
 	            org.testng.Assert.fail("Unknown server log_type: " +  log_type);
 	        }
+	        
+	        JLog.logger.info("Completed test successfully\n");
 
     	} catch (Exception e) {
-        org.testng.Assert.fail("SimulateLLMandVerifyDelivery failed" + "\n" + e.toString());
-     }
+    		JLog.logger.error("Test failed", e);
+            org.testng.Assert.fail("Test failed " + e.toString());
+    	}
     }
 
      private void createLLM_input() {
+    	 JLog.logger.info("Going to run script to create LLM input");
          String script;
          script = data.get("LLMScript");
          agent.writeAndExecute(script);
+         JLog.logger.info("done");
      }
 
-    public void handleSIEM(String command) {
-        // Here we have 2 zip files sent to LNE
-        String expectedString = ".zip was sent successfully";
-        String res = agent.verifyExpectedOnCommandResult(command, expectedString);
-        JLog.logger.info("res: " + res);
+    private void verifyLogsSentToSiem(String command) {
+    	JLog.logger.info("Going to verify logs sent to SIEM");
+
+    	String res = agent.verifyExpectedOnCommandResult(command, ".zip was sent successfully");        
         org.testng.Assert.assertTrue(res != null);
-        Vector<String> zipFiles = extractFileNames(res, "dla_", ".zip");
-
-        for (int i = 0; i < zipFiles.size(); i++) {
-            res = lennyActions.numLinesinFile(scp_path + zipFiles.elementAt(i), EP_Syslog_pattern);
-            JLog.logger.info("res: " + res);
-            org.testng.Assert.assertTrue(null != res && res.contains(expectedResult));
-        }
+                
+        int start = res.lastIndexOf("dla_");
+        int stop = res.lastIndexOf(".zip");
+        org.testng.Assert.assertTrue(start != -1 && stop != -1, "Failed to find zip file name in result");
+        
+        String zipFileName = res.substring(start, stop + 4);
+        JLog.logger.info("Going to verify number of lines in {}", scp_path + zipFileName);
+       
+        res = lennyActions.numLinesinFile(scp_path + zipFileName, EP_Syslog_pattern);
+        org.testng.Assert.assertTrue(null != res , "Failed, response is null.");
+        org.testng.Assert.assertTrue(res.contains(expectedNumberOfMessages), "Failed: number of messages is: " + res + ". Expected is: " + expectedNumberOfMessages);        
+        JLog.logger.info("done");
     }
 
-    public Vector<String> extractFileNames(String lines, String startPattern, String endPattern) {
-        Vector<String> fileNames = new Vector<String>();
-        int file_start = 0;
-        for (int i = 0;i < 2; i++) {
-            int start = lines.indexOf(startPattern, file_start);
-            int stop = lines.indexOf(endPattern, start);
-            JLog.logger.info("start: {}, stop: {}",  start, stop);
-            org.testng.Assert.assertTrue(start != -1 && stop != -1);
-            String zipFileMane = lines.substring(start, stop + endPattern.length());
-            JLog.logger.info("file[" + i + "] Name: " + zipFileMane);
-            fileNames.add(zipFileMane);
-            file_start = stop;
-        }
-        return fileNames;
+    private void verifyLogsSentToLca(String command) {
+    	JLog.logger.info("Going to verify logs sent to LCA");
+
+        String res = agent.verifyExpectedOnCommandResult(command, ".txt was sent successfully");
+        org.testng.Assert.assertTrue(res != null);
+        
+        int start = res.lastIndexOf("dla_");
+        int stop = res.lastIndexOf(".txt");
+        org.testng.Assert.assertTrue(start != -1 && stop != -1, "Failed to find txt file name in result");
+        
+        String txtFileName = res.substring(start, stop + 4);
+        JLog.logger.info("Going to verify number of lines in {}", scp_path + txtFileName);
+        
+        res = lennyActions.numLinesinFile(scp_path + txtFileName, EP_Syslog_pattern);
+        org.testng.Assert.assertTrue(null != res , "Failed, response is null.");
+        org.testng.Assert.assertTrue(res.contains(expectedNumberOfMessages), "Failed: number of messages is: " + res + ". Expected is: " + expectedNumberOfMessages);  
+        JLog.logger.info("done");
     }
 
-    private boolean checkEPSyslog(String filename, String pattern) {
-        boolean result = false;
+    private void verifyLogsSentToLcaSyslog(String command) {
+    	JLog.logger.info("Going to verify logs sent to LCA SYSLOG according to logs on agent");
+        String patt = String.format(EP_LCA_SYSLOG_log_pattern, expectedNumberOfMessages);
+        String res = agent.verifyExpectedOnCommandResult(command, patt);
+        
+        // now check on LNE       
+        JLog.logger.info("Going to verify logs received in Lenny according to logs on Lenny");
+        res = lennyActions.numLinesinFile(lcaSyslogOnLenny, EP_Syslog_pattern);        
+        org.testng.Assert.assertTrue(null != res , "Failed, response is null.");
+        org.testng.Assert.assertTrue(res.contains(expectedNumberOfMessages), "Failed: number of messages is: " + res + ". Expected is: " + expectedNumberOfMessages);          
+        JLog.logger.info("done");
+    }
+    
+
+    private void verifySyslogInAgent(String filename, String pattern) {
+        JLog.logger.info("Going to check that expected string '{}' exist in '{}' ", pattern, filename);
+    	
         String res = agent.findInText(filename, pattern);
-        if (res != null) {
-            int num_of_patterns = res.split(pattern,-1).length - 1;
-            JLog.logger.info("Found " + num_of_patterns + " patterns: " + pattern);
-            if (Integer.parseInt(expectedResult) == num_of_patterns)
-                result = true;
-        }
-        return result;
-    }
-
-    public void handleLCA(String command) {
-        // Here we have 2 log files sent to LNE
-
-        String patt = ".txt was sent successfully";
-        String res = agent.verifyExpectedOnCommandResult(command, patt);
-        JLog.logger.info("res: " + res);
-        org.testng.Assert.assertTrue(res != null);
-        Vector<String> logFiles = extractFileNames(res, "dla_", ".txt");
-        for (int i = 0; i < logFiles.size(); i++) {
-            res = lennyActions.numLinesinFile(scp_path + logFiles.elementAt(i), EP_Syslog_pattern);
-            JLog.logger.info("res: " + res);
-            org.testng.Assert.assertTrue((null != res) && (res.contains(expectedResult)));
-        }
-    }
-
-    public void handleLCA_SYSLOG(String command) {
-
-        String patt = String.format(EP_LCA_SYSLOG_log_pattern, expectedResult);
-        String res = agent.verifyExpectedOnCommandResult(command, patt);
-        JLog.logger.info("res: " + res);
-        org.testng.Assert.assertTrue(res != null);
-        // now check on LNE
-        String txtFileMane = syslog_path + data.get("EP_HostName_1") + "/local0.log";
-        res = lennyActions.numLinesinFile(txtFileMane, EP_Syslog_pattern);
-        JLog.logger.info("res: " + res);
-        org.testng.Assert.assertTrue(null != res && res.contains(expectedResult));
+        org.testng.Assert.assertTrue(res!= null);
+        int num_of_patterns = res.split(pattern,-1).length - 1;
+        org.testng.Assert.assertEquals(Integer.parseInt(expectedNumberOfMessages),num_of_patterns);
+        JLog.logger.info("done");
     }
 
     @AfterMethod
     public void Close(){
-        JLog.logger.info("Closing...");
         if (agent!=null) {
             agent.close();
         }

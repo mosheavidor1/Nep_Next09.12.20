@@ -1,0 +1,18 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+
+<suite name = "RunOneTest" configfailurepolicy="skip">
+
+
+    <test name = "RunOneTest">
+        <classes>
+            <class name = "Tests.LNE.SimulateLFMandVerify" />
+          <!--  <class name = "Tests.LNE.SimulateLFMandVerify" />
+          <class name = "Tests.LNE.SimulateLLMandVerify" />-->
+            
+        </classes>
+
+    </test>
+
+</suite>

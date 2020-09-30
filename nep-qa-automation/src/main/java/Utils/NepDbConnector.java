@@ -5,8 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
 
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
@@ -20,22 +18,22 @@ import Utils.PropertiesFile.PropertiesFile;
  */
 public class NepDbConnector {
 	
-	private static Statement stmt;
-	private static final String url = "jdbc:mysql://%s:3306/nep_data?useSSL=false";
-	private static final String username = "root";
-	private static final String password = "trustwave";
+	//private static Statement stmt;
 	
 	public static final String SELECT_UUID = "select uuid_text from endpoint_data where name = ?";
 	
 	public static PreparedStatement selectUuidStmt;
 	
-	public NepDbConnector() {
+	public NepDbConnector(String url, String username, String password) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");  
+			if (url.contains("{lenny-ip}")) {
+				url = url.replace("{lenny-ip}", PropertiesFile.readProperty("ClusterToTest"));
+			}
 			Connection conn= DriverManager.getConnection(  
-					String.format(url, PropertiesFile.readProperty("ClusterToTest")), username, password);  
+					url, username, password);  
 			
-			stmt = conn.createStatement();  
+			//stmt = conn.createStatement();  
 			
 			selectUuidStmt = conn.prepareStatement(SELECT_UUID);
 		}

@@ -20,7 +20,7 @@ public class GenericTest {
 	protected VideoCapture video;
 	protected String screenShot;
 	public static final String generalSettingsIdentifier = "General Settings";
-	private static NepDbConnector dbConnector = new NepDbConnector();
+	private static NepDbConnector dbConnector ;
 
 	@SuppressWarnings("unchecked")
 	public GenericTest(Object dataToSet) {
@@ -30,6 +30,9 @@ public class GenericTest {
 	}
 	
 	public NepDbConnector getDbConnector() {
+		if (dbConnector == null) {
+			dbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
+		}
 		return dbConnector;
 	}
 

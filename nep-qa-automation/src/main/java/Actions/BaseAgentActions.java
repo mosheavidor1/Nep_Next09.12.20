@@ -260,7 +260,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 
 
     }
-
+/*
     public void deleteLFMData() {
 	    FileWriter file;
         try {
@@ -270,12 +270,12 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
                 org.testng.Assert.fail("Could not find db.json; file was not found at: " + dbJsonRemoteFile);
             }
 
-            String text = connection.GetTextFromFile(dbJsonRemoteFile);
+            String dbJsonContect = connection.GetTextFromFile(dbJsonRemoteFile);
 
-            if (!text.contains(LfmData)) {
+            if (!dbJsonContect.contains(LfmData)) {
                 return;
             }
-            JSONObject dbFile = new JSONObject(text);
+            JSONObject dbFile = new JSONObject(dbJsonContect);
             dbFile.remove(LfmData);
             JSONObject newNode = new JSONObject();
             dbFile.append(LfmData, newNode);
@@ -295,7 +295,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         }
 
 
-    }
+    }*/
 
     /**
      * Verifies that output of command contains the expectedStr

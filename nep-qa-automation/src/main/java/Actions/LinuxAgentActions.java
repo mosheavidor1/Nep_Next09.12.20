@@ -265,7 +265,7 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     }
 	
 	public String getClearFileCommand() {
-		return "> ";
+		return "cp -f /dev/null ";
 	}
 
     public String getScriptName(String scriptName) {

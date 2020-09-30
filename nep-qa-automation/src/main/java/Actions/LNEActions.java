@@ -33,6 +33,7 @@ public class LNEActions extends ManagerActions  {
     public static final String caCertificateFileName = "cacertificate.txt";
     RequestSpecification requestSpecification;// = new RequestSpecBuilder().setBaseUri(url).build();
 
+    private static final String installUnzipCommand = "rpm -q unzip || yum -y install unzip";  
     
     //scan the document from the end and stop after 1 match
     public static final String verifyCallToCentcomCommand = "tac /work/services/stub-srv/var/log/nep/nep_dummy_services.log | grep -m 1 \"Method '%s'\"";
@@ -100,16 +101,17 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("file is not found on LNE: " + fileName + " LNE: " + LNE_IP + "\n");
             }
             if (fileName.contains((".zip"))) {
+            	connection.Execute(installUnzipCommand);
+            	
                 String unzip = "unzip -o " + fileName + " -d /tmp";
-                String res_unzip = connection.Execute(unzip);
-                JLog.logger.info("res_unzip: " + res_unzip);
-                if ((!res_unzip.contains("extracting:")) && (!res_unzip.contains("inflating:")))
-                    return null;
+                String res_unzip = connection.Execute(unzip);                
+                org.testng.Assert.assertTrue(res_unzip.contains("extracting:") && res_unzip.contains("inflating:"),"unzip command failed in numLinesinFile");
+                    
                 int start = res_unzip.lastIndexOf("/tmp/");
                 int suffix = res_unzip.lastIndexOf(".gz");
-                JLog.logger.info("suffix: " + suffix + " start: " + start);
+                //JLog.logger.info("suffix: " + suffix + " start: " + start);
                 gz = res_unzip.substring(start, suffix) + ".gz";
-                JLog.logger.info("gz: " + gz);
+                JLog.logger.info("gz file: " + gz);
                 if (null == pattern) {
                     gz_comm = "cat " + gz + " | gzip -d | wc -l";
                     res = connection.Execute(gz_comm);
@@ -120,19 +122,17 @@ public class LNEActions extends ManagerActions  {
                     int num_of_patterns = res.split(pattern,-1).length - 1;
                     res = Integer.toString(num_of_patterns);
                 }
+                JLog.logger.info("Done.");
+                return res;
             }
-            else {
-                if (null == pattern) {
-                    String wc_comm = "cat " + fileName + " | wc -l";
-                    res = connection.Execute(wc_comm);
-                }
-                else {
-                    String wc_comm = "cat " + fileName;
-                    res = connection.Execute(wc_comm);
-                    int num_of_patterns = res.split(pattern,-1).length - 1;
-                    res = Integer.toString(num_of_patterns);
-                }
+            if (null == pattern) {
+                String wc_comm = "cat " + fileName + " | wc -l";
+                return connection.Execute(wc_comm);
             }
+            String wc_comm = "cat " + fileName;
+            res = connection.Execute(wc_comm);
+            int num_of_patterns = res.split(pattern,-1).length - 1;
+            return Integer.toString(num_of_patterns);
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not check SIEM logs on LNE: " + LNE_IP + "\n" + e.toString());

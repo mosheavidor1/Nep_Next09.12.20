@@ -7,7 +7,15 @@ public interface AgentActionsInterface  {
     
     public void uninstallEndpoint(int timeout);
     
+    /**
+     * Should be used only by reinstall endpoint
+     * @param timeout
+     */
     public void startEPService(int timeout);
+    /**
+     * Should be used only by reinstall endpoint
+     * @param timeout
+     */
     public void stopEPService(int timeout);
     
     public String getVerifySiemCommand();

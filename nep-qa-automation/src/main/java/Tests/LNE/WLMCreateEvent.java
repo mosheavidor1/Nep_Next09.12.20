@@ -9,33 +9,39 @@ import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 
-
+//https://jira.trustwave.com/browse/NEP-1230
 public class WLMCreateEvent extends GenericTest {
 
     private LNEActions lennyActions;
     private BaseAgentActions agent;
-    private String customerId;
+    private static String customerId;
 
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
-    // result depends on filter settings in relevant config.json and on number of created events per config.json
-    // currently, number of lines detected by ep is 2.
     String expectedLines;
     private static final int schedule_report_timeout = 120000; //120 seconds
-    //private static final int checkInterval = 5000; //5 seconds
-    private static int checkUPdatesInterval;
     
-    private static final String localIP = "127.0.0.1";
+    private static int checkUPdatesInterval;
+    private static String agentIp;
+    private static final String host_value_to_update = "\\{lenny-ip\\}";
     
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+        
+       
+    }
+    
+    @BeforeTest
+    public void init() {
+    	customerId = general.get("Customer Id");
         checkUPdatesInterval = Integer.parseInt(general.get("Check Updates Timeout")) * 1000; //35 seconds
+        
     }
 
     @Test()
@@ -49,23 +55,28 @@ public class WLMCreateEvent extends GenericTest {
 
             String log_type = data.get("Log_Type");
             expectedLines = data.get("expectedResult");
-
-            JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, expectedLines);
             
-            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+            JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, expectedLines);
+           
+            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
             
-            String confJson = data.get("Settings Json");
+            //Read configuration and update the host tags
+            String confJson = data.get("Settings Json");            
+            confJson = confJson.replaceAll(host_value_to_update, PropertiesFile.readProperty("ClusterToTest"));
+            
+            agentIp = data.get("EP_HostName_1");
+            
             lennyActions.SetCustomerConfiguration(customerId, confJson);
             
             Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
-            //TODO: how to compare?
+            //TODO: compare json cofniguration on agent
             
            // agent.clearFile(agent.getAgentLogPath()); //clear fails since file is in use
+            //TODO: instead of clearing the file, tail it to a different new file
             if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
             	clearSyslogFile();
             }
-
            
             createEvents();
             Thread.sleep(schedule_report_timeout);
@@ -79,34 +90,29 @@ public class WLMCreateEvent extends GenericTest {
             } else {
                 org.testng.Assert.fail("Unknown server log_type: " +  log_type);
             }
+            JLog.logger.info("Completed test successfully\n");
 
         }
         catch (Exception e) {
-                org.testng.Assert.fail("WLMCreateEventAndVerify ." + "\n" + e.toString());
-            }
+        	JLog.logger.error("Test failed", e);
+            org.testng.Assert.fail("Test failed " + e.toString());
+        }
 
     }
     
     private void clearSyslogFile() {
     	JLog.logger.info("Going to clear file 'user.log' on Lenny");
-    	String syslogFileName = syslog_path + getAgentIPFolder() + "/user.log";
+    	String syslogFileName = syslog_path + agentIp + "/user.log";
     	if (lennyActions.fileExists(syslogFileName)) {
     		lennyActions.clearFile(syslogFileName);
     		JLog.logger.info("Done");
     		return;
-    	}
-        JLog.logger.info("File on path {} does not exist", syslogFileName);
-        syslogFileName = syslog_path + localIP + "/user.log";
-        if (lennyActions.fileExists(syslogFileName)) {
-        	lennyActions.clearFile(syslogFileName);
-        	JLog.logger.info("Cleard on path {}", syslogFileName);
-    		return;
-        }
-        JLog.logger.info("File was not found on path {} either", syslogFileName);
+    	}       
+        JLog.logger.info("File was not found on path {}", syslogFileName);
     }
     
     public void verifyLogsSentToSiem() {
-    	JLog.logger.info("Starting verifyLogsSentToSiem");
+    	JLog.logger.info("Going to verify logs sent to SIEM");
     	
         String command = agent.getVerifySiemCommand();
         String expectedStr = ".zip was sent successfully";
@@ -115,21 +121,17 @@ public class WLMCreateEvent extends GenericTest {
         
         int start = res.lastIndexOf("dla_");
         int stop = res.lastIndexOf(".zip");
-        JLog.logger.info("start: {}, stop: {}",start, stop);
         org.testng.Assert.assertTrue(start != -1 && stop != -1, "Failed to find txt file name in result");
         
         String zipFileMane = res.substring(start, stop + 4);
-        JLog.logger.info("zip file Name: {}", zipFileMane);
-
         JLog.logger.info("Going to verify number of lines in {}", scp_path + zipFileMane);
         res = lennyActions.numLinesinFile(scp_path + zipFileMane, null);
-        JLog.logger.info("Got: " + res);
-
         org.testng.Assert.assertTrue(res != null && res.contains(expectedLines));
+        JLog.logger.info("done");
     }
 
     public void verifyLogsSentToLCA() {
-    	JLog.logger.info("Starting verifyLogsSentToLCA");
+    	JLog.logger.info("Going to verify logs sent to LCA");
     	
         String command = agent.getVerifyLcaCommand();       
         String patt = ".txt was sent successfully";
@@ -138,47 +140,34 @@ public class WLMCreateEvent extends GenericTest {
         
         int start = res.lastIndexOf("dla_");
         int stop = res.lastIndexOf(".txt");
-        JLog.logger.info("start: {}, stop: {}",start, stop);
         org.testng.Assert.assertTrue(start != -1 && stop != -1, "Failed to find txt file name in result");
         
         String txtFileMane = res.substring(start, stop + 4);
         JLog.logger.info("Going to verify number of lines in {}", scp_path + txtFileMane);
-        res = lennyActions.numLinesinFile(scp_path + txtFileMane, null);
-        JLog.logger.info("Got: " + res);
-        
+        res = lennyActions.numLinesinFile(scp_path + txtFileMane, null);        
         org.testng.Assert.assertTrue(res != null && res.contains(expectedLines));
+        JLog.logger.info("done");
     }
 
     public void verifyLogsSentToLCA_SYSLOG() {
-    	JLog.logger.info("Starting verifyLogsSentToLCA_SYSLOG");
+    	JLog.logger.info("Going to verify logs sent to LCA SYSLOG");
     	
         String command = "type " + agent.getAgentLogPath() + " | find /n \"SecureSyslogCollector: sent " + expectedLines + " events\"";
         String expectedStr = "SecureSyslogCollector: sent " + expectedLines + " events";
         
         String res = agent.verifyExpectedOnCommandResult(command, expectedStr);
                 
-        String txtFileMane = syslog_path + getAgentIPFolder() + "/user.log";
+        String txtFileMane = syslog_path + agentIp + "/user.log";
         if (!lennyActions.fileExists(txtFileMane)) {
         	JLog.logger.info("File on path {} does not exist", txtFileMane);
-        	txtFileMane = syslog_path + localIP + "/user.log";
-        	if (!lennyActions.fileExists(txtFileMane)) {
-        		JLog.logger.error("File on path {} does not exist either", txtFileMane);
-        		 org.testng.Assert.fail("Could not find user.log file");
-        	}
+        	org.testng.Assert.fail("Could not find user.log file");        	
         }
         JLog.logger.info("Going to verify number of lines in {} and expect {} lines", txtFileMane, expectedLines);
         res = lennyActions.numLinesinFile(txtFileMane, null);
-        JLog.logger.info("Got: " + res);
-        
         org.testng.Assert.assertTrue(res != null && res.contains(expectedLines));
+        JLog.logger.info("done");
     }
-    
-    private String getAgentIPFolder() {
-    	
-    	return PropertiesFile.readProperty("ClusterToTest");
-    	
-    }
-
+   
     public void createEvents() {
     	JLog.logger.info("Starting writing events.");
     	
@@ -209,38 +198,9 @@ public class WLMCreateEvent extends GenericTest {
         JLog.logger.info("Finished writing events.");
     }
     
-    //Waits until check updates will run, and uninstall will be done as a result
-    /*
-    public void checkUpdatesUntilConfIsUpdated(String conf) {
-
-        boolean deleted = false;
-
-        try {
-            LocalDateTime start = LocalDateTime.now();
-            LocalDateTime current = start;
-            Duration durationTimeout = Duration.ofSeconds(Integer.parseInt(general.get("Check Updates Timeout")));
-
-            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                Thread.sleep(checkInterval);
-                current = LocalDateTime.now();
-                if (!endpointServiceRunning()) {
-                    deleted = true;
-                    JLog.logger.info("Endpoint service was stopped!");
-                    break;
-                }
-            }
-        } catch (InterruptedException e) {
-        	JLog.logger.info("Got interrupted exception");
-        }
-
-        if(!deleted){
-            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still running.");
-        }
-    }*/
-
+    
     @AfterMethod
     public void Close(){
-        JLog.logger.info("Closing...");
         if (agent!=null) {
             agent.close();
         }
