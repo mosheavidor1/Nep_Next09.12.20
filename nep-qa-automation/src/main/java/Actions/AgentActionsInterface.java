@@ -36,7 +36,7 @@ public interface AgentActionsInterface  {
     
     public String getDbJsonPath();
     
-    public String getClearFileCommand();
+    public String getClearFileCommand(String filename);
     
     public String getVersionJsonPath();
     

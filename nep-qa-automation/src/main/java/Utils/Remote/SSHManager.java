@@ -207,14 +207,16 @@ public class SSHManager  {
         try {
             File file = File.createTempFile("AutomationTemp", null);
             file.deleteOnExit();
+            
             PrintWriter out = new PrintWriter(file.getAbsolutePath());
             out.print(text);
             out.close();
-            sftpChannel.put(file.getAbsolutePath(),filePath);
+            
+            sftpChannel.put(file.getAbsolutePath(), filePath);
         }
 
         catch(Exception e){
-            org.testng.Assert.fail("Could not write text to file: " + filePath  + "\n" + e.toString() +"\n" + "text to write: " + text);
+              org.testng.Assert.fail("Could not write text to file: " + filePath , e);
         }
     }
 

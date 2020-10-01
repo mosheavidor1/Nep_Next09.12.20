@@ -264,8 +264,8 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
         connection.DeleteFile(remoteFilePath);
     }
 	
-	public String getClearFileCommand() {
-		return "cp -f /dev/null ";
+	public String getClearFileCommand(String fileName) {
+		return "cp -f /dev/null " + fileName;
 	}
 
     public String getScriptName(String scriptName) {

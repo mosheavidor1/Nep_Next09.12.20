@@ -1,5 +1,6 @@
 package Actions;
 
+import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -7,14 +8,15 @@ import java.util.Map;
 
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+import Utils.Remote.SSHManager;
 
 public class WinAgentActions extends BaseAgentActions implements AgentActionsInterface{
 	
-	public static final String installationFolder = "/C:/Program Files/Trustwave/NEPAgent";
+	//public static final String installationFolder = "C:/Program Files/Trustwave/NEPAgent";
     public static final String windowsInstallationFile = ManagerActions.windowsInstallationFile;
     public static final String windowsHostsFile = "/C:/Windows/System32/drivers/etc/hosts";
     public static final String exexInstPath = "C:\\Program Files\\Trustwave\\NEPAgent";
-    public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
+    public static final String dbJsonPath = "C:/ProgramData/Trustwave/NEPAgent/db.json";
     public static final String versionJsonWindowsPath = "/C:/Program Files/Trustwave/NEPAgent/version.json";
     private static final String winLog = "C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log";
     private static final String command_winSIEM = "type " + winLog + " | find /n \".zip was sent successfully\"";
@@ -278,21 +280,23 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     }
 	
 	public void writeAndExecute(String text) {
-        String remoteFilePath = installationFolder + "/createFoldersAndLogs.bat";
-        connection.WriteTextToFile(text, remoteFilePath);
-        String execPath = exexInstPath + "\\createFoldersAndLogs.bat";
-        connection.Execute(execPath);
-        connection.DeleteFile(remoteFilePath);
+		try {
+	        connection.WriteTextToFile(text, "/C:/home/createFoldersAndLogs.bat");
+	        connection.Execute("C:\\home\\createFoldersAndLogs.bat");
+		}
+		catch(Exception ex) {
+			org.testng.Assert.fail("Failed in writeAndExecute function", ex);
+		}
     }
 	
-	public String getClearFileCommand() {
-		return "type nul > ";
+	public String getClearFileCommand(String filename) {
+		return "powershell \"Clear-Content " + filename + "\"";
 	}
 
 	public String getScriptName(String scriptName) {
-        String nameExcell = scriptNamesMap.get(scriptName);
-        return nameExcell;
+        return scriptNamesMap.get(scriptName);
     }
+	
     public String getConfigPath(boolean afterUpdate) {
         String conf_path;
         String new_or_stable;
