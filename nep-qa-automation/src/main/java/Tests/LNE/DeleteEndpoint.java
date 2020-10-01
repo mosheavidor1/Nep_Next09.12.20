@@ -44,7 +44,7 @@ public class DeleteEndpoint extends GenericTest {
             String originalEndpointId = agent.getEpIdFromDbJson();
 
             lennyActions.deleteAndVerifyResponse(customerId, agent.getEpName());
-            agent.checkDeleted(Integer.parseInt(general.get("Check Updates Timeout")));
+            agent.checkDeleted(Integer.parseInt(general.get("EP Installation timeout")));
 
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
@@ -57,7 +57,7 @@ public class DeleteEndpoint extends GenericTest {
 
             // Verify the agent got new unique id to be sure it is a new installation
             if(originalEndpointId.compareTo(newEndpointId) == 0){
-                org.testng.Assert.fail("RevokeEndpoint test failed, the unique id is the same after the installation.");
+                org.testng.Assert.fail("RevokeEndpoint test failed, the unique id is the same after the installation. Original EP IP: "+ originalEndpointId + " New EP ID: " + newEndpointId + " Machine: " + data.get("EP_HostName_1") );
             }
 
             // Assert after installing the agent back

@@ -44,7 +44,7 @@ public class RevokeEndpoint extends GenericTest {
             simulatedAgent.register(customerId, SimulatedAgentIp, SimulatedAgentName, "84-7B-EB-21-99-99","Windows 10");
 
             lennyActions.revoke(customerId, agent.getEpName());
-            agent.checkDeleted(Integer.parseInt(general.get("Check Updates Timeout")));
+            agent.checkDeleted(Integer.parseInt(general.get("EP Installation timeout")));
 
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
