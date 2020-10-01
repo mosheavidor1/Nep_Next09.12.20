@@ -198,9 +198,12 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
             String dbJsonRemoteFile = getDbJsonPath();
             if (connection.IsFileExists(dbJsonRemoteFile)) {
                 String dbJsonFileContent = connection.GetTextFromFile(dbJsonRemoteFile);
+                JLog.logger.debug("db.json content: " +dbJsonFileContent);
                 ObjectMapper objectMapper = new ObjectMapper();
                 DbJson dbJson = objectMapper.readValue(dbJsonFileContent, DbJson.class);
                 endpointId = dbJson.getEndpointId();
+                JLog.logger.debug("Endpoint ID from db.json: " +endpointId);
+
             }
         }
         catch (Exception e) {
