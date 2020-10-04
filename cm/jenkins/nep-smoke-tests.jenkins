@@ -7,7 +7,7 @@ node('nep-build-centos7') {
         echo "buildCauses:  ${currentBuild.buildCauses}"
         isStartedByNEPSET = "${currentBuild.buildCauses}".contains('nepset-multijob')
         currentBuild.displayName = "${BUILD_NUMBER}" + "-${env.NEP_BRANCH}"
-        // echo "groovy version : ${GroovySystem.version}"
+        echo "groovy version : ${GroovySystem.version}"
         
         lock (LOCK_NAME) {
 
@@ -272,7 +272,7 @@ node('nep-build-centos7') {
                             throw exc
                         }
                         finally {
-                            archiveArtifacts artifacts: 'test-output/*'
+                            archiveArtifacts artifacts: 'test-output/*' /* */
                         }
                     } // win node try
                 }// timeout to wait for Win node
@@ -314,7 +314,7 @@ node('nep-build-centos7') {
                       'lne_logs/tail_1K_nepa-dserver.log'
                       )
 
-        archiveArtifacts artifacts: 'lne_logs/*'
+        archiveArtifacts artifacts: 'lne_logs/*'  /* */
                       
         echo "finally prepare mail to send"
         
