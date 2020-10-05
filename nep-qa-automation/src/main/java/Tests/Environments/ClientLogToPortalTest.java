@@ -29,8 +29,6 @@ public class ClientLogToPortalTest extends RecordedTest {
 
     @Test( groups = { "logs" } )
     public void SendLogsAndVerify () {
-        agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-        String hostname1 = agent.getEpNameAndDomain();
 
         try {
             if (!data.get("EP_Type_1").equals("win")) {
