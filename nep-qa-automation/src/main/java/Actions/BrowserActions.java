@@ -8,6 +8,8 @@ import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.TestFiles;
 import org.apache.commons.io.IOUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -99,7 +101,7 @@ public class BrowserActions extends ManagerActions {
 
 
     //verify log entry message appears at the portal
-    public void VerifyMessageExistsInPortal(LogEntry entry, int timeoutForLogEntryToAppearInSeconds) {
+    public void VerifyMessageExistsInPortal(LogEntry entry, String hostname, int timeoutForLogEntryToAppearInSeconds) {
         try {
             EventExplorerPage eventPage = new EventExplorerPage();
             final String filteredItemsText = "Filtered Items";
@@ -122,7 +124,8 @@ public class BrowserActions extends ManagerActions {
             eventPage.detectorHostQuery_element.click();
             eventPage.detectorHostAll.click();
 
-            String fullMachineName = InetAddress.getLocalHost().getCanonicalHostName();
+            //String fullMachineName = InetAddress.getLocalHost().getCanonicalHostName();
+            String fullMachineName = hostname;
             eventPage.specifyAnOption.sendKeys(fullMachineName + "\n");
 
             eventPage.selectQueryOption.click();
@@ -288,7 +291,7 @@ public class BrowserActions extends ManagerActions {
     }
 
 
-    public void CheckEndPointOkInCentCom(String customerName) {
+    public void GotoCentComEndpointsPage(String customerName) {
         try {
             CentComSearchPage centSearch = new CentComSearchPage();
             centSearch.customersText_element.sendKeys(customerName);
@@ -299,14 +302,23 @@ public class BrowserActions extends ManagerActions {
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
             detailsPage.endPointTab_element.click();
 
-            String host = InetAddress.getLocalHost().getHostName();
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not check endpoint status at CentCom for customer: " + customerName + " hostname: "  +  "\n" + e.toString());
+        }
 
-            //detailsPage.endPointSearchBox_element.sendKeys(host + "\n");
+    }
+
+    public void CheckEndPointOkInCentCom(String hostname) {
+        try {
+            CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
+
             detailsPage.binocularsButton_element.click();
 
             detailsPage.WaitUntilPageLoad();
             detailsPage.WaitUntilObjectClickable(detailsPage.valueToSearchBy);
-            detailsPage.valueToSearch_element.sendKeys(host + "\n");
+            detailsPage.valueToSearch_element.clear();
+            detailsPage.valueToSearch_element.sendKeys(hostname + "\n");
 
             detailsPage.refreshButton_element.click();
 
@@ -316,19 +328,22 @@ public class BrowserActions extends ManagerActions {
 
             Thread.sleep(5000); //after all 3 wait above needs some more - to be investigated
 
-            if (!detailsPage.IsElementExist(detailsPage.GetHostNameRowBy(host))) {
-                org.testng.Assert.fail("Could not find hostname: " + host);
+            if (!detailsPage.IsElementExist(detailsPage.GetHostNameRowBy(hostname))) {
+                org.testng.Assert.fail("Could not find hostname: " + hostname);
             }
 
             if (!detailsPage.IsElementExist(detailsPage.OkBy)) {
-                org.testng.Assert.fail("Host: " + host + " Status is not Okay. See screenshot/video.");
+                org.testng.Assert.fail("Host: " + hostname + " Status is not Okay. See screenshot.");
             }
+            JLog.logger.info("Status OK for endpoint: " + hostname);
+
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not check endpoint status at CentCom for customer: " + customerName + "\n" + e.toString());
+            org.testng.Assert.fail("Could not check endpoint status at CentCom for hostname: " + hostname +  "\n" + e.toString());
         }
 
     }
+
 
 
     public void SelectCustomer(String customerName) {
@@ -415,10 +430,6 @@ public class BrowserActions extends ManagerActions {
 
     public void DownloadFilesFromTrustWaveEndPointFolder(String fileToAppearTimeoutString, String fileStoredAndVirusScanTimeoutString) {
         try {
-
-            int fileToAppearTimeout = Integer.parseInt(fileToAppearTimeoutString);
-            int fileStoredAndVirusScanTimeout = Integer.parseInt(fileStoredAndVirusScanTimeoutString);
-
             FileCabinet fc = new FileCabinet();
 
             fc.WaitUntilObjectDisappear(fc.spinnerBy);
@@ -432,10 +443,33 @@ public class BrowserActions extends ManagerActions {
 
             fc.trustwaveEndpointFolder_element.click();
 
-            boolean found = false;
-
 
             LocalDateTime start = LocalDateTime.now();
+
+            WaitForInstallerToAppearAtFileCabinet(fc.endPointLnxBy,start, fileToAppearTimeoutString);
+            WaitForInstallerToAppearAtFileCabinet(fc.endPointExeBy,start, fileToAppearTimeoutString);
+
+            DownloadInstaller(fc.TrustwaveEndpointLnx_element, fc.endPointLnxBy,fileStoredAndVirusScanTimeoutString);
+            DownloadInstaller(fc.TrustwaveEndpointExe_element, fc.endPointExeBy,fileStoredAndVirusScanTimeoutString);
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not download endpoint installation files" + "\n" + e.toString());
+        }
+
+    }
+
+
+
+    private void WaitForInstallerToAppearAtFileCabinet( By installerLinkBy, LocalDateTime start, String fileToAppearTimeoutString) {
+        try {
+
+            int fileToAppearTimeout = Integer.parseInt(fileToAppearTimeoutString);
+
+            FileCabinet fc = new FileCabinet();
+
+            boolean found = false;
+
             LocalDateTime current = start;
             Duration durationTimeout = Duration.ofSeconds(fileToAppearTimeout);
 
@@ -450,28 +484,41 @@ public class BrowserActions extends ManagerActions {
                 current = LocalDateTime.now();
 
 
-                if (fc.IsElementExist(FileCabinet.endPointExeBy)) {
+                if (fc.IsElementExist(installerLinkBy)) {
                     found = true;
                     break;
                 }
 
             }
 
-            if (!found)
-                org.testng.Assert.fail("Download failed. Installation file did not appeared at File Cabinet after timeout: " + fileToAppearTimeoutString + " seconds. See screenshot or video links below");
+            if (!found) {
+                org.testng.Assert.fail("Download failed. Installation file did not appeared at File Cabinet after timeout: " + fileToAppearTimeoutString + " seconds. See screenshot file.");
+            }
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not download endpoint installation files" + "\n" + e.toString());
+        }
 
+    }
+
+
+
+    private void DownloadInstaller(WebElement installerLink, By installerLinkBy, String fileStoredAndVirusScanTimeoutString) {
+        try {
+
+            int fileStoredAndVirusScanTimeout = Integer.parseInt(fileStoredAndVirusScanTimeoutString);
 
             boolean errorMessageAppear = true;
+            FileCabinet fc = new FileCabinet();
 
-
-            start = LocalDateTime.now();
-            current = start;
-            durationTimeout = Duration.ofSeconds(fileStoredAndVirusScanTimeout);
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(fileStoredAndVirusScanTimeout);
 
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
 
-                fc.WaitUntilObjectClickable(fc.endPointExeBy);
-                fc.TrustwaveEndpointExe_element.click();
+                fc.WaitUntilObjectClickable(installerLinkBy);
+                installerLink.click();
                 if (!fc.IsElementExist(fc.fileUnableToBeDownloadedBy)) {
                     errorMessageAppear = false;
                     break;
@@ -492,16 +539,19 @@ public class BrowserActions extends ManagerActions {
 
             }
 
-            if (errorMessageAppear)
-                org.testng.Assert.fail("Message appears: File is still being processed (virus scanned and stored). after timeout: " + fileStoredAndVirusScanTimeoutString + " seconds. See video link below");
-
+            if (errorMessageAppear) {
+                org.testng.Assert.fail("Message appears: File is still being processed (virus scanned and stored). after timeout: " + fileStoredAndVirusScanTimeoutString + " seconds. Timeout reached test failed.");
+            }
         }
         catch (Exception e) {
             org.testng.Assert.fail("Could not download endpoint installation files" + "\n" + e.toString());
         }
 
     }
-    
+
+
+
+
 
 }
 

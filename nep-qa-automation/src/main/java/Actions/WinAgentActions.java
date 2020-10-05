@@ -27,7 +27,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     public static final String configJsonWindowsPath_1_2_gen = "/C:/ProgramData/Trustwave/NEPAgent/General/";
     public static final String configJsonWindowsPath_1_2_new = "/C:/ProgramData/Trustwave/NEPAgent/General/new";
     public static final String configJsonWindowsPath_1_2_stable = "/C:/ProgramData/Trustwave/NEPAgent/General/stable";
-    
+
     private static final String startCommand = "Net start NepaService";
     private static final String stopCommand = "Net stop NepaService";
     
@@ -310,4 +310,39 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
             conf_path = configJsonWindowsPath_1_2_gen + new_or_stable + "/config.json";
         return conf_path;
     }
+
+    public String getEpNameAndDomain() {
+
+        try {
+
+            String result = connection.Execute("ipconfig /all");
+            String domainIdentifier ="Primary Dns Suffix";
+            String fullHostname;
+
+            if (null != result) {
+                int start = result.indexOf(domainIdentifier);
+                String domain = result.substring(start+domainIdentifier.length());
+                domain=domain.substring(0,domain.indexOf("\n"));
+                domain=domain.substring(domain.indexOf(":")+ 1);
+                domain = domain.trim();
+                fullHostname=this.getEpName();
+                if (!domain.isEmpty()){
+                    fullHostname+="." + domain;
+                }
+            }
+            else {
+                return null;
+            }
+            return fullHostname;
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not get ep and domain name for Endpoint: "+epIp + "\n" + e.toString());
+            return null;
+        }
+
     }
+
+
+
+
+}

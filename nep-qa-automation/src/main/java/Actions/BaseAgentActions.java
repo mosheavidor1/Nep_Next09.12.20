@@ -30,8 +30,8 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     public static final String hostsFileRedirection = "endpoint-protection-services.local.tw-test.net";
     public static final String hostsFileIngressRedirection = "siem-ingress.trustwave.com";
     public static final char hostsFileCommentChar = '#';
-	
-	private String epIp, epUserName, epPassword, epName;
+
+	protected String epIp, epUserName, epPassword, epName;
     protected SSHManager connection;
     public static final int connection_port =22;
 
@@ -358,6 +358,8 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         }
         return epName;
     }
+
+
 
     public void close(){
         if (connection!=null) {

@@ -1,14 +1,19 @@
 package Tests.Environments;
 
+import Actions.AgentActionsFactory;
+import Actions.BaseAgentActions;
 import Actions.BrowserActions;
 import Tests.GenericTest;
 import Tests.RecordedTest;
+import Utils.Logs.JLog;
 import org.testng.annotations.*;
 
 import java.io.IOException;
 
 public class VerifyEndPointOkAtPortalTest extends RecordedTest {
     private BrowserActions action;
+    private BaseAgentActions agent1;
+    private BaseAgentActions agent2;
 
     @Factory(dataProvider = "getData")
     public VerifyEndPointOkAtPortalTest(Object dataToSet) {
@@ -19,15 +24,32 @@ public class VerifyEndPointOkAtPortalTest extends RecordedTest {
 
     @Test( groups = { "verify" } )
     public void VerifyEndPointStatusAtPortalTest () {
+        try {
+
+        JLog.logger.info("Starting VerifyEndPointOkAtPortalTest...");
+
+        agent1 = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+        String hostname1 = agent1.getEpName();
+
+        agent2 = AgentActionsFactory.getAgentActions(data.get("EP_Type_2"), data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get("EP_Password_2"));
+        String hostname2 = agent2.getEpName();
 
 
-        action.LaunchApplication(general.get("Browser"));
+            action.LaunchApplication(general.get("Browser"));
         action.SetApplicationUrl(general.get("Fusion Link"));
 
         action.Login(general.get("Fusion User Name"), general.get("Fusion Password"));
 
         action.GotoCentComSearch(general.get("Fusion Link"));
-        action.CheckEndPointOkInCentCom(data.get("Customer"));
+        action.GotoCentComEndpointsPage(data.get("Customer"));
+
+        action.CheckEndPointOkInCentCom(hostname1);
+        action.CheckEndPointOkInCentCom(hostname2);
+        }
+        catch (Exception e){
+            org.testng.Assert.fail("Could not verify endpoint status at portal: " + "\n" + e.toString());
+
+        }
 
     }
 
@@ -36,6 +58,13 @@ public class VerifyEndPointOkAtPortalTest extends RecordedTest {
         afterMethod();
         if (action != null) {
             action.CloseApplication();
+        }
+        if (agent1!=null) {
+            agent1.close();
+        }
+
+        if (agent2!=null) {
+            agent2.close();
         }
 
     }

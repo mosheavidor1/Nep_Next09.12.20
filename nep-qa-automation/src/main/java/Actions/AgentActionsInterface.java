@@ -45,5 +45,7 @@ public interface AgentActionsInterface  {
     public boolean endpointServiceRunning();
     public String getScriptName(String scriptName);
     public String getConfigPath(boolean afterUpdate);
-}
+
+    public String getEpNameAndDomain();
+    }
 

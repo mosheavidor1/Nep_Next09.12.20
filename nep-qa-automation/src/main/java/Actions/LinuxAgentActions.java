@@ -27,7 +27,10 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     
     private static final String startCommand = "systemctl start tw-endpoint";
     private static final String stopCommand = "systemctl stop tw-endpoint";
-    
+
+    public static final String hostnamePlusDomainCommandLinux = "hostname --fqdn";
+
+
     Map<String, String> scriptNamesMap;
     
     public LinuxAgentActions(String epIp, String epUserName, String epPassword) {
@@ -287,4 +290,23 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
             conf_path = configJsonLinuxPath_1_2_gen + new_or_stable + "/config.json";
         return conf_path;
     }
+
+    public String getEpNameAndDomain() {
+        try {
+                String result = connection.Execute(hostnamePlusDomainCommandLinux);
+                if(result!=null){
+                    result=result.trim();
+                }
+                return result;
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not get ep and domain name for Endpoint: "+epIp + "\n" + e.toString());
+            return null;
+        }
+
+
+    }
+
+
+
 }

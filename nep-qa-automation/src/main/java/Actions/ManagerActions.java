@@ -115,7 +115,7 @@ public class ManagerActions {
         try {
 
             File nepFolder = new File(PropertiesFile.getManagerDownloadFolder());
-            String[] expectedArr = {archiveFolderName, windowsInstallationFile, uninstallFolderName,utilsFolderName};
+            String[] expectedArr = { windowsInstallationFile,linuxInstallationFile};
             List expectedList = Arrays.asList(expectedArr);
 
             boolean foundFiles = false;
