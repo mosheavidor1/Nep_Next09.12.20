@@ -3,17 +3,44 @@
 /* Need 3 Win EP machines for PROD check - one for each of 3 Regions:
    [ AMS | APJ | EMEA ]
 */
+
+
 WIN_NODE_1 = 'WinProdStat_10_85_24_247' 
 WIN_IP_1   = '10.85.24.247'
+WIN_NODE_2 = 'WinProdStat_10_85_24_32' 
+WIN_IP_2   = '10.85.24.32'
+WIN_NODE_3 = 'WinProdStat_10_85_24_207' 
+WIN_IP_3   = '10.85.24.207'
 
+switch(REGION) {
+    
+    case "EMEA" :
+       WIN_NODE = WIN_NODE_1
+       WIN_IP   = WIN_IP_1
+       break
+    case "AMS" :
+        WIN_NODE = WIN_NODE_3
+        WIN_IP   = WIN_IP_3
+        break
+    case "APJ" :
+        WIN_NODE = WIN_NODE_3
+        WIN_IP   = WIN_IP_3
+        break
+}
 
-node(WIN_NODE_1) {
+echo """
+  REGION    : ${REGION}
+  WIN_NODE  : ${WIN_NODE}
+  WIN_IP    : ${WIN_IP}
+"""
+
+node(WIN_NODE) {
     try {
 
         SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
         MODULE_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
         MODULE_ARTIFACT_DST="${WORKSPACE}\\nep-qa-automation\\nep-qa-automation.jar"
-        DISPLAY_VERSION="${BUILD_NUMBER} - ${REGION}"
+        DISPLAY_VERSION="${BUILD_NUMBER} - ${REGION} - "
 
         stage("Clean Workspace") {
             echo """
@@ -46,7 +73,7 @@ node(WIN_NODE_1) {
 
         stage("Check prod status") {
             bat """
-				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${REGION}" "win]${WIN_IP_1}]QA-NEP]finjan!"
+				java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${REGION}" "win]${WIN_IP}]QA-NEP]finjan!"
 			
 				if ERRORLEVEL 1  set test_result=false
 
