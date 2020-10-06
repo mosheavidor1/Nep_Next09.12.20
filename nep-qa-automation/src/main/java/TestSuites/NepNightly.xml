@@ -1,0 +1,24 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name = "Smoke Test" configfailurepolicy="skip">
+
+    <test name = "Smoke Tests" >
+
+        <groups>
+            <dependencies>
+            	<group  name= "InitCustomer" depends-on="Cleanup" ></group>
+                <group  name= "InstallEP" depends-on="InitCustomer" ></group>
+            </dependencies>
+        </groups>
+
+        <classes>
+        	   	<class name = "Tests.LNE.Cleanup"  />
+              	<class name = "Tests.LNE.InitCustomer"/>
+              	<class name = "Tests.LNE.InstallEP" />
+
+        </classes>
+    </test>
+
+
+</suite>
