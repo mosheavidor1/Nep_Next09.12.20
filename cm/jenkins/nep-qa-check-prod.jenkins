@@ -34,6 +34,8 @@ echo """
   WIN_IP    : ${WIN_IP}
 """
 
+currentBuild.displayName = "${BUILD_NUMBER} - ${REGION} - ${WIN_IP}"
+
 node(WIN_NODE) {
     try {
 
