@@ -19,8 +19,8 @@ switch(REGION) {
        WIN_IP   = WIN_IP_1
        break
     case "AMS" :
-        WIN_NODE = WIN_NODE_3
-        WIN_IP   = WIN_IP_3
+        WIN_NODE = WIN_NODE_2
+        WIN_IP   = WIN_IP_2
         break
     case "APJ" :
         WIN_NODE = WIN_NODE_3
