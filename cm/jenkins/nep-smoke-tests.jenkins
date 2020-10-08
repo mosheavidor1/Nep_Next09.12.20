@@ -24,6 +24,10 @@ node('nep-build-centos7') {
                 // tempstr = RES.inspect() Scripts not permitted to use staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object. Administrators can decide whether to approve or reject this signature.
                 // echo "tempstr = ${tempstr}
 
+                if (SETTINGS_XML.isEmpty()) {
+                   SETTINGS_XML = "SmokeTest.xml"
+                }
+
                 HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
                 // WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' :  'WinSmoke_10_85_25_159' //  'WinSmoke_10_85_24_250'
                 WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_85' :  'WinSmoke_10_85_25_159' //  'WinSmoke_10_85_24_250'
@@ -248,12 +252,13 @@ node('nep-build-centos7') {
                                 exit 1
                             }
                             """
-                            SETTINGS_XML = "SmokeTest.xml"
+                            // SETTINGS_XML = "SmokeTest.xml"
                             // SmokeTest.xml 10.85.25.76 
                             // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
                             bat """
                             java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave" 
                             """
+
                             
                             // bat """
                             // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "lnx]${LIN_AGENT_IP}]root]trustwave"
@@ -358,6 +363,16 @@ def sendEmailExt()
 
     prepareMailBody()
 
+    if (SETTINGS_XML.contains('SmokeTest.xml')) {
+        EMAIL_SUBJ = "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
+    }
+    else if ((SETTINGS_XML.contains('NepNightly.xml'))) {
+        EMAIL_SUBJ = "NEP nightly test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
+    }
+    else {
+        EMAIL_SUBJ = "wrong settings.xml param"
+    }
+    
     emailext (
        attachLog: true,
        attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log, lne_logs/*",
@@ -366,7 +381,7 @@ def sendEmailExt()
        from: 'ivalevich@trustwave.com',
        to: "${SMOKE_EMAIL_LIST}",
        mimeType: 'text/html',
-       subject: "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
+       subject: "${EMAIL_SUBJ}"
     )
 }
 
