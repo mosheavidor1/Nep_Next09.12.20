@@ -3,6 +3,7 @@ package Tests.LNE;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
+import Utils.NepDbConnector;
 import Utils.PropertiesFile.PropertiesFile;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.*;
@@ -40,7 +41,7 @@ public class BinaryUpdate extends GenericTest {
         super(dataToSet);
     }
 
-    @Test(groups = { "BinaryUpdate" } )
+    @Test(priority=2)
     public void TestBinaryUpdate() throws IOException {
 
         JLog.logger.info("Starting binary update test");
@@ -57,20 +58,74 @@ public class BinaryUpdate extends GenericTest {
                 data.get("EP_UserName_1"), data.get("EP_Password_1"));
 
         if(data.get("EP_Type_1").equals("win")) {
-            FetchFilesFromNexusToLocalForWindows();
-            checkBinaryUpdateOnWindowsOnly(endpoint);
+            String windowsNewVer = data.get("update_win_ver");
+            FetchFilesFromNexusToLocalForWindows(windowsNewVer);
+            checkBinaryUpdateOnWindowsOnly(endpoint, windowsNewVer);
+            verifyUpdatedVersion(windowsNewVer, endpoint);
         }
         else {
-            FetchFilesFromNexusToLocalForLinux();
-            checkBinaryUpdateOnLinuxOnly(endpoint);
+            String linuxNewVer = data.get("update_linux_ver");
+            FetchFilesFromNexusToLocalForLinux(linuxNewVer);
+            checkBinaryUpdateOnLinuxOnly(endpoint, linuxNewVer);
+            verifyUpdatedVersion(linuxNewVer, endpoint);
         }
 
-        //lneActions.cleanGlobalVersionsTable();
+        cleanGlobalVersionsDB();
+        //cleanBinVerEpRequest();
     }
 
-    private void FetchFilesFromNexusToLocalForWindows() throws IOException {
+    @Test(priority=1)
+    public void TestBinaryUpdateRollback() throws IOException {
 
-        String windowsNewVer = data.get("update_win_ver");
+        JLog.logger.info("Starting binary update rollback test");
+
+        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+
+        // get bucket id from LNE
+        s3Bucket = lneActions.getBucketId();
+        JLog.logger.info("s3 bucket id is: " + s3Bucket);
+
+        lneActions.disableGradualUpgrade();
+
+        endpoint = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"),
+                data.get("EP_UserName_1"), data.get("EP_Password_1"));
+
+        if(data.get("EP_Type_1").equals("win")) {
+            String windowsNewVer = data.get("update_bad_win_ver");
+            FetchFilesFromNexusToLocalForWindows(windowsNewVer);
+            checkBinaryUpdateOnWindowsOnly(endpoint, windowsNewVer);
+        }
+        else {
+            String linuxNewVer = data.get("update_bad_linux_ver");
+            FetchFilesFromNexusToLocalForLinux(linuxNewVer);
+            checkBinaryUpdateOnLinuxOnly(endpoint, linuxNewVer);
+        }
+
+        JLog.logger.info("Sleeping for 1 minute so endpoint would have time to report on an error...");
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            JLog.logger.error("Interrupted exception in Thread.sleep: ", e);
+        }
+
+        VerifySuccessfulRollback(endpoint);
+        cleanGlobalVersionsDB();
+        cleanBinVerEpRequest();
+    }
+
+    private void cleanGlobalVersionsDB(){
+        NepDbConnector nepDbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
+        nepDbConnector.cleanGlobalVersionsAfterBinaryUpdate();
+    }
+
+    private void cleanBinVerEpRequest(){
+        NepDbConnector nepDbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
+        nepDbConnector.cleanEndpointBinVerEpRequest();
+    }
+
+    private void FetchFilesFromNexusToLocalForWindows(String windowsNewVer) throws IOException {
+
+        //String windowsNewVer = data.get("update_win_ver");
         List<String> windowsFiles = WindowsFilesList(windowsNewVer);
 
         String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
@@ -80,8 +135,8 @@ public class BinaryUpdate extends GenericTest {
         FetchFiles(fullPathToNexusWinVer, windowsFiles, localFolderForWinFiles);
     }
 
-    private void FetchFilesFromNexusToLocalForLinux() throws IOException {
-        String linuxNewVer = data.get("update_linux_ver");
+    private void FetchFilesFromNexusToLocalForLinux(String linuxNewVer) throws IOException {
+        //String linuxNewVer = data.get("update_linux_ver");
         List<String> linuxFiles = LinuxFilesList(linuxNewVer);
 
         String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
@@ -138,11 +193,11 @@ public class BinaryUpdate extends GenericTest {
      * This test uploads new binary update only for Linux. We expect the Linux endpoint to upgrade while the windows will not.
      * 
      */
-    public void checkBinaryUpdateOnLinuxOnly (BaseAgentActions endpointLinux) {
+    public void checkBinaryUpdateOnLinuxOnly (BaseAgentActions endpointLinux, String linuxNewVer) {
 
         JLog.logger.info("Starting linux binary update test");
     	
-    	String linuxNewVer = data.get("update_linux_ver");
+    	//String linuxNewVer = data.get("update_linux_ver");
          
          try {
 	         lneActions.uploadLinuxFilesToBucket(s3Bucket, LinuxFilesList(linuxNewVer));
@@ -167,20 +222,13 @@ public class BinaryUpdate extends GenericTest {
 	                 Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
 	
 	         // Sleep for 2 minutes - so the EPs will check updates and be updated
-	         JLog.logger.info("Sleeping for 2 minutes so check updates would update the EPs...");
-	         Thread.sleep(120000);
+	         JLog.logger.info("Sleeping for 3 minutes so check updates would update the EPs...");
+	         Thread.sleep(180000);
 		         
 	         if(!endpointLinux.endpointServiceRunning())
 	             org.testng.Assert.fail("Binary update failed. Trustwave Endpoint Agent Service not running on the linux EP.");
 	         else
 	             JLog.logger.info("Trustwave Endpoint Agent Service is running on the linux machine");
-	         
-	         
-	         String linuxBinVer = endpointLinux.getEPBinaryVersion();
-
-	         JLog.logger.info("Linux version is: " + linuxBinVer);
-
-	         org.testng.Assert.assertEquals(linuxBinVer, linuxNewVer, "Versions don't match");
 	         
          } catch (Exception ex) {
              ex.printStackTrace();
@@ -192,10 +240,10 @@ public class BinaryUpdate extends GenericTest {
          }
     }
 
-    public void checkBinaryUpdateOnWindowsOnly(BaseAgentActions endpointWin) {
+    public void checkBinaryUpdateOnWindowsOnly(BaseAgentActions endpointWin, String windowsNewVer) {
 
         JLog.logger.info("Starting windows binary update test");
-        String windowsNewVer = data.get("update_win_ver");
+        //String windowsNewVer = data.get("update_win_ver");
 
         try {
             lneActions.uploadWindowsFilesToBucket(s3Bucket, WindowsFilesList(windowsNewVer));
@@ -220,21 +268,14 @@ public class BinaryUpdate extends GenericTest {
                     Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
 
             // Sleep for 2 minutes - so the EPs will check updates and be updated
-            JLog.logger.info("Sleeping for 2 minutes so check updates would update the EPs...");
-            Thread.sleep(120000);
+            JLog.logger.info("Sleeping for 3 minutes so check updates would update the EPs...");
+            Thread.sleep(180000);
             //Thread.sleep(240000);
 
             if(!endpointWin.endpointServiceRunning())
                 org.testng.Assert.fail("Binary update failed. Trustwave Endpoint Agent Service not running on the windows EP.");
             else
                 JLog.logger.info("Trustwave Endpoint Agent Service is running on the windows machine");
-
-
-            String windowsBinVer = endpointWin.getEPBinaryVersion();
-
-            JLog.logger.info("Windows version is: " + windowsBinVer);
-
-            org.testng.Assert.assertEquals(windowsBinVer, windowsNewVer, "Versions don't match");
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -244,6 +285,14 @@ public class BinaryUpdate extends GenericTest {
             lneActions.cleanWindowsBucket(s3Bucket, WindowsFilesList(windowsNewVer));
             JLog.logger.info("s3Bucket cleaned...");
         }
+    }
+
+    private void verifyUpdatedVersion(String newVer, BaseAgentActions endpoint) {
+        String epVer = endpoint.getEPBinaryVersion();
+
+        JLog.logger.info("Endpoint agent version is: " + epVer);
+
+        org.testng.Assert.assertEquals(epVer, newVer, "Versions don't match");
     }
     
 /*
@@ -370,20 +419,16 @@ public class BinaryUpdate extends GenericTest {
         org.testng.Assert.assertEquals(winBinVer, windowsNewVer, "Versions don't match");
     }
 */
-    private void VerifySuccessfulRollback() {
-//        // Verify that the EPs have the old versions
-//        String linuxBinVer = endpointLinux.getEPBinaryVersion();
-//        String winBinVer = endpointWin.getEPBinaryVersion();
-//
-//        JLog.logger.info("Linux version is: " + linuxBinVer);
-//        JLog.logger.info("Windows version is: " + winBinVer);
-//
-//        // Get newer binaries versions
-//        String windowsNewVer = data.get("update_win_ver");
-//        String linuxNewVer = data.get("update_linux_ver");
-//
-//        org.testng.Assert.assertNotEquals(linuxBinVer, linuxNewVer, "Versions match, rollback wasn't performed");
-//        org.testng.Assert.assertNotEquals(winBinVer, windowsNewVer, "Versions match, rollback wasn't performed");
+    private void VerifySuccessfulRollback(BaseAgentActions endpoint) {
+
+        NepDbConnector nepDbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
+        String errorMsg = nepDbConnector.getEpErrorMsg(endpoint.getEpName());
+
+        JLog.logger.debug("EP " + endpoint.getEpName() + " error message: " + errorMsg);
+
+        org.testng.Assert.assertTrue(errorMsg.contains("rollback"), "The error message doesn't contain rollback: " + errorMsg);
+        JLog.logger.debug("Rollback succeeded");
+
     }
 
     private void FetchFiles(String nexusPath, List<String> files, String localFolder) throws IOException {
