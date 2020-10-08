@@ -367,8 +367,8 @@ def sendEmailExt()
     if (SETTINGS_XML.contains('SmokeTest.xml')) {
         EMAIL_SUBJ = "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
     }
-    else if ((SETTINGS_XML.contains('LneNightly.xml'))) {
-        EMAIL_SUBJ = "LNE nightly test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "   
+    else if ((SETTINGS_XML.contains('NepNightly.xml'))) {
+        EMAIL_SUBJ = "NEP nightly test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
     }
     else {
         EMAIL_SUBJ = "wrong settings.xml param"
