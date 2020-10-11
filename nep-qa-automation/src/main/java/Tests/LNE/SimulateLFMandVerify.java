@@ -22,7 +22,7 @@ public class SimulateLFMandVerify extends GenericTest {
     private static String customerId;
     
     private static final String scp_path = "/work/services/siem/var/siem/data/nep/";
-    private static final int schedule_report_timeout = 120000; //120 seconds
+    private static final int schedule_report_timeout = 150000; //120 seconds
     private static final String wasSentSuccessString = " was sent successfully";
     private static int checkUPdatesInterval;
     private static final String file1Format = "%s-src.";    
@@ -43,13 +43,21 @@ public class SimulateLFMandVerify extends GenericTest {
         checkUPdatesInterval = Integer.parseInt(general.get("Check Updates Timeout")) * 1000; //35 seconds
     }
 
-    @Test()
+    @Test(groups = { "SimulateLFMandVerify" } )
     public void SimulateLFMandVerifyDelivery()  {
     	try {
 		    String log_type = data.get("Log_Type");
 		    expectedResult1 = data.get("ExpectedResult1");
 		    expectedResult2 = data.get("ExpectedResult2");
-		
+		    /*
+		    if (data.get("EP_Type_1").equals("lnx")) {
+    	    	return;
+    	    }*/
+		    
+		    if (!log_type.equalsIgnoreCase( "SIEM")) {
+		    	return;
+		    }
+		   		   		
 		    JLog.logger.info("Starting SimulateLFMandVerifyDelivery. Agent type: {}. Log type: {}. Expected results: {} and {}.", data.get("EP_Type_1"), log_type, expectedResult1, expectedResult2);
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		    lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
@@ -61,9 +69,7 @@ public class SimulateLFMandVerify extends GenericTest {
 		    String commandLCA = agent.getVerifyLFMLca2Command();
 		    String commandLCA2 = agent.getVerifyLca2Command();
 		    
-		    if (!log_type.equalsIgnoreCase( "SIEM") || !data.get("EP_Type_1").equals("lnx")) {
-	            return;
-	        }
+		   
 		    
 		    //Read configuration and update the host tags
 		    String confJson = data.get("Settings Json");		    
@@ -93,21 +99,21 @@ public class SimulateLFMandVerify extends GenericTest {
     }
 
      private void prepareDirectories() {
+    	 JLog.logger.info("Going to prepareDirectories");
          String script_name = agent.getScriptName("LFM_Create_Dir");
-         if (null == script_name)
-             org.testng.Assert.fail("Can't find script : LFM_Create_Dir");
+         org.testng.Assert.assertTrue(script_name!= null,"Can't find script : LFM_Create_Dir");
          String script_text = data.get(script_name);
-         agent.writeAndExecute(script_text);
+         agent.writeAndExecute(script_text, "lfmTestPrepareDirs");
+         JLog.logger.info("done");
      }
 
 
      private void createLogs() {
     	 JLog.logger.info("Going to run script to create LFM input");
          String script_name = agent.getScriptName("LFM_Create_Log");
-         if (null == script_name)
-             org.testng.Assert.fail("Can't find script : LFM_Create_Log");
+         org.testng.Assert.assertTrue(script_name!= null,"Can't find script : LFM_Create_Log");
          String script_text = data.get(script_name);
-         agent.writeAndExecute(script_text);
+         agent.writeAndExecute(script_text, "lfmTestCreateInput");
          JLog.logger.info("done");
      }
 
