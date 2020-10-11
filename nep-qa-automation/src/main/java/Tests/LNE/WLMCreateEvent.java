@@ -44,7 +44,7 @@ public class WLMCreateEvent extends GenericTest {
         
     }
 
-    @Test()
+    @Test(groups = { "WLMCreateEvent" } )
     public void WLMCreateEventAndVerify()  {
         try {
         	

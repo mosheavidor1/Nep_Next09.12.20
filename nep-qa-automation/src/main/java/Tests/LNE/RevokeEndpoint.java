@@ -31,7 +31,7 @@ public class RevokeEndpoint extends GenericTest {
         customerId = general.get("Customer Id");
     }
 
-    @Test(groups = { "RevokeEndpoint" } )
+    @Test(groups = { "RevokeEndpoint" } , priority = 101)
     public void revokeEndpoint()  {
 
         try {

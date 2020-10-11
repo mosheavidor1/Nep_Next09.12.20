@@ -29,7 +29,7 @@ public class DeleteEndpoint extends GenericTest {
         customerId = general.get("Customer Id");
     }
 
-    @Test(groups = { "DeleteEndpoint" } )
+    @Test(groups = { "DeleteEndpoint" }, priority = 100 )
     public void deleteEndpoint()  {
 
         try {
@@ -57,7 +57,7 @@ public class DeleteEndpoint extends GenericTest {
 
             // Verify the agent got new unique id to be sure it is a new installation
             if(originalEndpointId.compareTo(newEndpointId) == 0){
-                org.testng.Assert.fail("RevokeEndpoint test failed, the unique id is the same after the installation. Original EP IP: "+ originalEndpointId + " New EP ID: " + newEndpointId + " Machine: " + data.get("EP_HostName_1") );
+                org.testng.Assert.fail("Delete endpoint test failed, the unique id is the same after the installation. Original EP IP: "+ originalEndpointId + " New EP ID: " + newEndpointId + " Machine: " + data.get("EP_HostName_1") );
             }
 
             // Assert after installing the agent back

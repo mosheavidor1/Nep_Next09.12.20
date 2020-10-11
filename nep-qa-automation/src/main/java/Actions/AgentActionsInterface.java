@@ -40,7 +40,7 @@ public interface AgentActionsInterface  {
     
     public String getVersionJsonPath();
     
-    public void writeAndExecute(String text );
+    public void writeAndExecute(String text, String scriptFileName);
     
     public boolean endpointServiceRunning();
     public String getScriptName(String scriptName);

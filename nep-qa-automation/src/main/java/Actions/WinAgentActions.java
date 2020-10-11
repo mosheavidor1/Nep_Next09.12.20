@@ -31,6 +31,8 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     private static final String startCommand = "Net start NepaService";
     private static final String stopCommand = "Net stop NepaService";
     
+    private static final String scriptExtension = ".bat";
+    
     Map<String, String> scriptNamesMap;
     
     public WinAgentActions(String epIp, String epUserName, String epPassword) {
@@ -278,11 +280,12 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
         }
 
     }
-	
-	public void writeAndExecute(String text) {
+
+	public void writeAndExecute(String text, String scriptFilename) {
 		try {
-	        connection.WriteTextToFile(text, "/C:/home/createFoldersAndLogs.bat");
-	        connection.Execute("C:\\home\\createFoldersAndLogs.bat");
+			JLog.logger.info("Going to save script and run {}", "/C:/home/" + scriptFilename + scriptExtension);
+	        connection.WriteTextToFile(text, "/C:/home/" + scriptFilename + scriptExtension);
+	        connection.Execute("C:\\home\\" + scriptFilename + scriptExtension);
 		}
 		catch(Exception ex) {
 			org.testng.Assert.fail("Failed in writeAndExecute function", ex);

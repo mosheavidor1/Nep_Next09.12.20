@@ -1,9 +1,9 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name = "Smoke Test" configfailurepolicy="skip">
+<suite name = "Nightly run on Lenny" configfailurepolicy="skip">
 
-    <test name = "Smoke Tests" >
+    <test name = "Nightly run on Lenny" >
 
         <groups>
             <dependencies>
@@ -18,6 +18,7 @@
               	<class name = "Tests.LNE.InitCustomer"/>
               	<class name = "Tests.LNE.InstallEP" />
                 <class name = "Tests.LNE.BinaryUpdate" />
+                <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />
         </classes>
     </test>
 

@@ -44,7 +44,7 @@ public class SimulateLLMandVerify extends GenericTest {
         checkUPdatesInterval = Integer.parseInt(general.get("Check Updates Timeout")) * 1000; //35 seconds
     }
 
-    @Test()
+    @Test(groups = { "SimulateLLMandVerify" } )
     public void SimulateLLMandVerifyDelivery()  {
     	
     	try {
@@ -104,7 +104,7 @@ public class SimulateLLMandVerify extends GenericTest {
     	 JLog.logger.info("Going to run script to create LLM input");
          String script;
          script = data.get("LLMScript");
-         agent.writeAndExecute(script);
+         agent.writeAndExecute(script, "llmTestCreateInput");
          JLog.logger.info("done");
      }
 

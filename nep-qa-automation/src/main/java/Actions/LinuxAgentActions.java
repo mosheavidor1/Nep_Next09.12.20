@@ -27,6 +27,8 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     
     private static final String startCommand = "systemctl start tw-endpoint";
     private static final String stopCommand = "systemctl stop tw-endpoint";
+    
+    private static final String scriptExtension = ".sh";
 
     public static final String hostnamePlusDomainCommandLinux = "hostname --fqdn";
 
@@ -257,9 +259,11 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
 
     }
 	
-	public void writeAndExecute(String text) {
+	public void writeAndExecute(String text, String scriptFilename) {
+		
+		JLog.logger.info("Going to save script and run {}", LinuxinstallationFolder + "/" + scriptFilename + scriptExtension);
         
-        String remoteFilePath = LinuxinstallationFolder + "/createFoldersAndLogs.sh";
+        String remoteFilePath = LinuxinstallationFolder + "/" + scriptFilename + scriptExtension;
         connection.WriteTextToFile(text, remoteFilePath);
         String chmod = "chmod 755 " + remoteFilePath;
         connection.Execute(chmod);
