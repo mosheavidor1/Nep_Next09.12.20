@@ -41,7 +41,7 @@ public class BinaryUpdate extends GenericTest {
         super(dataToSet);
     }
 
-    @Test(priority=2)
+    @Test(groups="Binary",priority=2)
     public void TestBinaryUpdate() throws IOException {
 
         JLog.logger.info("Starting binary update test");
@@ -74,7 +74,7 @@ public class BinaryUpdate extends GenericTest {
         //cleanBinVerEpRequest();
     }
 
-    @Test(priority=1)
+    @Test(groups="Binary",priority=1)
     public void TestBinaryUpdateRollback() throws IOException {
 
         JLog.logger.info("Starting binary update rollback test");

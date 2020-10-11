@@ -9,6 +9,7 @@
             <dependencies>
             	<group  name= "InitCustomer" depends-on="Cleanup" ></group>
                 <group  name= "InstallEP" depends-on="InitCustomer" ></group>
+                <group  name= "Binary" depends-on="InstallEP" ></group>
             </dependencies>
         </groups>
 
@@ -16,7 +17,7 @@
         	   	<class name = "Tests.LNE.Cleanup"  />
               	<class name = "Tests.LNE.InitCustomer"/>
               	<class name = "Tests.LNE.InstallEP" />
-
+                <class name = "Tests.LNE.BinaryUpdate" />
         </classes>
     </test>
 
