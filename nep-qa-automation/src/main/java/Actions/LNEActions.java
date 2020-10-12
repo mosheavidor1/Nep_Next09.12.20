@@ -129,7 +129,7 @@ public class LNEActions extends ManagerActions  {
 
                 String unzip = "unzip -o " + fileName + " -d /tmp";
                 String res_unzip = connection.Execute(unzip);
-                org.testng.Assert.assertTrue(res_unzip.contains("extracting:") && res_unzip.contains("inflating:"),"unzip command failed in numLinesinFile");
+                org.testng.Assert.assertTrue(res_unzip.contains("extracting:") || res_unzip.contains("inflating:"), "unzip command failed, the following response does not contain the expected: " + res_unzip);
 
                 int start = res_unzip.lastIndexOf("/tmp/");
                 int suffix = res_unzip.lastIndexOf(".gz");
