@@ -218,7 +218,7 @@ node('nep-build-centos7') {
                                   ]
             }
             stage('Run EndPoint tests') {
-                WIN_SMOKE_TMOUT_MINS  = (SETTINGS_XML.contains('NepNightly.xml')) ? '120 : 30
+                WIN_SMOKE_TMOUT_MINS  = (SETTINGS_XML.contains('NepNightly.xml')) ? 120 : 30
                 timeout(time: WIN_SMOKE_TMOUT_MINS, unit: 'MINUTES') {
 
                     node( WIN_NODE ) {
