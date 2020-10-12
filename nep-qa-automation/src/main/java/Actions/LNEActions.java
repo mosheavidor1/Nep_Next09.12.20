@@ -14,8 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -31,39 +30,64 @@ public class LNEActions extends ManagerActions  {
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/nepa_ca.pem";
     public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
     public static final String caCertificateFileName = "cacertificate.txt";
+    public static final String propertiesFolder = "/work/services/stub-srv/etc/nep-properties/";
     RequestSpecification requestSpecification;// = new RequestSpecBuilder().setBaseUri(url).build();
 
-    private static final String installUnzipCommand = "rpm -q unzip || yum -y install unzip";  
-    
+    private static final String installUnzipCommand = "rpm -q unzip || yum -y install unzip";
+
     //scan the document from the end and stop after 1 match
     public static final String verifyCallToCentcomCommand = "tac /work/services/stub-srv/var/log/nep/nep_dummy_services.log | grep -m 1 \"Method '%s'\"";
-    
-    public static ObjectMapper objectMapper = new ObjectMapper();
-    
-    public enum CentcomMethods{
-    	REGISTER("registerEndpoint"),
-    	REQUEST_UPGRADE("requestUpgrade"),
-    	UPDATE_ENDPOINT("updateEndpoint"),
-    	REVOKE_ENDPOINT("revokeEndpoint"),
-    	RENAME_ENDPOINT("renameEndpoint"),
-    	UPDATE_ENDPOINT_STATE("updateEndpointState");
-    	
-    	private String methodName;
-    	
-    	private CentcomMethods(String methodName){
-    		this.methodName = methodName;
-    	}
 
-		public String getMethodName() {
-			return methodName;
-		}
-    	
-    	
-    	
+    public static ObjectMapper objectMapper = new ObjectMapper();
+
+    public enum NepService {
+        //          STUB_SRV("stub-srv","","/work/services/stub-srv/var/log/nep/nep_dummy_services.log","Started DummyPortalServicesInitializer"),
+        IS("is","nepa-is.properties"),
+        DS("ds","nepa-dserver.properties"),
+        DS_MGMT("ds-mgmt","nepa-dserver-mgmt.properties");
+
+        private String name;
+        private String propertyFileName;
+
+        private NepService(String name, String propertyFileName){
+            this.propertyFileName = propertyFileName;
+            this.name=name;
+        }
+
+        public String getPropertyFileName() {
+            return propertyFileName;
+        }
+
+
+        public String getName() {
+            return name;
+        }
     }
-    
+
+    public enum CentcomMethods{
+        REGISTER("registerEndpoint"),
+        REQUEST_UPGRADE("requestUpgrade"),
+        UPDATE_ENDPOINT("updateEndpoint"),
+        REVOKE_ENDPOINT("revokeEndpoint"),
+        RENAME_ENDPOINT("renameEndpoint"),
+        UPDATE_ENDPOINT_STATE("updateEndpointState");
+
+        private String methodName;
+
+        private CentcomMethods(String methodName){
+            this.methodName = methodName;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+
+
+
+    }
+
     public boolean fileExists(String path) {
-    	return connection.IsFileExists(path);
+        return connection.IsFileExists(path);
     }
 
     public LNEActions ()
@@ -79,8 +103,8 @@ public class LNEActions extends ManagerActions  {
 
     public LNEActions (String LNE_IP, String userNameLNE, String passwordLNE, int LNE_SSH_port) {
         this.LNE_IP = LNE_IP;
-       // this.userNameLNE = userNameLNE;
-       // this.passwordLNE = passwordLNE;
+        // this.userNameLNE = userNameLNE;
+        // this.passwordLNE = passwordLNE;
         this.LNE_SSH_port =LNE_SSH_port;
         SetLNEBaseURI(LNE_IP);
         connection = new SSHManager(userNameLNE,passwordLNE,LNE_IP, LNE_SSH_port );
@@ -101,12 +125,12 @@ public class LNEActions extends ManagerActions  {
                 org.testng.Assert.fail("file is not found on LNE: " + fileName + " LNE: " + LNE_IP + "\n");
             }
             if (fileName.contains((".zip"))) {
-            	connection.Execute(installUnzipCommand);
-            	
+                connection.Execute(installUnzipCommand);
+
                 String unzip = "unzip -o " + fileName + " -d /tmp";
-                String res_unzip = connection.Execute(unzip);                
+                String res_unzip = connection.Execute(unzip);
                 org.testng.Assert.assertTrue(res_unzip.contains("extracting:") && res_unzip.contains("inflating:"),"unzip command failed in numLinesinFile");
-                    
+
                 int start = res_unzip.lastIndexOf("/tmp/");
                 int suffix = res_unzip.lastIndexOf(".gz");
                 //JLog.logger.info("suffix: " + suffix + " start: " + start);
@@ -363,7 +387,7 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
-    
+
     public void InitCustomerSettingsWithDuration(String customerId, String configJson, int fromLNEStartUntilLNEResponseOKTimeout) {
         try {
 
@@ -409,15 +433,15 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
-    
-    private String buildJsonBody(List<String> paramNames, List<String> paramValues) {
-    
-    	JsonNode jsonNode = objectMapper.createObjectNode();
-    	for (int i = 0; i < paramNames.size(); i++) {
-    		((ObjectNode) jsonNode).put(paramNames.get(i), paramValues.get(i));
-    	}
 
-    	return jsonNode.toPrettyString();
+    private String buildJsonBody(List<String> paramNames, List<String> paramValues) {
+
+        JsonNode jsonNode = objectMapper.createObjectNode();
+        for (int i = 0; i < paramNames.size(); i++) {
+            ((ObjectNode) jsonNode).put(paramNames.get(i), paramValues.get(i));
+        }
+
+        return jsonNode.toPrettyString();
     }
 
 
@@ -442,28 +466,28 @@ public class LNEActions extends ManagerActions  {
 
     private int sendInitCustomerSettings (String customerId, String configJson ) {
 
-    	String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configJson));
-    	
+        String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configJson));
+
         Response r = given().spec(requestSpecification)
-                		.contentType("application/json")
-                        .body(body)
-                        .when()
-                        .post("initCustomerSettings");
+                .contentType("application/json")
+                .body(body)
+                .when()
+                .post("initCustomerSettings");
 
         return r.getStatusCode();
 
     }
-    
+
     public void setCustomerConfig(String customerId, String configuration) {
-    	
-    	String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configuration));
-    	
+
+        String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configuration));
+
         try {
             Response r = given().spec(requestSpecification)
-                    		.contentType("application/json")
-                            .body(body)
-                            .when()
-                            .post("setConfig");
+                    .contentType("application/json")
+                    .body(body)
+                    .when()
+                    .post("setConfig");
 
             int response = r.getStatusCode();
 
@@ -480,15 +504,15 @@ public class LNEActions extends ManagerActions  {
     }
 
     public void setClusterConfig(String customerId, String clusterName, String configJson) {
-     
+
         String body = buildJsonBody( Arrays.asList("customerId", "clusterName", "config"), Arrays.asList(customerId, clusterName, configJson));
 
         try {
             Response r = given().spec(requestSpecification)
-                    		.contentType("application/json")
-                            .body(body)
-                            .when()
-                            .post("setClusterConfig");
+                    .contentType("application/json")
+                    .body(body)
+                    .when()
+                    .post("setClusterConfig");
 
             int response = r.getStatusCode();
 
@@ -503,17 +527,17 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
-    
+
     public void setEndpointConfig(String customerId, String endpointName, String configuration) {
-    	
-    	String body = buildJsonBody( Arrays.asList("customerId", "name", "configuration"), Arrays.asList(customerId, endpointName, configuration));
-    	
+
+        String body = buildJsonBody( Arrays.asList("customerId", "name", "configuration"), Arrays.asList(customerId, endpointName, configuration));
+
         try {
             Response r = given().spec(requestSpecification)
-                    		.contentType("application/json")
-                            .body(body)
-                            .when()
-                            .post("setConfig");
+                    .contentType("application/json")
+                    .body(body)
+                    .when()
+                    .post("setConfig");
 
             int response = r.getStatusCode();
 
@@ -528,7 +552,7 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
-   
+
     public void updateClusterMap(Long customerId, Map<String, List<String>> assignments) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("customerId",customerId);
@@ -562,15 +586,15 @@ public class LNEActions extends ManagerActions  {
 
     }
     public void SetCustomerConfiguration (String customerId, String configuration) {
-    	
-    	String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configuration));
-        
-    	try {
+
+        String body = buildJsonBody( Arrays.asList("customerId", "configuration"), Arrays.asList(customerId, configuration));
+
+        try {
             Response r = given().spec(requestSpecification)
-                    		.contentType("application/json")
-                            .body(body)
-                            .when()
-                            .post("setConfig");
+                    .contentType("application/json")
+                    .body(body)
+                    .when()
+                    .post("setConfig");
 
             int response = r.getStatusCode();
 
@@ -587,15 +611,15 @@ public class LNEActions extends ManagerActions  {
     }
 
     public void revokeEpConfiguration (String customerId, String epName) {
-    	
-    	String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
-    	
+
+        String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
+
         try {
             Response r = given().spec(requestSpecification)
-                    		.contentType("application/json")
-                            .body(body)
-                            .when()
-                            .post("revokeEpConfiguration");
+                    .contentType("application/json")
+                    .body(body)
+                    .when()
+                    .post("revokeEpConfiguration");
 
             int response = r.getStatusCode();
 
@@ -611,15 +635,15 @@ public class LNEActions extends ManagerActions  {
     }
 
     public void revoke(String customerId, String epName) {
-    	
-    	String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
-    	
+
+        String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
+
         try {
             Response r = given().spec(requestSpecification)
-                    		.contentType("application/json")
-                            .body(body)
-                            .when()
-                            .post("revoke");
+                    .contentType("application/json")
+                    .body(body)
+                    .when()
+                    .post("revoke");
 
             int response = r.getStatusCode();
 
@@ -633,40 +657,40 @@ public class LNEActions extends ManagerActions  {
         }
 
     }
-    
+
     public void deleteWithoutVerify(String customerId, String epName) {
-    	
-    	JLog.logger.info("Going to send delete endpoint request to Centcom client, customer: {}, ep: {}", customerId, epName);
-    	
-    	sendDelete(customerId, epName);
-    	
+
+        JLog.logger.info("Going to send delete endpoint request to Centcom client, customer: {}, ep: {}", customerId, epName);
+
+        sendDelete(customerId, epName);
+
     }
 
     public void deleteAndVerifyResponse(String customerId, String epName) {
-    	
-    	int response = sendDelete(customerId, epName);
-    	
-    	if (response == 200)
+
+        int response = sendDelete(customerId, epName);
+
+        if (response == 200)
             JLog.logger.info("Success. LNE delete response: " + response);
         else
             org.testng.Assert.fail("Failure. LNE delete failed with response status code: " + response);
 
     }
-    
+
     private int sendDelete(String customerId, String epName) {
-    	
-    	String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
-    	
+
+        String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
+
         try {
             Response r = given().spec(requestSpecification)
-                    		.contentType("application/json")
-                            .body(body)
-                            .when()
-                            .post("delete");
-            
+                    .contentType("application/json")
+                    .body(body)
+                    .when()
+                    .post("delete");
+
             return r.getStatusCode();
 
-            	
+
         }
         catch (Exception e) {
             org.testng.Assert.fail("Delete action failed.", e);
@@ -1126,27 +1150,27 @@ public class LNEActions extends ManagerActions  {
         String response = connection.Execute("nep_service ds-mgmt restart");
         JLog.logger.debug("Response: " + response);
     }
-    
+
     public void verifyCallToCentcom(CentcomMethods method, String... params) {
-    	String response = connection.Execute(String.format(verifyCallToCentcomCommand,  method.getMethodName()));
-    	if (response == null) {
-    		return;
-    	}
-    	if (response.isEmpty()) {
-    		 org.testng.Assert.fail("Failed to found Centcom call for method " + method.getMethodName() + ". Response is empty");
-    	}
-    	for (String param : params) {
-    		org.testng.Assert.assertTrue(response.contains(param), String.format("Param '%s' wasn't found in the dummy services log for method '%s'", param, method.getMethodName()));
-    	}
-    	JLog.logger.info("Found centcom call for method '{}' in the dummy services log!", method.getMethodName());
+        String response = connection.Execute(String.format(verifyCallToCentcomCommand,  method.getMethodName()));
+        if (response == null) {
+            return;
+        }
+        if (response.isEmpty()) {
+            org.testng.Assert.fail("Failed to found Centcom call for method " + method.getMethodName() + ". Response is empty");
+        }
+        for (String param : params) {
+            org.testng.Assert.assertTrue(response.contains(param), String.format("Param '%s' wasn't found in the dummy services log for method '%s'", param, method.getMethodName()));
+        }
+        JLog.logger.info("Found centcom call for method '{}' in the dummy services log!", method.getMethodName());
     }
 
     //TODO do we want to use the existing jenkins job?
     public void cleanLinuxBucket(String s3Bucket, List<String> linuxFiles) {
 
-    	JLog.logger.info("Cleaning the bucket now...");
+        JLog.logger.info("Cleaning the bucket now...");
 
-    	for (String file : linuxFiles) {
+        for (String file : linuxFiles) {
             String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
                     "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
                     "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
@@ -1161,9 +1185,9 @@ public class LNEActions extends ManagerActions  {
     //TODO do we want to use the existing jenkins job?
     public void cleanWindowsBucket(String s3Bucket, List<String> windowsFiles) {
 
-    	JLog.logger.info("Cleaning the bucket now...");
+        JLog.logger.info("Cleaning the bucket now...");
 
-    	for (String file : windowsFiles) {
+        for (String file : windowsFiles) {
             String response = connection.Execute("export AWS_ACCESS_KEY_ID=`grep aws-access-key-id " + "/work" +
                     "/services/stub-srv/etc/nep-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " +
                     "AWS_SECRET_ACCESS_KEY=`grep aws-secret-access-key " + "/work/services/stub-srv/etc/nep" +
@@ -1209,5 +1233,73 @@ public class LNEActions extends ManagerActions  {
                 "where component=\"linux_binary_update\"' | nep_exec mysql mysql -s -ptrustwave");
         JLog.logger.debug("Reverted linux version");
 
+    }
+
+    public boolean changePropertyInPropertySet(NepService nepService, String key, String val){
+        boolean ans = false;
+        try {
+            String propFileName = nepService.getPropertyFileName();
+            String remoteFilePath = propertiesFolder +propFileName;
+            String localFilePath = PropertiesFile.getManagerDownloadFolder()+ "/" + propFileName;
+
+            connection.CopyToLocal(remoteFilePath,localFilePath);
+            FileInputStream in = new FileInputStream(localFilePath);
+            Properties props = new Properties();
+            props.load(in);
+            in.close();
+
+            String currProp = props.getProperty(key);
+            if(!currProp.equals(val)){
+                FileOutputStream out = new FileOutputStream(localFilePath);
+                props.setProperty(key, val);
+                props.store(out, null);
+                ans=true;
+                out.close();
+                connection.CopyToRemote(localFilePath,remoteFilePath);
+
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ans;
+
+    }
+
+    public boolean changePropertyInPropertySet(NepService nepService, HashMap<String,String> keyVals){
+        boolean ans = false;
+
+        try {
+            String propFileName = nepService.getPropertyFileName();
+            String remoteFilePath = propertiesFolder +propFileName;
+            String localFilePath = PropertiesFile.getManagerDownloadFolder()+ "/" + propFileName;
+
+            connection.CopyToLocal(remoteFilePath,localFilePath);
+            FileInputStream in = new FileInputStream(localFilePath);
+            Properties props = new Properties();
+            in.close();
+
+            FileOutputStream out = new FileOutputStream(localFilePath);
+            for(String key : keyVals.keySet()){
+                String currProp = props.getProperty(key);
+                String val = keyVals.get(key);
+                if(currProp!=val){
+                    props.setProperty(key, val);
+                    props.store(out, null);
+                    ans=true;
+                }
+            }
+
+            props.store(out, null);
+            out.close();
+            if(ans) {
+                connection.CopyToRemote(localFilePath, remoteFilePath);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ans;
     }
 }
