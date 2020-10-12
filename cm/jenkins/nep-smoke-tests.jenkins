@@ -13,6 +13,10 @@ node('nep-build-centos7') {
 
             stage("Get modules versions") {
 
+                if (SETTINGS_XML.isEmpty()) {
+                   SETTINGS_XML = "SmokeTest.xml"
+                }
+
                 print_params()
 
                 RES = [:]
@@ -23,10 +27,6 @@ node('nep-build-centos7') {
                 // this groovy code prohibited by default in Pipelines
                 // tempstr = RES.inspect() Scripts not permitted to use staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object. Administrators can decide whether to approve or reject this signature.
                 // echo "tempstr = ${tempstr}
-
-                if (SETTINGS_XML.isEmpty()) {
-                   SETTINGS_XML = "SmokeTest.xml"
-                }
 
                 HOST_IP  = (NEP_BRANCH == 'master') ? '10.85.25.60' : '10.85.25.47'
                 // WIN_NODE = (NEP_BRANCH == 'master') ? 'WinSmoke_10_85_24_247' :  'WinSmoke_10_85_25_159' //  'WinSmoke_10_85_24_250'
@@ -218,7 +218,8 @@ node('nep-build-centos7') {
                                   ]
             }
             stage('Run EndPoint tests') {
-                timeout(time: 30, unit: 'MINUTES') {
+                WIN_SMOKE_TMOUT_MINS  = (SETTINGS_XML.contains('NepNightly.xml')) ? '120 : 30
+                timeout(time: WIN_SMOKE_TMOUT_MINS, unit: 'MINUTES') {
 
                     node( WIN_NODE ) {
                         try {
@@ -538,7 +539,7 @@ def sendEmail( bodyMsg ) {
 
 def print_params() {
     echo """
-      Params passed:
+      JOB parameters:
       LNE_INSTALL_TYPE :  ${LNE_INSTALL_TYPE}
       NEP_BRANCH       :  ${NEP_BRANCH}
       SMOKE_EMAIL_LIST :  ${SMOKE_EMAIL_LIST}
@@ -547,5 +548,6 @@ def print_params() {
       DS_VERSION       :  ${DS_VERSION}
       DS_MGMT_VERSION  :  ${DS_MGMT_VERSION}
       IS_VERSION       :  ${IS_VERSION}
+      SETTINGS_XML     :  ${SETTINGS_XML}
     """
 }
