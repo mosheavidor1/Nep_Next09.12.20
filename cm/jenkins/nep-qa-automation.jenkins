@@ -120,13 +120,11 @@ def getChangeString() {
 }
 
 def sendEmail(status) {
-
     emailext (
 		subject: "Build $NEXUS_ARTIFACT_VERSION - " + status + " ($JOB_NAME)" + " - ${env.NEP_BRANCH}",
-        body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n"),
+		body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n",
         from: 'svc_wafbuild@trustwave.com',
         to: EMAIL_LIST,
         recipientProviders: [buildUser(), brokenBuildSuspects(), brokenTestsSuspects()],
     )
-
 }
