@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 //input parameter: codesigner_version
 //input parameter: installerlnx_version
-	
+
 node('nep-build-centos7') {
 
 	SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
@@ -13,44 +13,44 @@ node('nep-build-centos7') {
 	MODULE_SRC_PATH = "${WORKSPACE}/${MODULE_NAME}"
 	VERSION_QUALIFIER = "-SNAPSHOT"
 
-	NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}" 
+	NEXUS_GROUP_ID="com.trustwave.nep.nepa-qa.${MODULE_NAME}"
 	NEXUS_SETTINGS_PATH = "${WORKSPACE}/cm/configs/nexus-settings.xml"
 	MODULE_ARTIFACT_LOCATION="https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/nep-qa/${MODULE_NAME}"
-	
+
 	PROPERTY_NAME="qaautomation"
 	PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 
-	try {	
-	
+	try {
+
 		node('master') {
 			stage("Read modules versions from  files on Master") {
-				def params = readProperties file: "${PROPERTIES_FILE_PATH}"	
+				def params = readProperties file: "${PROPERTIES_FILE_PATH}"
 				PRODUCT_VERSION = params['product_version']
 				NEXUS_ARTIFACT_VERSION = "${PRODUCT_VERSION}.${BUILD_NUMBER}"
 				echo "PRODUCT_VERSION = ${PRODUCT_VERSION}"
-				
+
 				env.currentTime = LocalDateTime.now()
 			}
 		}
 
 		stage('Update BUILD_NUMBER') {
 			currentBuild.displayName = NEXUS_ARTIFACT_VERSION
-		}	
-		
-		stage('Get sources from BitBucket') {			
+		}
+
+		stage('Get sources from BitBucket') {
 			sh ('set')
 			git branch: "${env.NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 		}
-		
+
 		stage('Build') {
 			echo "Running: ${MODULE_NAME} Build:${NEXUS_ARTIFACT_VERSION} on ${env.JENKINS_URL}"
 
 			sh """
 				cd "${MODULE_SRC_PATH}"
-				
+
 				mvn -s "${NEXUS_SETTINGS_PATH}" versions:set-property -Dproperty=module.version -DnewVersion="${NEXUS_ARTIFACT_VERSION}"
 				mvn -s "${NEXUS_SETTINGS_PATH}" -DskipTests clean install deploy
-				
+
 				ls "target/${MODULE_NAME}-${NEXUS_ARTIFACT_VERSION}.jar" || exit 1
 
 			"""
@@ -66,19 +66,19 @@ node('nep-build-centos7') {
 			sendEmail("Successful")
 
 			if ( params.RELEASE ) {
-				build job: 'update-param-on-master', 
+				build job: 'update-param-on-master',
 					parameters:  [
 						string(name: 'PROPERTY_NAME', value: "${PROPERTY_NAME}_version"),
 						string(name: 'PROPERTY_VALUE', value: "${NEXUS_ARTIFACT_VERSION}"),
 						string(name: 'PROPERTIES_FILE_PATH', value: "${PROPERTIES_FILE_PATH}")
 					]
-				build job: 'update-param-on-master', 
+				build job: 'update-param-on-master',
 					parameters:  [
 						string(name: 'PROPERTY_NAME', value: "${PROPERTY_NAME}_date"),
 						string(name: 'PROPERTY_VALUE', value: "${env.currentTime}"),
 						string(name: 'PROPERTIES_FILE_PATH', value: "${PROPERTIES_FILE_PATH}")
 					]
-				build job: 'cm-last-released-builds', 
+				build job: 'cm-last-released-builds',
 					parameters:  [
 						string(name: 'PRODUCT_NAME', value: "${MODULE_NAME}"),
 						string(name: 'PRODUCT_BRANCH', value: "${env.NEP_BRANCH}"),
@@ -86,7 +86,7 @@ node('nep-build-centos7') {
 						string(name: 'PRODUCT_ARTIFACT_LOCATION', value: "${MODULE_ARTIFACT_LOCATION}/${PRODUCT_VERSION}"),
 						string(name: 'PRODUCT_DATE', value: "${env.currentTime}"),
 						string(name: 'PRODUCT_INFO', value: currentBuild.displayName )
-					]				
+					]
        		}
 		}
 	}
@@ -120,8 +120,13 @@ def getChangeString() {
 }
 
 def sendEmail(status) {
-	mail (
-		to: "${EMAIL_LIST}", 
-		subject: "Build $NEXUS_ARTIFACT_VERSION - " + status + " ($JOB_NAME)" + " - ${env.NEP_BRANCH}", 
-		body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n")
+
+    emailext (
+		subject: "Build $NEXUS_ARTIFACT_VERSION - " + status + " ($JOB_NAME)" + " - ${env.NEP_BRANCH}",
+        body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n"),
+        from: 'svc_wafbuild@trustwave.com',
+        to: EMAIL_LIST,
+        recipientProviders: [buildUser(), brokenBuildSuspects(), brokenTestsSuspects()],
+    )
+
 }
