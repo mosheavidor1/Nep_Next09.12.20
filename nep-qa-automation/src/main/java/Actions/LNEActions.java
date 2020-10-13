@@ -146,7 +146,6 @@ public class LNEActions extends ManagerActions  {
                     int num_of_patterns = res.split(pattern,-1).length - 1;
                     res = Integer.toString(num_of_patterns);
                 }
-                JLog.logger.info("Done.");
                 return res;
             }
             if (null == pattern) {

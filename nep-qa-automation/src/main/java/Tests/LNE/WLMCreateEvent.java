@@ -67,8 +67,7 @@ public class WLMCreateEvent extends GenericTest {
             
             agentIp = data.get("EP_HostName_1");
             
-            lennyActions.SetCustomerConfiguration(customerId, confJson);
-            
+            lennyActions.SetCustomerConfiguration(customerId, confJson);            
             Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
             //TODO: compare json cofniguration on agent
             
