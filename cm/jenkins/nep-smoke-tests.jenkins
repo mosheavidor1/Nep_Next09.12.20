@@ -8,7 +8,7 @@ node('nep-build-centos7') {
         isStartedByNEPSET = "${currentBuild.buildCauses}".contains('nepset-multijob')
         currentBuild.displayName = "${BUILD_NUMBER}" + "-${env.NEP_BRANCH}"
         echo "groovy version : ${GroovySystem.version}"
-        
+
         lock (LOCK_NAME) {
 
             stage("Get modules versions") {
@@ -107,19 +107,19 @@ node('nep-build-centos7') {
 
                     case "upgrade" :
                             echo "upgrade LNE"
-                            
+
                             if (DS_VERSION.isEmpty() || DS_MGMT_VERSION.isEmpty() || IS_VERSION.isEmpty() ) {
                                 build job: 'tools-tst-bin-update-services',
                                        parameters: [
                                            //string(name: 'IS_VERSION', value: ''),
                                            //string(name: 'DS_VERSION', value: ''),
-                                           //string(name: 'DS_MGMT_VERSION', value: ''), 
-                                           //string(name: 'NEPA_CENTCOM_CLIENT_VERSION', value: ''), 
-                                           //string(name: 'DUMMY_PORTAL_SERVICES_VERSION', value: ''), 
-                                           string(name: 'SERVICE', value: 'is,ds,ds-mgmt,dummy-portal-services,nepa-centcom-client'), 
+                                           //string(name: 'DS_MGMT_VERSION', value: ''),
+                                           //string(name: 'NEPA_CENTCOM_CLIENT_VERSION', value: ''),
+                                           //string(name: 'DUMMY_PORTAL_SERVICES_VERSION', value: ''),
+                                           string(name: 'SERVICE', value: 'is,ds,ds-mgmt,dummy-portal-services,nepa-centcom-client'),
                                            string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
                                            string(name: 'HOST_IP', value: "${HOST_IP}" ),
-                                           //string(name: 'USERNAME', value: ''), 
+                                           //string(name: 'USERNAME', value: ''),
                                            //password(name: 'PASSWORD', description: '', value: '')
                                            ]
                             }
@@ -129,12 +129,12 @@ node('nep-build-centos7') {
                                            string(name: 'DS_VERSION', value: "${DS_VERSION}"),
                                            string(name: 'DS_MGMT_VERSION', value: "${DS_MGMT_VERSION}"),
                                            string(name: 'IS_VERSION', value: "${IS_VERSION}"),
-                                           //string(name: 'NEPA_CENTCOM_CLIENT_VERSION', value: ''), 
-                                           //string(name: 'DUMMY_PORTAL_SERVICES_VERSION', value: ''), 
-                                           string(name: 'SERVICE', value: 'is,ds,ds-mgmt,dummy-portal-services,nepa-centcom-client'), 
+                                           //string(name: 'NEPA_CENTCOM_CLIENT_VERSION', value: ''),
+                                           //string(name: 'DUMMY_PORTAL_SERVICES_VERSION', value: ''),
+                                           string(name: 'SERVICE', value: 'is,ds,ds-mgmt,dummy-portal-services,nepa-centcom-client'),
                                            string(name: 'NEP_BRANCH', value: "${NEP_BRANCH}"),
                                            string(name: 'HOST_IP', value: "${HOST_IP}" ),
-                                           //string(name: 'USERNAME', value: ''), 
+                                           //string(name: 'USERNAME', value: ''),
                                            //password(name: 'PASSWORD', description: '', value: '')
                                            ]
 
@@ -232,7 +232,7 @@ node('nep-build-centos7') {
                             DISPLAY_VERSION = "${BUILD_NUMBER}-${NEP_BRANCH}"
                             MODULE_ARTIFACT_SRC="https://nexus01.trustwave.com/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
                             MODULE_ARTIFACT_DST="${WORKSPACE}\\nep-qa-automation\\nep-qa-automation.jar"
-                            echo "RUN Windows smoke TESTS  ${MODULE_ARTIFACT_DST}"
+                            echo "RUN Windows QA TESTS  ${MODULE_ARTIFACT_DST}"
                             echo "1. checkout qa-tests automation folder"
                             deleteDir()
                             git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
@@ -254,13 +254,13 @@ node('nep-build-centos7') {
                             }
                             """
                             // SETTINGS_XML = "SmokeTest.xml"
-                            // SmokeTest.xml 10.85.25.76 
+                            // SmokeTest.xml 10.85.25.76
                             // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
                             bat """
-                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave" 
+                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave"
                             """
 
-                            
+
                             // bat """
                             // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "lnx]${LIN_AGENT_IP}]root]trustwave"
                             // """
@@ -321,12 +321,12 @@ node('nep-build-centos7') {
                       )
 
         archiveArtifacts artifacts: 'lne_logs/*'  /* */
-                      
+
         echo "finally prepare mail to send"
-        
+
         if ( currentBuild.result == null ) {
             currentBuild.result  = 'SUCCESS'
-        }           
+        }
 
         if( isStartedByNEPSET && currentBuild.result == 'SUCCESS') {
             echo "do not sent email if called by upstream nepset multijob and result is SUCCESS"
@@ -368,12 +368,12 @@ def sendEmailExt()
         EMAIL_SUBJ = "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
     }
     else if ((SETTINGS_XML.contains('NepNightly.xml'))) {
-        EMAIL_SUBJ = "NEP nightly test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
+        EMAIL_SUBJ = "NEP regression test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
     }
     else {
         EMAIL_SUBJ = "wrong settings.xml param"
     }
-    
+
     emailext (
        attachLog: true,
        attachmentsPattern: "**/emailable-report.html, nep_sanity.log, check_ports.log, lne_logs/*",
@@ -391,6 +391,10 @@ def prepareMailBody() {
     def errorColor = '#E74C3C'
     def normalColor = '#27AE60'
     def titleBgColor = (currentBuild.result=='FAILURE' ? errorColor : normalColor)
+    def tdTitleMain =  (SETTINGS_XML.contains('NepNightly.xml'))
+        ? "NEP Regression test results for ${NEP_BRANCH}"
+        : "NEP Smoke test results for ${NEP_BRANCH}"
+        
     echo "currentBuild.result: ${currentBuild.result}  titleBgColor : ${titleBgColor}"
 
     writeFile(file: 'mail_body.html', text:  """
@@ -461,11 +465,11 @@ def prepareMailBody() {
             <tbody>
                 <tr class="tr-title">
                     <td class="td-title-main" colspan="2">
-                       Smoke test results for ${NEP_BRANCH}
+                       ${tdTitleMain}
                     </td>
                 </tr>
                 <tr>
-                    <td>Environment:</td>
+                    <td>Environment :</td>
                     <td><b>LNE</b></td>
                 </tr>
                 <tr>
@@ -477,7 +481,7 @@ def prepareMailBody() {
                     <td><b>${RES.LNE_TESTS}</b></td>
                 </tr>
                 <tr>
-                    <td>Agents smoke:</td>
+                    <td>Agents QA tests :</td>
                     <td><b> ${RES.WIN_TESTS} </b></td>
                 </tr>
                 <tr>
