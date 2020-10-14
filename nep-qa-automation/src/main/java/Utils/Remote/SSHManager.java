@@ -83,7 +83,7 @@ public class SSHManager  {
                 errResponse += "\n" + line;
             }
             if(!errResponse.isEmpty()) {
-            	JLog.logger.error("Error response: " + errResponse);
+            	JLog.logger.warn("Error response: " + errResponse);
             	return response;
             }
 
