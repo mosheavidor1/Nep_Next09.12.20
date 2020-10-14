@@ -40,6 +40,7 @@ public class BinaryUpdate extends GenericTest {
     public BinaryUpdate(Object dataToSet) {
         super(dataToSet);
     }
+    
 
     @Test(groups="Binary",priority=2)
     public void TestBinaryUpdate() throws IOException {
@@ -145,10 +146,10 @@ public class BinaryUpdate extends GenericTest {
         String fullPathToNexusLinuxVer = "https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/tmp/" + linuxNewVer + "/linux/";
         FetchFiles(fullPathToNexusLinuxVer, linuxFiles, localFolderForLinuxFiles);
     }
-    
+
     //@BeforeTest
     private void AddS3FlagAndRestartLennyServices() {
-    	//TODO:Discuss how to do it
+        //TODO:Discuss how to do it
     	/*
     	
         JLog.logger.info("Adding s3 flag to LNE machine");
@@ -188,56 +189,58 @@ public class BinaryUpdate extends GenericTest {
             JLog.logger.info("s3bucket cleaned...");
         }
     }*/
-    
+
     /**
      * This test uploads new binary update only for Linux. We expect the Linux endpoint to upgrade while the windows will not.
-     * 
+     *
      */
     public void checkBinaryUpdateOnLinuxOnly (BaseAgentActions endpointLinux, String linuxNewVer) {
 
         JLog.logger.info("Starting linux binary update test");
-    	
-    	//String linuxNewVer = data.get("update_linux_ver");
-         
-         try {
-	         lneActions.uploadLinuxFilesToBucket(s3Bucket, LinuxFilesList(linuxNewVer));
 
-             // Restarting services so it will know new binary package is uploaded
-             // (instead of waiting for 15 minutes)
-             lneActions.restartStubService();
-             lneActions.restartDsMgmtService();
-             lneActions.restartDsService();
-             // Sleep for 1 minute - so all services will start
-             try {
-                 JLog.logger.info("Sleeping for 1 minute so services restart will finish...");
-                 Thread.sleep(60000);
-             } catch (InterruptedException e) {
-                 JLog.logger.error("Error in checkBinaryUpdateOnLinuxOnly");
-             }
-	   
-	         JLog.logger.info("Installing linux EP...");
-	
-	         endpointLinux.reinstallEndpoint(Integer.parseInt(general.get("EP " +
-	                         "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
-	                 Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
-	
-	         // Sleep for 2 minutes - so the EPs will check updates and be updated
-	         JLog.logger.info("Sleeping for 3 minutes so check updates would update the EPs...");
-	         Thread.sleep(180000);
-		         
-	         if(!endpointLinux.endpointServiceRunning())
-	             org.testng.Assert.fail("Binary update failed. Trustwave Endpoint Agent Service not running on the linux EP.");
-	         else
-	             JLog.logger.info("Trustwave Endpoint Agent Service is running on the linux machine");
-	         
-         } catch (Exception ex) {
-             ex.printStackTrace();
-             org.testng.Assert.fail("Failure in CheckSuccessfulBinaryUpdate" + "\n" + ex.toString());
-         }finally {
-             // Clean the bucket
-             lneActions.cleanLinuxBucket(s3Bucket, LinuxFilesList(linuxNewVer));
-             JLog.logger.info("s3Bucket cleaned...");
-         }
+        //String linuxNewVer = data.get("update_linux_ver");
+
+        try {
+            lneActions.uploadLinuxFilesToBucket(s3Bucket, LinuxFilesList(linuxNewVer));
+
+            // Restarting services so it will know new binary package is uploaded
+            // (instead of waiting for 15 minutes)
+            lneActions.restartStubServiceWaitForFinish(120);
+            lneActions.restartDsMgmtService();
+            lneActions.restartDsService();
+//            lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS,120);
+//            lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS_MGMT,120);
+            // Sleep for 1 minute - so all services will start
+            try {
+                JLog.logger.info("Sleeping for 1 minute so services restart will finish...");
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                JLog.logger.error("Error in checkBinaryUpdateOnLinuxOnly");
+            }
+
+            JLog.logger.info("Installing linux EP...");
+
+            endpointLinux.reinstallEndpoint(Integer.parseInt(general.get("EP " +
+                            "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
+                    Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+
+            // Sleep for 2 minutes - so the EPs will check updates and be updated
+            JLog.logger.info("Sleeping for 3 minutes so check updates would update the EPs...");
+            Thread.sleep(180000);
+
+            if(!endpointLinux.endpointServiceRunning())
+                org.testng.Assert.fail("Binary update failed. Trustwave Endpoint Agent Service not running on the linux EP.");
+            else
+                JLog.logger.info("Trustwave Endpoint Agent Service is running on the linux machine");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            org.testng.Assert.fail("Failure in CheckSuccessfulBinaryUpdate" + "\n" + ex.toString());
+        }finally {
+            // Clean the bucket
+            lneActions.cleanLinuxBucket(s3Bucket, LinuxFilesList(linuxNewVer));
+            JLog.logger.info("s3Bucket cleaned...");
+        }
     }
 
     public void checkBinaryUpdateOnWindowsOnly(BaseAgentActions endpointWin, String windowsNewVer) {
@@ -250,9 +253,12 @@ public class BinaryUpdate extends GenericTest {
 
             // Restarting services so it will know new binary package is uploaded
             // (instead of waiting for 15 minutes)
-            lneActions.restartStubService();
+            lneActions.restartStubServiceWaitForFinish(120);
             lneActions.restartDsMgmtService();
             lneActions.restartDsService();
+//            lneActions.restartStubServiceWaitForFinish(120);
+//            lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS_MGMT,120);
+//            lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS,120);
             // Sleep for 1 minute - so all services will start
             try {
                 JLog.logger.info("Sleeping for 1 minute so services restart will finish...");
@@ -346,9 +352,9 @@ public class BinaryUpdate extends GenericTest {
 
 */
 
-     
-        // String s3Bucket = data.get("s3Bucket");
-        private void uploadWindowsFilesToBucket(String s3Bucket, String version) {
+
+    // String s3Bucket = data.get("s3Bucket");
+    private void uploadWindowsFilesToBucket(String s3Bucket, String version) {
 /*
         List<String> windowsFiles = WindowsFilesList(version);
 
@@ -406,19 +412,19 @@ public class BinaryUpdate extends GenericTest {
         }
         */
     }
-/*
-    private void VerifySuccessfulUpdate(String windowsNewVer, String linuxNewVer) {
-        // Verify that the EPs have the correct new versions
-        String linuxBinVer = endpointLinux.getEPBinaryVersion(AgentActions.EP_OS.LINUX);
-        String winBinVer = endpointWin.getEPBinaryVersion(AgentActions.EP_OS.WINDOWS);
+    /*
+        private void VerifySuccessfulUpdate(String windowsNewVer, String linuxNewVer) {
+            // Verify that the EPs have the correct new versions
+            String linuxBinVer = endpointLinux.getEPBinaryVersion(AgentActions.EP_OS.LINUX);
+            String winBinVer = endpointWin.getEPBinaryVersion(AgentActions.EP_OS.WINDOWS);
 
-        JLog.logger.info("Linux version is: " + linuxBinVer);
-        JLog.logger.info("Windows version is: " + winBinVer);
+            JLog.logger.info("Linux version is: " + linuxBinVer);
+            JLog.logger.info("Windows version is: " + winBinVer);
 
-        org.testng.Assert.assertEquals(linuxBinVer, linuxNewVer, "Versions don't match");
-        org.testng.Assert.assertEquals(winBinVer, windowsNewVer, "Versions don't match");
-    }
-*/
+            org.testng.Assert.assertEquals(linuxBinVer, linuxNewVer, "Versions don't match");
+            org.testng.Assert.assertEquals(winBinVer, windowsNewVer, "Versions don't match");
+        }
+    */
     private void VerifySuccessfulRollback(BaseAgentActions endpoint) {
 
         NepDbConnector nepDbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
@@ -461,7 +467,7 @@ public class BinaryUpdate extends GenericTest {
         return files;
     }
 
-    
+
 
     @AfterTest
     public void Close() {
@@ -474,8 +480,8 @@ public class BinaryUpdate extends GenericTest {
             lneActions.Close();
         }
     }
-    
-    
+
+
     //@Test()
     public void CheckBinaryUpdateFailureCorruptedExecutables() throws IOException, InterruptedException {
 /*
@@ -613,9 +619,9 @@ public class BinaryUpdate extends GenericTest {
         String windowsNewVer = data.get("update_bad_win_ver");
         String linuxNewVer = data.get("update_bad_linux_ver");
         try {
-           // BasicBinaryUpdateFlow(windowsNewVer, linuxNewVer);
+            // BasicBinaryUpdateFlow(windowsNewVer, linuxNewVer);
 
-           // VerifySuccessfulRollback();
+            // VerifySuccessfulRollback();
 
             JLog.logger.info("Done...");
         } catch (Exception ex) {

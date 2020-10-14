@@ -1,5 +1,6 @@
 package Utils.Remote;
 
+import Actions.LNEActions;
 import Utils.Logs.JLog;
 import com.jcraft.jsch.*;
 
@@ -8,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class SSHManager  {
     private String userName, password, hostName;
@@ -54,11 +58,25 @@ public class SSHManager  {
 
         }
         catch(Exception e){
-                org.testng.Assert.fail("Could not create SSH connection to machine: " + hostName + "  user name: " + userName + " password: " + password + " port number: " + port +  "\n" + e.toString());
-            }
+            org.testng.Assert.fail("Could not create SSH connection to machine: " + hostName + "  user name: " + userName + " password: " + password + " port number: " + port +  "\n" + e.toString());
+        }
     }
 
 
+    public void ExecuteNoResponse(String command) {
+        try {
+            channelExecute = (ChannelExec)jschSession.openChannel("exec");
+            channelExecute.setCommand(command);
+            channelExecute.connect();
+        } catch (Exception e) {
+            org.testng.Assert.fail("Could not execute command: " + command +  ". At machine: " + hostName + "\n" + e.toString());
+        }
+        finally {
+            if (channelExecute != null) {
+                channelExecute.disconnect();
+            }
+        }
+    }
     public String Execute(String command) {
         try {
             channelExecute = (ChannelExec)jschSession.openChannel("exec");
@@ -84,7 +102,7 @@ public class SSHManager  {
             }
             if(!errResponse.isEmpty()) {
             	JLog.logger.warn("Error response: " + errResponse);
-            	return response;
+                return response;
             }
 
             JLog.logger.debug("Execute " + command + " done.");
@@ -94,9 +112,9 @@ public class SSHManager  {
             return null;
         }
         finally {
-        	if (channelExecute != null) {
-        		channelExecute.disconnect();
-        	}
+            if (channelExecute != null) {
+                channelExecute.disconnect();
+            }
         }
 
     }
@@ -113,7 +131,7 @@ public class SSHManager  {
     public List<String> ListOfFiles (String path) {
         try {
 
-               return  ListOfFilesWithoutExceptionProtection(path);
+            return  ListOfFilesWithoutExceptionProtection(path);
 
         } catch (Exception e) {
             org.testng.Assert.fail("Could not get list of content (ls) of folder:  " + path +  " at machine: " + hostName + "\n" + e.toString());
@@ -122,12 +140,12 @@ public class SSHManager  {
     }
 
     public List<String> ListOfFilesWithoutExceptionProtection (String path) throws SftpException {
-            List<String> list = new ArrayList<String>();
-            Vector<ChannelSftp.LsEntry> vector = sftpChannel.ls(path);
-            for (ChannelSftp.LsEntry entry : vector) {
-                list.add(entry.getFilename());
-            }
-            return list;
+        List<String> list = new ArrayList<String>();
+        Vector<ChannelSftp.LsEntry> vector = sftpChannel.ls(path);
+        for (ChannelSftp.LsEntry entry : vector) {
+            list.add(entry.getFilename());
+        }
+        return list;
     }
 
     public void DeleteFile (String path) {
@@ -207,20 +225,34 @@ public class SSHManager  {
         try {
             File file = File.createTempFile("AutomationTemp", null);
             file.deleteOnExit();
-            
+
             PrintWriter out = new PrintWriter(file.getAbsolutePath());
             out.print(text);
             out.close();
-            
+
             sftpChannel.put(file.getAbsolutePath(), filePath);
         }
 
         catch(Exception e){
-              org.testng.Assert.fail("Could not write text to file: " + filePath , e);
+            org.testng.Assert.fail("Could not write text to file: " + filePath , e);
         }
     }
 
+    public boolean tailUntilFound(LNEActions.NepService nepService, long timeout) {
+        Runnable tailRunnable = new TailRunnable(nepService,hostName,jschSession);
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.execute(tailRunnable);
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(timeout, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+        }
 
+        return true;
+    }
 
 }
 
