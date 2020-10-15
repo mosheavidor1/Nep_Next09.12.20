@@ -103,6 +103,7 @@ public class BrowserActions extends ManagerActions {
     //verify log entry message appears at the portal
     public void VerifyMessageExistsInPortal(LogEntry entry, String hostname, int timeoutForLogEntryToAppearInSeconds) {
         try {
+            JLog.logger.debug("Starting VerifyMessageExistsInPortal with timeout: " +timeoutForLogEntryToAppearInSeconds + " seconds");
             EventExplorerPage eventPage = new EventExplorerPage();
             final String filteredItemsText = "Filtered Items";
 
@@ -138,6 +139,7 @@ public class BrowserActions extends ManagerActions {
             LocalDateTime current = start;
             Duration durationTimeout = Duration.ofSeconds(timeoutForLogEntryToAppearInSeconds);
 
+            JLog.logger.info("Waiting for event to appear at event explorer for: "+ timeoutForLogEntryToAppearInSeconds + " seconds");
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 eventPage.searchBox_element.clear();
 
@@ -239,6 +241,13 @@ public class BrowserActions extends ManagerActions {
             CentComSearchPage centSearch = new CentComSearchPage();
             centSearch.customersText_element.sendKeys(customerName);
             centSearch.searchButton_element.click();
+            centSearch.WaitUntilPageLoad();
+            centSearch.WaitUntilObjectDisappear(centSearch.spinnerBy);
+            centSearch.WaitUntilObjectClickable(centSearch.GetCustomerRowBy(customerName));
+            centSearch.WaitUntilPageLoad();
+            centSearch.WaitUntilObjectDisappear(centSearch.spinnerBy);
+            centSearch.WaitUntilObjectClickable(centSearch.GetCustomerRowBy(customerName));
+
             centSearch.GetCustomerRow(customerName).click();
         }
         catch (Exception e) {
