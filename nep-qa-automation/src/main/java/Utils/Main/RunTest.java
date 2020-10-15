@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Tests.Environments.ClientLogToPortalTest;
 import Utils.Data.Endpoint;
 import Utils.Data.Excel;
 import Utils.Logs.JLog;
@@ -45,9 +46,20 @@ public class RunTest {
 			PropertiesFile.saveFile("Set cluster to test: " + clusterToTest);
 		}
 
+		int startingEpParams = 2;
+
+		if(args.length>2){
+			String param = args[2];
+			if(param.toLowerCase().contains("waitforevents")){
+				param=param.toLowerCase().replace("waitforevents","");
+				ClientLogToPortalTest.longWaitEE= Integer.parseInt(param);
+				startingEpParams++;
+
+			}
+		}
 		List<Endpoint> list = new ArrayList<Endpoint>();
 
-		for (int i=2; i < args.length; i++){
+		for (int i=startingEpParams; i < args.length; i++){
 			String epDetails = args[i];
 			String[] arr = epDetails.split("]");
 			Endpoint currentEP = new Endpoint();

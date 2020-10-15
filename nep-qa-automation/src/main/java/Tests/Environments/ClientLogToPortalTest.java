@@ -19,6 +19,7 @@ import java.io.IOException;
 public class ClientLogToPortalTest extends RecordedTest {
     private BrowserActions browser;
     private BaseAgentActions agent;
+    public static int longWaitEE = 0;
 
     @Factory(dataProvider = "getData")
     public ClientLogToPortalTest(Object dataToSet) {
@@ -51,7 +52,8 @@ public class ClientLogToPortalTest extends RecordedTest {
             browser.GotoEventExplorer(data.get("Fusion Link"));
 
             browser.SelectCustomer(data.get("Customer"));
-            browser.VerifyMessageExistsInPortal(entry, hostname, Integer.parseInt(data.get("Log To Appear Timeout")));
+            //if long wait for event explore is assigned use it, else use Excel default value
+            browser.VerifyMessageExistsInPortal(entry, hostname, (longWaitEE==0)?Integer.parseInt(data.get("Log To Appear Timeout")) : longWaitEE*60);
             JLog.logger.debug("Test ended");
         }
         catch (Exception e){
