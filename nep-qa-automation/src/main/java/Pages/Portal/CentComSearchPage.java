@@ -25,12 +25,21 @@ public class CentComSearchPage extends GenericPage {
 
     private final static String customerRowXpath = "//twa-datalist-column//div[normalize-space(text())='XXX']";
 
+    public static final By spinnerBy =By.xpath("//span/twa-spinner");
+
     public WebElement GetCustomerRow(String customerName){
 
         String xpath = customerRowXpath.replace("XXX", customerName);
         return driver.findElement(By.xpath(xpath));
 
     }
+    public By GetCustomerRowBy(String customerName){
+
+        String xpath = customerRowXpath.replace("XXX", customerName);
+        return By.xpath(xpath);
+
+    }
+
 
 
 }

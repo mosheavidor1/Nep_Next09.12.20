@@ -239,6 +239,13 @@ public class BrowserActions extends ManagerActions {
             CentComSearchPage centSearch = new CentComSearchPage();
             centSearch.customersText_element.sendKeys(customerName);
             centSearch.searchButton_element.click();
+            centSearch.WaitUntilPageLoad();
+            centSearch.WaitUntilObjectDisappear(centSearch.spinnerBy);
+            centSearch.WaitUntilObjectClickable(centSearch.GetCustomerRowBy(customerName));
+            centSearch.WaitUntilPageLoad();
+            centSearch.WaitUntilObjectDisappear(centSearch.spinnerBy);
+            centSearch.WaitUntilObjectClickable(centSearch.GetCustomerRowBy(customerName));
+
             centSearch.GetCustomerRow(customerName).click();
         }
         catch (Exception e) {
