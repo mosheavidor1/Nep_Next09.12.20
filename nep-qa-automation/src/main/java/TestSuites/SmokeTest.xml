@@ -19,8 +19,6 @@
                 <group  name= "WLMCreateEvent" depends-on="InstallEP" ></group>
                 <group  name= "SimulateLLMandVerify" depends-on="InstallEP" ></group>
                 
-                <group  name= "BinaryUpdate" depends-on="DeleteEndpoint" ></group>
-                
                 <group  name= "StandaloneEPconfiguration" depends-on="InitCustomer" ></group>
                 
             </dependencies>
@@ -31,16 +29,14 @@
               	<class name = "Tests.LNE.InitCustomer"/>
               	<class name = "Tests.LNE.InstallEP" />
             	<class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
-            	<class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />
+            <!--	<class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />-->
         		<class name = "Tests.LNE.ClusterConfiguration" />
          		<class name = "Tests.LNE.WLMCreateEvent"/>
-               	<class name = "Tests.LNE.SimulateLLMandVerify"/>
-             	<!--<class name = "Tests.LNE.SimulateLFMandVerify"/>-->
-          		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
-               	<!--class name = "Tests.LNE.RevokeEndpoint" />
-	            <class name = "Tests.LNE.DeleteEndpoint" /-->
+               	<!--<class name = "Tests.LNE.SimulateLLMandVerify"/>
+             	<class name = "Tests.LNE.SimulateLFMandVerify"/>-->
+          		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>               
                 <class name = "Tests.LNE.RevokeEndpoint" />
-                <class name = "Tests.LNE.DeleteEndpoint" />
+	           <!-- <class name = "Tests.LNE.DeleteEndpoint" />-->
 
         </classes>
     </test>
