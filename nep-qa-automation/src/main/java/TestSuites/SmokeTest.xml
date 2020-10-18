@@ -29,7 +29,7 @@
               	<class name = "Tests.LNE.InitCustomer"/>
               	<class name = "Tests.LNE.InstallEP" />
             	<class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
-            <!--	<class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />-->
+            	<class name = "Tests.LNE.VerifyFileCabinetOldInstallers" />
         		<class name = "Tests.LNE.ClusterConfiguration" />
          		<class name = "Tests.LNE.WLMCreateEvent"/>
                	<!--<class name = "Tests.LNE.SimulateLLMandVerify"/>

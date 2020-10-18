@@ -32,8 +32,8 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
     public static final String hashIdentifier = "sha256";
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/nepa_ca.pem";
     public static final String lneFileCabinetPath = "/work/services/stub-srv/var/file_cabinet/";
-    public static final String windowsInstallerFolder = "";
-    public static final String linuxInstallerFolder = "";
+    //    public static final String windowsInstallerFolder = "";
+//    public static final String linuxInstallerFolder = "";
     public static final String caCertificateFileName = "cacertificate.txt";
     public static final String propertiesFolder = "/work/services/stub-srv/etc/nep-properties/";
     public static final String servicesFolder = "/work/services/nepa-services/";
@@ -216,7 +216,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
 
     public void DownloadInstallerWithoutAdditions(long  customerId, int timeout){
         try {
-            String clientFolder = lneFileCabinetPath + customerId ;
+            String clientFolder = lneFileCabinetPath + customerId;
 
             JLog.logger.info("Waiting file cabinet folder to appear... LNE machine:" + LNE_IP);
             LocalDateTime start = LocalDateTime.now();
@@ -251,12 +251,12 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 org.testng.Assert.fail("Could not find client FileCabinet folder: " + clientFolder + " at LNE machine: " + LNE_IP + " for customer: " + customerId);
             }
 
-            JLog.logger.info("Getting the list of files at customer windows folder... LNE machine:" + LNE_IP);
+            JLog.logger.info("Getting the list of files at customer folder... LNE machine:" + LNE_IP);
             List<String> list = null;
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 try {
-                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder+ windowsInstallerFolder);
+                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder);
                     //System.out.println(Arrays.toString(list.toArray()));
                     if(list!=null) {
                         found=true;
@@ -274,7 +274,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             }
 
             if (! found) {
-                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder+ windowsInstallerFolder + " LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder + " LNE machine: " + LNE_IP);
             }
 
             JLog.logger.info("Waiting for windows installer file to be ready... LNE machine:" + LNE_IP);
@@ -285,7 +285,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
-                        String source = clientFolder +"/"+ windowsInstallerFolder+ "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyWinInstallerLocation;
                         connection.CopyToLocal(source, destination);
                         found = true;
@@ -297,40 +297,13 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                list = connection.ListOfFiles(clientFolder+ windowsInstallerFolder);
+                list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find file: " + windowsInstallationFile + " at LNE folder: " + clientFolder+ windowsInstallerFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find file: " + windowsInstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
-
-            JLog.logger.info("Getting the list of files at customer linux folder... LNE machine:" + LNE_IP);
-            list = null;
-            found = false;
-            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                try {
-                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder+ linuxInstallerFolder);
-                    //System.out.println(Arrays.toString(list.toArray()));
-                    if(list!=null) {
-                        found=true;
-                        break;
-                    }
-                }
-                catch (Exception e){
-                    //if exception happened do nothing just try again
-                    //Get the list of files for the first time may fail because the folder was just created. Therefore wait until list of files is received with not exception for the first time.
-
-                }
-                Thread.sleep(checkInterval);
-                current = LocalDateTime.now();
-
-            }
-
-            if (! found) {
-                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder+ linuxInstallerFolder + " LNE machine: " + LNE_IP);
-            }
-
 
             JLog.logger.info("Waiting for linux installer file to be ready... LNE machine:" + LNE_IP);
 
@@ -340,7 +313,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(linuxInstallationFile) && !list.get(i).contains(backupIdentifier) && !list.get(i).contains(hashIdentifier)) {
-                        String source = clientFolder+ linuxInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyLinuxInstallerLocation;
                         connection.CopyToLocal(source, destination);
                         found = true;
@@ -352,12 +325,12 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                list = connection.ListOfFiles(clientFolder+ linuxInstallerFolder);
+                list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find file: " + linuxInstallationFile + " at LNE folder: " + clientFolder+ linuxInstallerFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find file: " + linuxInstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
 
             JLog.logger.info("Waiting for installer sha file to be ready... LNE machine:" + LNE_IP);
@@ -368,7 +341,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(linuxSha256InstallationFile) && !list.get(i).contains(backupIdentifier)) {
-                        String source = clientFolder+ linuxInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyLinuxSha256InstallerLocation;
                         connection.CopyToLocal(source, destination);
                         found = true;
@@ -383,11 +356,11 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find file: " + linuxSha256InstallationFile + " at LNE folder: " + clientFolder+ linuxInstallerFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find file: " + linuxSha256InstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not download installer for customer: " + customerId + " from: " + lneFileCabinetPath+" machine: " + LNE_IP   + "\n" + e.toString(), e);
+            org.testng.Assert.fail("Could not download installer for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString(), e);
         }
 
     }
@@ -398,29 +371,15 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             JLog.logger.info("Checking if current installer exist. If yes deleting it... LNE machine:" + LNE_IP);
 
             //deleting previous installer
-            String clientWinFolder = lneFileCabinetPath + customerId + windowsInstallerFolder;
-            String clientLnxFolder = lneFileCabinetPath + customerId + linuxInstallerFolder;
+            String clientFolder = lneFileCabinetPath + customerId;
 
-            if (connection.IsFileExists(clientWinFolder)) {
-                List<String> list = connection.ListOfFiles(clientWinFolder);
+            if (connection.IsFileExists(clientFolder)) {
+                List<String> list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
                 for (int i = 0; i < list.size(); i++) {
                     if ( !list.get(i).contains(backupIdentifier)) {
-                        if (list.get(i).contains(windowsInstallationFile)) {
-                            String currentInstaller = clientWinFolder + "/" + list.get(i);
-                            connection.DeleteFile(currentInstaller);
-                        }
-                    }
-                }
-            }
-
-            if (connection.IsFileExists(clientLnxFolder)) {
-                List<String> list = connection.ListOfFiles(clientLnxFolder);
-                //System.out.println(Arrays.toString(list.toArray()));
-                for (int i = 0; i < list.size(); i++) {
-                    if ( !list.get(i).contains(backupIdentifier)) {
-                        if (list.get(i).contains(linuxInstallationFile) || list.get(i).contains(linuxSha256InstallationFile) ) {
-                            String currentInstaller = clientLnxFolder + "/" + list.get(i);
+                        if (list.get(i).contains(windowsInstallationFile) || list.get(i).contains(linuxInstallationFile) || list.get(i).contains(linuxSha256InstallationFile) ) {
+                            String currentInstaller = clientFolder + "/" + list.get(i);
                             connection.DeleteFile(currentInstaller);
                         }
                     }
@@ -811,7 +770,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
         Map<String,String> installerDocIds = new HashMap<>();
 
         try {
-            String clientFolder = lneFileCabinetPath;
+            String clientFolder = lneFileCabinetPath + customerId;
 
             JLog.logger.info("Waiting file cabinet folder to appear... LNE machine:" + LNE_IP);
             LocalDateTime start = LocalDateTime.now();
@@ -846,12 +805,12 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 org.testng.Assert.fail("Could not find client FileCabinet folder: " + clientFolder + " at LNE machine: " + LNE_IP + " for customer: " + customerId);
             }
 
-            JLog.logger.info("Getting the list of files at customer windows folder... LNE machine:" + LNE_IP);
+            JLog.logger.info("Getting the list of files at customer folder... LNE machine:" + LNE_IP);
             List<String> list = null;
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 try {
-                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder+ windowsInstallerFolder);
+                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder);
                     //System.out.println(Arrays.toString(list.toArray()));
                     if (list != null) {
                         found = true;
@@ -868,7 +827,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder+ windowsInstallerFolder + " LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder + " LNE machine: " + LNE_IP);
             }
 
             JLog.logger.info("Waiting for windows installer file to be ready... LNE machine:" + LNE_IP);
@@ -879,7 +838,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(windowsInstallationFile) && !list.get(i).contains(backupIdentifier)) {
-                        String source = clientFolder+ windowsInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyWinInstallerLocation;
                         //                        connection.CopyToLocal(source, destination);
                         String[] fileNameParts = list.get(i).split("__");
@@ -893,40 +852,13 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                list = connection.ListOfFiles(clientFolder+ windowsInstallerFolder);
+                list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
                 org.testng.Assert.fail("Could not find file: " + windowsInstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
-
-            JLog.logger.info("Getting the list of files at customer linux folder... LNE machine:" + LNE_IP);
-            list = null;
-            found = false;
-            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                try {
-                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder+ linuxInstallerFolder);
-                    //System.out.println(Arrays.toString(list.toArray()));
-                    if(list!=null) {
-                        found=true;
-                        break;
-                    }
-                }
-                catch (Exception e){
-                    //if exception happened do nothing just try again
-                    //Get the list of files for the first time may fail because the folder was just created. Therefore wait until list of files is received with not exception for the first time.
-
-                }
-                Thread.sleep(checkInterval);
-                current = LocalDateTime.now();
-
-            }
-
-            if (! found) {
-                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder+ linuxInstallerFolder + " LNE machine: " + LNE_IP);
-            }
-
 
             JLog.logger.info("Waiting for linux installer file to be ready... LNE machine:" + LNE_IP);
 
@@ -936,7 +868,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(linuxInstallationFile) && !list.get(i).contains(backupIdentifier) && !list.get(i).contains(hashIdentifier)) {
-                        String source = clientFolder+ linuxInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyLinuxInstallerLocation;
                         //                        connection.CopyToLocal(source, destination);
                         String[] fileNameParts = list.get(i).split("__");
@@ -950,12 +882,12 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                list = connection.ListOfFiles(clientFolder+ linuxInstallerFolder);
+                list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find file: " + linuxInstallationFile + " at LNE folder: " + clientFolder+ linuxInstallerFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find file: " + linuxInstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
 
             JLog.logger.info("Waiting for installer sha file to be ready... LNE machine:" + LNE_IP);
@@ -966,7 +898,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(linuxSha256InstallationFile) && !list.get(i).contains(backupIdentifier)) {
-                        String source = clientFolder+ linuxInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyLinuxSha256InstallerLocation;
                         //                        connection.CopyToLocal(source, destination);
                         String[] fileNameParts = list.get(i).split("__");
@@ -983,11 +915,11 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find file: " + linuxSha256InstallationFile + " at LNE folder: " + clientFolder+ linuxInstallerFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find file: " + linuxSha256InstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not download installer for customer: " + customerId + " from: " + lneFileCabinetPath+" machine: " + LNE_IP   + "\n" + e.toString(), e);
+            org.testng.Assert.fail("Could not download installer for customer: " + customerId + " from: " + lneFileCabinetPath +" machine: " + LNE_IP   + "\n" + e.toString(), e);
         }
         return installerDocIds;
     }
@@ -1013,13 +945,13 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find FileCabinet folder: " + lneFileCabinetPath+ " at LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find FileCabinet folder: " + lneFileCabinetPath + " at LNE machine: " + LNE_IP);
             }
 
-            JLog.logger.info("Waiting for customer windows folder to appear at file cabinet... LNE machine:" + LNE_IP);
+            JLog.logger.info("Waiting for customer folder to appear at file cabinet... LNE machine:" + LNE_IP);
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                if (connection.IsFileExists(clientFolder+ windowsInstallerFolder)) {
+                if (connection.IsFileExists(clientFolder)) {
                     found = true;
                     break;
                 }
@@ -1027,7 +959,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 current = LocalDateTime.now();
             }
             if (!found) {
-                org.testng.Assert.fail("Could not find client FileCabinet folder: " + clientFolder+ windowsInstallerFolder + " at LNE machine: " + LNE_IP + " for customer: " + customerId);
+                org.testng.Assert.fail("Could not find client FileCabinet folder: " + clientFolder + " at LNE machine: " + LNE_IP + " for customer: " + customerId);
             }
 
             JLog.logger.info("Getting the list of files at customer folder... LNE machine:" + LNE_IP);
@@ -1035,7 +967,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             found = false;
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 try {
-                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder+ windowsInstallerFolder);
+                    list = connection.ListOfFilesWithoutExceptionProtection(clientFolder);
                     //System.out.println(Arrays.toString(list.toArray()));
                     if (list != null) {
                         found = true;
@@ -1052,7 +984,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder+ windowsInstallerFolder + " LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not get the list of files of folder: " + clientFolder + " LNE machine: " + LNE_IP);
             }
 
             JLog.logger.info("Waiting for windows installer file to be ready... LNE machine:" + LNE_IP);
@@ -1064,7 +996,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(windowsInstallationFile) && list.get(i).contains(backupIdentifier)) {
-                        String source = clientFolder+ windowsInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyWinInstallerLocation;
                         //                        connection.CopyToLocal(source, destination);
                         String[] fileNameParts = list.get(i).split("__");
@@ -1079,26 +1011,12 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                list = connection.ListOfFiles(clientFolder+ windowsInstallerFolder);
+                list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
                 org.testng.Assert.fail("Could not find backup file: " + windowsInstallationFile + "with document id "+docId+" at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
-            }
-
-            JLog.logger.info("Waiting for customer linux folder to appear at file cabinet... LNE machine:" + LNE_IP);
-            found = false;
-            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
-                if (connection.IsFileExists(clientFolder+ linuxInstallerFolder)) {
-                    found = true;
-                    break;
-                }
-                Thread.sleep(checkInterval);
-                current = LocalDateTime.now();
-            }
-            if (!found) {
-                org.testng.Assert.fail("Could not find client FileCabinet folder: " + clientFolder+ linuxInstallerFolder + " at LNE machine: " + LNE_IP + " for customer: " + customerId);
             }
 
             JLog.logger.info("Waiting for linux installer file to be ready... LNE machine:" + LNE_IP);
@@ -1110,7 +1028,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(linuxInstallationFile) && list.get(i).contains(backupIdentifier) && !list.get(i).contains(hashIdentifier)) {
-                        String source = clientFolder+ linuxInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyLinuxInstallerLocation;
                         //                        connection.CopyToLocal(source, destination);
                         String[] fileNameParts = list.get(i).split("__");
@@ -1125,12 +1043,12 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 }
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
-                list = connection.ListOfFiles(clientFolder+ linuxInstallerFolder);
+                list = connection.ListOfFiles(clientFolder);
                 //System.out.println(Arrays.toString(list.toArray()));
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find file: " + linuxInstallationFile + " at LNE folder: " + clientFolder+ linuxInstallerFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find file: " + linuxInstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
 
             JLog.logger.info("Waiting for installer sha file to be ready... LNE machine:" + LNE_IP);
@@ -1142,7 +1060,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).contains(linuxSha256InstallationFile) && list.get(i).contains(backupIdentifier)) {
-                        String source = clientFolder+ linuxInstallerFolder + "/" + list.get(i);
+                        String source = clientFolder + "/" + list.get(i);
                         String destination = copyLinuxSha256InstallerLocation;
                         //                        connection.CopyToLocal(source, destination);
                         String[] fileNameParts = list.get(i).split("__");
@@ -1160,7 +1078,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
             }
 
             if (!found) {
-                org.testng.Assert.fail("Could not find file: " + linuxSha256InstallationFile + " at LNE folder: " + clientFolder+ linuxInstallerFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
+                org.testng.Assert.fail("Could not find file: " + linuxSha256InstallationFile + " at LNE folder: " + clientFolder + " Folder content is: " + Arrays.toString(list.toArray()) + "  LNE machine: " + LNE_IP);
             }
         }
         catch (Exception e) {
