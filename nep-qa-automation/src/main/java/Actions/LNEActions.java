@@ -1,5 +1,6 @@
 package Actions;
 
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
@@ -111,7 +112,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
 
     public LNEActions ()
     {
-        LNE_IP = PropertiesFile.readProperty("ClusterToTest");
+        LNE_IP = GlobalTools.getClusterToTest();
         SetLNEBaseURI(LNE_IP);
     }
 

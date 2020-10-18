@@ -65,7 +65,7 @@ public class WLMCreateEvent extends GenericTest {
             
             //Read configuration and update the host tags
             String confJson = data.get("Settings Json");            
-            confJson = confJson.replaceAll(host_value_to_update, PropertiesFile.readProperty("ClusterToTest"));
+            confJson = confJson.replaceAll(host_value_to_update, GlobalTools.getClusterToTest());
             
             agentIp = data.get("EP_HostName_1");
             

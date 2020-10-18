@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import io.restassured.RestAssured;
@@ -104,8 +105,8 @@ public class SimulatedAgentActions {
 
 	public SimulatedAgentActions() {
 		try {
-			JLog.logger.info("SimulatedAgentActions: {}", String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest")));
-			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, PropertiesFile.readProperty("ClusterToTest"))).build();
+			JLog.logger.info("SimulatedAgentActions: {}", String.format(DS_URL, GlobalTools.getClusterToTest()));
+			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, GlobalTools.getClusterToTest())).build();
 			
 		}
 		catch (Exception e) {

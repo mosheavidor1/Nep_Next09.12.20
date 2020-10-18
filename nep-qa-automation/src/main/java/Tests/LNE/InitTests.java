@@ -3,6 +3,7 @@ package Tests.LNE;
 import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterTest;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class InitTests extends GenericTest {
 
-    private LNEActions lneActions;
+    private LNEActions lneActions = GlobalTools.getLneActions();
     private String customerId;
     public static SimulatedAgentActions simulatedAgent;
     public static String initEpName = "ChiefEp";
@@ -32,7 +33,6 @@ public class InitTests extends GenericTest {
     @Test(groups = { "InitTests" } )
     public void initTests(){
         JLog.logger.info("Starting InitTests test ...");
-        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
         changeServicesProperties();
         simulatedAgent = new SimulatedAgentActions();
         simulatedAgent.register(customerId, "1.2.3.4", initEpName, "66-7B-EB-71-99-44", "Windows 10");

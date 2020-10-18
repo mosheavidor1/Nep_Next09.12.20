@@ -2,6 +2,7 @@ package Tests.LNE;
 
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterTest;
@@ -27,7 +28,7 @@ public class VerifyEndpointConnectedStatus extends GenericTest {
     public void verifyEndpointConnectedStatus() {
         try {
             JLog.logger.info("Starting verifyEndpointConnectedStatus test ...");
-            lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
+            lneActions = new LNEActions(GlobalTools.getClusterToTest(), getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
             long timeLeftInSeconds = TimeUnit.MINUTES.toSeconds(15) - Instant.now().minus(InitTests.whenInit.getEpochSecond(), ChronoUnit.SECONDS).getEpochSecond();
             JLog.logger.info("going to wait for endpoint to no be connected, seconds left until checking status not connected: {}",timeLeftInSeconds);
             if(timeLeftInSeconds>0){

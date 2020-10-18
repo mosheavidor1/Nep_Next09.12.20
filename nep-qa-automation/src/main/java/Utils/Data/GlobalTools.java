@@ -25,7 +25,7 @@ public class GlobalTools {
 		if (lennyActions != null) {
 			return lennyActions;
 		}
-		lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), GenericTest.getGeneralData().get("LNE User Name"), 
+		lennyActions = new LNEActions(GlobalTools.getClusterToTest(), GenericTest.getGeneralData().get("LNE User Name"), 
 				GenericTest.getGeneralData().get("LNE Password"), Integer.parseInt(GenericTest.getGeneralData().get("LNE SSH port")));
 		return lennyActions;
 	}

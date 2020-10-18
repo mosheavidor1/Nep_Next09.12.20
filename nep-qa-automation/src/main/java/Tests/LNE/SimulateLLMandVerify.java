@@ -67,7 +67,7 @@ public class SimulateLLMandVerify extends GenericTest {
             
 		    //Read configuration and update the host tags
 		    String confJson = data.get("Settings Json");		    
-            confJson = confJson.replaceAll(host_value_to_update, PropertiesFile.readProperty("ClusterToTest"));
+            confJson = confJson.replaceAll(host_value_to_update, GlobalTools.getClusterToTest());
             		
             DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
@@ -175,6 +175,9 @@ public class SimulateLLMandVerify extends GenericTest {
         if (agent!=null) {
             agent.close();
         }
+      //Set Basic configuration with LFM false
+	    String confJson = data.get("Basic Conf");             
+	    DsMgmtActions.SetCustomerConfiguration(customerId, confJson);	    
     }
 
 

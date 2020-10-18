@@ -3,6 +3,7 @@ package Actions;
 import java.io.FileInputStream;
 
 import Utils.TestFiles;
+import Utils.Data.GlobalTools;
 import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
@@ -178,8 +179,8 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
             connection.CopyToLocal(pathToEPHostsFile,localHostsCopy);
             TestFiles.RemoveLines(localHostsCopy, hostsFileRedirection, hostsFileCommentChar);
             TestFiles.RemoveLines(localHostsCopy, hostsFileIngressRedirection, hostsFileCommentChar);
-            String toAppend = PropertiesFile.readProperty("ClusterToTest") + " " + hostsFileRedirection;
-            toAppend += "\n" + PropertiesFile.readProperty("ClusterToTest") + " " + hostsFileIngressRedirection;
+            String toAppend = GlobalTools.getClusterToTest() + " " + hostsFileRedirection;
+            toAppend += "\n" + GlobalTools.getClusterToTest() + " " + hostsFileIngressRedirection;
 
             //To check why this not failed
             //TestFiles.AppendToFile(windowsHostsFile, toAppend, true);

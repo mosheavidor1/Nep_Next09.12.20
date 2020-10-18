@@ -484,7 +484,7 @@ public class BinaryUpdate extends GenericTest {
 
         // restart all services
         connection = new SSHManager(getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"),
-                PropertiesFile.readProperty("ClusterToTest"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
+                GlobalTools.getClusterToTest(), Integer.parseInt(getGeneralData().get("LNE SSH port")));
 
         JLog.logger.info("Restarting all services on LNE machine");
         String response = connection.Execute("nep_service all restart");
