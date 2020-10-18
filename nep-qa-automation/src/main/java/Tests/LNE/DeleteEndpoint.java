@@ -2,12 +2,9 @@ package Tests.LNE;
 
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
-import Actions.CheckUpdatesActions;
-import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -15,7 +12,6 @@ import org.testng.annotations.Test;
 
 public class DeleteEndpoint extends GenericTest {
 
-    private LNEActions lennyActions;
     private BaseAgentActions agent;
     private SimulatedAgentActions simulatedAgent;
     private String SimulatedAgentName = "SimulatedAgentForDeleteTest";
@@ -26,7 +22,7 @@ public class DeleteEndpoint extends GenericTest {
     @Factory(dataProvider = "getData")
     public DeleteEndpoint(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+        customerId = getGeneralData().get("Customer Id");
     }
 
     @Test(groups = { "DeleteEndpoint" }, priority = 100 )
@@ -35,7 +31,6 @@ public class DeleteEndpoint extends GenericTest {
         try {
             JLog.logger.info("Starting DeleteEndpoint test ...");
 
-            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 
             simulatedAgent = new SimulatedAgentActions();
@@ -43,16 +38,16 @@ public class DeleteEndpoint extends GenericTest {
 
             String originalEndpointId = agent.getEpIdFromDbJson();
 
-            lennyActions.deleteAndVerifyResponse(customerId, agent.getEpName());
-            agent.checkDeleted(Integer.parseInt(general.get("EP Installation timeout")));
+            DsMgmtActions.deleteAndVerifyResponse(customerId, agent.getEpName());
+            agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
 
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
 
-            agent.reinstallEndpoint(Integer.parseInt(general.get("EP Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")), Integer.parseInt(general.get("From EP service start until logs show EP active timeout") ));
+            agent.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")), Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout") ));
             String newEndpointId = agent.getEpIdFromDbJson();
 
-            lennyActions.deleteWithoutVerify(customerId, SimulatedAgentName);
+            DsMgmtActions.deleteWithoutVerify(customerId, SimulatedAgentName);
             simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
             // Verify the agent got new unique id to be sure it is a new installation
@@ -74,9 +69,6 @@ public class DeleteEndpoint extends GenericTest {
     @AfterMethod
     public void Close(){
     	
-        if(lennyActions!=null){
-            lennyActions.Close();
-        }
         if(agent !=null){
             agent.close();
         }

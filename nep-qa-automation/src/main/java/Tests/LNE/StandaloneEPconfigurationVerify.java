@@ -2,12 +2,10 @@ package Tests.LNE;
 
 import Actions.BaseAgentActions;
 import Actions.CheckUpdatesActions;
-import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 
 import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -19,8 +17,6 @@ import org.testng.annotations.Test;
 //https://jira.trustwave.com/browse/NEP-1252
 public class StandaloneEPconfigurationVerify extends GenericTest {
 
-    private LNEActions lennyActions;
-    
     private static final String tag_to_update = "ds_max_off_perios";
     private static final String customerLevelValue = "10";
     private static final String endpointLevelValue = "15";
@@ -41,12 +37,10 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     SimulatedAgentActions simulatedAgent2 = null;
     
     
-    
     @Factory(dataProvider = "getData")
     public StandaloneEPconfigurationVerify(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
-        lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+        customerId = getGeneralData().get("Customer Id");
     }
 
     @Test(groups = { "StandaloneEPconfiguration" })
@@ -76,8 +70,8 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             simulatedAgent2.register(customerId, simulatedAgentIp2, simulatedAgentName2, 
             		simulatedAgentMac2, simulatedAgentOs);
             
-            lennyActions.SetCustomerConfiguration(customerId, customerConf);
-            lennyActions.setEndpointConfig(customerId, simulatedAgentName2, epConf);
+            DsMgmtActions.SetCustomerConfiguration(customerId, customerConf);
+            DsMgmtActions.setEndpointConfig(customerId, simulatedAgentName2, epConf);
             
             //agent1 expects to get the customer conf
             sendCheckUpdatesAndGetConfAndVerify(simulatedAgent1, simulatedAgentName1, customerConfigSent, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName());
@@ -86,7 +80,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             
 	       
             //Call revoke ep conf for agent 2
-	        lennyActions.revokeEpConfiguration(customerId, simulatedAgentName2);
+            DsMgmtActions.revokeEpConfiguration(customerId, simulatedAgentName2);
 	        
 	        //agent2 expects to get the customer conf now
 	        sendCheckUpdatesAndGetConfAndVerify(simulatedAgent2, simulatedAgentName2, customerConfigSent, CheckUpdatesActions.CONFIGURATION_SWITCH.getActionName());
@@ -100,7 +94,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             customerConfigSent.remove("centcom_meta");
             
             //Set the new configuration for customer level
-            lennyActions.SetCustomerConfiguration(customerId, customerConf);
+            DsMgmtActions.SetCustomerConfiguration(customerId, customerConf);
             
             //agent1 expects to get the customer conf
             sendCheckUpdatesAndGetConfAndVerify(simulatedAgent1, simulatedAgentName1, customerConfigSent, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName());
@@ -137,7 +131,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     public void Close(){
         
     	if (simulatedAgent1 != null) {
-    		lennyActions.deleteWithoutVerify(customerId, simulatedAgentName1);
+    		DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgentName1);
     		
     		String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, "1.2.0.100", 0, 0, "1.1.1", customerId);
         	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
@@ -145,15 +139,12 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     	}
         
     	if (simulatedAgent2 != null) {
-    		lennyActions.deleteWithoutVerify(customerId, simulatedAgentName2);
+    		DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgentName2);
     	
     		String action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, "1.2.0.100", 0, 0, "1.1.1", customerId);
     		org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
     	}
         
-        if(lennyActions!=null){
-            lennyActions.Close();
-        }
     }
 
 

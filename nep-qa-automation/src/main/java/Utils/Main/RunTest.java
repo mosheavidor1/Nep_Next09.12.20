@@ -8,11 +8,13 @@ import java.util.List;
 import Tests.Environments.ClientLogToPortalTest;
 import Utils.Data.Endpoint;
 import Utils.Data.Excel;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
+
+import Tests.LNE.DsMgmtActions;
 
 
 public class RunTest {
@@ -22,7 +24,7 @@ public class RunTest {
 	public static String runAtDirectory ="";
 
 	public static void main(String[] args) throws URISyntaxException {
-
+		
 		String currentSuite="";
 		String clusterToTest="";
 		
@@ -42,9 +44,12 @@ public class RunTest {
 		//get cluster to test name
 		if (args.length > 1){
 			clusterToTest = args[1];
-			PropertiesFile.writeProperty("ClusterToTest",clusterToTest.toLowerCase() );
-			PropertiesFile.saveFile("Set cluster to test: " + clusterToTest);
+			GlobalTools.setClusterToTest(clusterToTest);
+			new DsMgmtActions(clusterToTest);//TODO: to adjust to portal environments
 		}
+		else
+			throw new IllegalStateException("Test failed, missing cluster to test in arguments. Throwing exception for Jenkins to catch.");
+
 
 		int startingEpParams = 2;
 
@@ -97,6 +102,8 @@ public class RunTest {
 		testng.setTestSuites(suites);
         testng.addListener(tla);
 		testng.run();
+		
+		GlobalTools.getLneActions().Close();
 		
 		// if a test failed throw exception for Jenkins to catch
 		int status = testng.getStatus();

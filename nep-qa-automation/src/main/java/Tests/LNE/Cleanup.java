@@ -2,11 +2,9 @@ package Tests.LNE;
 
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
-import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
@@ -16,7 +14,6 @@ import org.testng.annotations.Test;
 public class Cleanup extends GenericTest {
 
 	private BaseAgentActions agentActions;
-    private LNEActions lennyActions;
     private String customerId;
     
     
@@ -26,7 +23,7 @@ public class Cleanup extends GenericTest {
     @Factory(dataProvider = "getData")
     public Cleanup(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+        customerId = getGeneralData().get("Customer Id");
     }
 
     /**
@@ -38,8 +35,6 @@ public class Cleanup extends GenericTest {
     public void cleanup()  {
 
         JLog.logger.info("Starting Cleanup...");
-        
-        lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         
         agentActions = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         
@@ -59,7 +54,7 @@ public class Cleanup extends GenericTest {
         }
         
         JLog.logger.info("Agent exists, going to delete it from DS Mgmt.");
-        lennyActions.deleteWithoutVerify(customerId, epName);
+        DsMgmtActions.deleteWithoutVerify(customerId, epName);
         
         try {
         	Thread.sleep(2000);//Sleep 2 seconds
@@ -77,9 +72,6 @@ public class Cleanup extends GenericTest {
     public void Close(){
     	if (agentActions!=null) {
             agentActions.close();
-        }
-        if(lennyActions!=null){
-            lennyActions.Close();
         }
     }
 

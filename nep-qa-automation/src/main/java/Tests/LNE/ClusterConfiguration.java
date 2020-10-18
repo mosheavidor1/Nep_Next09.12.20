@@ -1,11 +1,9 @@
 package Tests.LNE;
 
-import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -17,7 +15,6 @@ import java.util.Map;
 
 public class ClusterConfiguration extends GenericTest {
 
-    private LNEActions lneActions;
     private String customerId;
     String clusterName = "CraftyCluster";
     String ep1Name = "CraftyEp";
@@ -29,13 +26,12 @@ public class ClusterConfiguration extends GenericTest {
     @Factory(dataProvider = "getData")
     public ClusterConfiguration(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+        customerId = getGeneralData().get("Customer Id");
     }
 
     @Test(groups = { "ClusterConfiguration" } )
     public void setClusterConfiguration() {
         JLog.logger.info("Starting setClusterConfiguration test ...");
-        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
         String confJson = data.get("Settings Json");
 
@@ -50,14 +46,14 @@ public class ClusterConfiguration extends GenericTest {
 //        JLog.logger.info("sleeping 60 seconds until finish registering");
 //        Thread.sleep(60000);
 
-        lneActions.setClusterConfig(customerId, clusterName, confJson);
+        DsMgmtActions.setClusterConfig(customerId, clusterName, confJson);
 
 
         List<String> epsNames = new LinkedList<>();
         epsNames.add(simulatedAgentInCluster.getName());
         assignments.put(clusterName, epsNames);
 
-        lneActions.updateClusterMap(Long.valueOf(customerId), assignments);
+        DsMgmtActions.updateClusterMap(Long.valueOf(customerId), assignments);
 
 
         Map<String, Object> tagsToChange = new HashMap<>();
@@ -65,7 +61,7 @@ public class ClusterConfiguration extends GenericTest {
         tagsToChange.put("report_period", 666);
         String updatedClusterConfig = JsonUtil.ChangeTagsConfiguration(confJson, tagsToChange);
 
-        lneActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
+        DsMgmtActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
 
 
         String actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 1, 0, "1.1.1", customerId);
@@ -93,7 +89,7 @@ public class ClusterConfiguration extends GenericTest {
         }
 
         assignments.put(clusterName, new LinkedList<>());
-        lneActions.updateClusterMap(Long.valueOf(customerId), assignments);
+        DsMgmtActions.updateClusterMap(Long.valueOf(customerId), assignments);
 
         actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 0, 0, "1.1.1", customerId);
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"), "setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
@@ -115,21 +111,10 @@ public class ClusterConfiguration extends GenericTest {
     public void close(){
 
         //delete if exist and clean cluster
-        try {
-            lneActions.updateClusterMap(Long.valueOf(customerId), new HashMap<>());
-            lneActions.deleteWithoutVerify(customerId, ep1Name);
-            simulatedAgentInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
-            lneActions.deleteWithoutVerify(customerId, ep2Name);
-            simulatedAgentNotInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
-
-        }catch (Exception e) {
-
-        }finally {
-            JLog.logger.info("Closing...");
-            if(lneActions!=null){
-                lneActions.Close();
-            }
-        }
-
+    	DsMgmtActions.updateClusterMap(Long.valueOf(customerId), new HashMap<>());
+    	DsMgmtActions.deleteWithoutVerify(customerId, ep1Name);
+        simulatedAgentInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
+        DsMgmtActions.deleteWithoutVerify(customerId, ep2Name);
+        simulatedAgentNotInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
     }
 }

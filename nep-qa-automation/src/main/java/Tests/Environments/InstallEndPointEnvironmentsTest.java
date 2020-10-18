@@ -18,7 +18,7 @@ public class InstallEndPointEnvironmentsTest extends RecordedTest {
         super(dataToSet);
     }
 
-    @Test(groups = { "install" } )
+    @Test(groups = { "InstallEP" } )
     public void InstallTest () {
     	
     	JLog.logger.info("Starting InstallEndPointEnvironmentsTest::InstallTest ...");

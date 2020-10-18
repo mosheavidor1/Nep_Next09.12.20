@@ -4,6 +4,7 @@ import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
 import Utils.NepDbConnector;
+import Utils.Data.GlobalTools;
 import Utils.PropertiesFile.PropertiesFile;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.*;
@@ -33,8 +34,9 @@ public class BinaryUpdate extends GenericTest {
 
     private BaseAgentActions endpoint;
 
-    private LNEActions lneActions;
     private String s3Bucket;
+    
+    private static final LNEActions lneActions = GlobalTools.getLneActions();
 
     @Factory(dataProvider = "getData")
     public BinaryUpdate(Object dataToSet) {
@@ -46,8 +48,6 @@ public class BinaryUpdate extends GenericTest {
     public void TestBinaryUpdate() throws IOException {
 
         JLog.logger.info("Starting binary update test");
-
-        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
         // get bucket id from LNE
         s3Bucket = lneActions.getBucketId();
@@ -79,8 +79,6 @@ public class BinaryUpdate extends GenericTest {
     public void TestBinaryUpdateRollback() throws IOException {
 
         JLog.logger.info("Starting binary update rollback test");
-
-        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 
         // get bucket id from LNE
         s3Bucket = lneActions.getBucketId();
@@ -115,12 +113,12 @@ public class BinaryUpdate extends GenericTest {
     }
 
     private void cleanGlobalVersionsDB(){
-        NepDbConnector nepDbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
+        NepDbConnector nepDbConnector = new NepDbConnector(getGeneralData().get("DB URL"), getGeneralData().get("DB user"), getGeneralData().get("DB password"));
         nepDbConnector.cleanGlobalVersionsAfterBinaryUpdate();
     }
 
     private void cleanBinVerEpRequest(){
-        NepDbConnector nepDbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
+        NepDbConnector nepDbConnector = new NepDbConnector(getGeneralData().get("DB URL"), getGeneralData().get("DB user"), getGeneralData().get("DB password"));
         nepDbConnector.cleanEndpointBinVerEpRequest();
     }
 
@@ -220,9 +218,9 @@ public class BinaryUpdate extends GenericTest {
 
             JLog.logger.info("Installing linux EP...");
 
-            endpointLinux.reinstallEndpoint(Integer.parseInt(general.get("EP " +
-                            "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
-                    Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+	         endpointLinux.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP " +
+	                         "Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")),
+	                 Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout")));
 
             // Sleep for 2 minutes - so the EPs will check updates and be updated
             JLog.logger.info("Sleeping for 3 minutes so check updates would update the EPs...");
@@ -269,9 +267,9 @@ public class BinaryUpdate extends GenericTest {
 
             JLog.logger.info("Installing windows EP...");
 
-            endpointWin.reinstallEndpoint(Integer.parseInt(general.get("EP " +
-                            "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
-                    Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+            endpointWin.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP " +
+                            "Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")),
+                    Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout")));
 
             // Sleep for 2 minutes - so the EPs will check updates and be updated
             JLog.logger.info("Sleeping for 3 minutes so check updates would update the EPs...");
@@ -324,15 +322,15 @@ public class BinaryUpdate extends GenericTest {
         JLog.logger.info("Installing windows EP...");
         // TODO RBRB make order of EPs irrelevant
 
-        endpointWin.InstallEPIncludingRequisites(AgentActions.EP_OS.WINDOWS, Integer.parseInt(general.get("EP " +
-                        "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
-                Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+        endpointWin.InstallEPIncludingRequisites(AgentActions.EP_OS.WINDOWS, Integer.parseInt(getGeneralData().get("EP " +
+                        "Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")),
+                Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout")));
 
         JLog.logger.info("Installing linux EP...");
 
-        endpointLinux.InstallEPIncludingRequisites(AgentActions.EP_OS.LINUX, Integer.parseInt(general.get("EP " +
-                        "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
-                Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+        endpointLinux.InstallEPIncludingRequisites(AgentActions.EP_OS.LINUX, Integer.parseInt(getGeneralData().get("EP " +
+                        "Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")),
+                Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout")));
 
         // Sleep for 2 minutes - so the EPs will check updates and be updated
         JLog.logger.info("Sleeping for 2 minutes so check updates would update the EPs...");
@@ -427,7 +425,7 @@ public class BinaryUpdate extends GenericTest {
     */
     private void VerifySuccessfulRollback(BaseAgentActions endpoint) {
 
-        NepDbConnector nepDbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
+        NepDbConnector nepDbConnector = new NepDbConnector(getGeneralData().get("DB URL"), getGeneralData().get("DB user"), getGeneralData().get("DB password"));
         String errorMsg = nepDbConnector.getEpErrorMsg(endpoint.getEpName());
 
         JLog.logger.debug("EP " + endpoint.getEpName() + " error message: " + errorMsg);
@@ -475,10 +473,6 @@ public class BinaryUpdate extends GenericTest {
             JLog.logger.info("Closing endpoint");
             endpoint.close();
         }
-        if (lneActions != null) {
-            JLog.logger.info("Closing lneActions");
-            lneActions.Close();
-        }
     }
 
 
@@ -489,8 +483,8 @@ public class BinaryUpdate extends GenericTest {
         String linuxNewVer = data.get("update_bad_linux_ver");
 
         // restart all services
-        connection = new SSHManager(general.get("LNE User Name"), general.get("LNE Password"),
-                PropertiesFile.readProperty("ClusterToTest"), Integer.parseInt(general.get("LNE SSH port")));
+        connection = new SSHManager(getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"),
+                PropertiesFile.readProperty("ClusterToTest"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
 
         JLog.logger.info("Restarting all services on LNE machine");
         String response = connection.Execute("nep_service all restart");
@@ -506,8 +500,8 @@ public class BinaryUpdate extends GenericTest {
         endpointLinux = new AgentActions(data.get("EP_HostName_2"), data.get("EP_UserName_2"), data.get(
                 "EP_Password_2"));
 
-        endpointWin.UninstallEndpoint(AgentActions.EP_OS.WINDOWS,Integer.parseInt(general.get("EP Installation timeout")));
-        endpointLinux.UninstallEndpoint(AgentActions.EP_OS.LINUX, Integer.parseInt(general.get("EP Installation timeout")));
+        endpointWin.UninstallEndpoint(AgentActions.EP_OS.WINDOWS,Integer.parseInt(getGeneralData().get("EP Installation timeout")));
+        endpointLinux.UninstallEndpoint(AgentActions.EP_OS.LINUX, Integer.parseInt(getGeneralData().get("EP Installation timeout")));
 
         // Get newer binaries
         // FetchFilesFromNexusToLocal(windowsNewVer, linuxNewVer);
@@ -588,15 +582,15 @@ public class BinaryUpdate extends GenericTest {
         JLog.logger.info("Installing windows EP...");
         // TODO RBRB make order of EPs irrelevant
 
-        endpointWin.InstallEPIncludingRequisites(AgentActions.EP_OS.WINDOWS, Integer.parseInt(general.get("EP " +
-                        "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
-                Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+        endpointWin.InstallEPIncludingRequisites(AgentActions.EP_OS.WINDOWS, Integer.parseInt(getGeneralData().get("EP " +
+                        "Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")),
+                Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout")));
 
         JLog.logger.info("Installing linux EP...");
 
-        endpointLinux.InstallEPIncludingRequisites(AgentActions.EP_OS.LINUX, Integer.parseInt(general.get("EP " +
-                        "Installation timeout")), Integer.parseInt(general.get("EP Service Timeout")),
-                Integer.parseInt(general.get("From EP service start until logs show EP active timeout")));
+        endpointLinux.InstallEPIncludingRequisites(AgentActions.EP_OS.LINUX, Integer.parseInt(getGeneralData().get("EP " +
+                        "Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")),
+                Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout")));
 
         // Sleep for 2 minutes - so the EPs will check updates and be updated
         JLog.logger.info("Sleeping for 2 minutes so check updates would update the EPs...");

@@ -1,11 +1,9 @@
 package Tests.LNE;
 
 import Actions.CheckUpdatesActions;
-import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 
 import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -17,7 +15,6 @@ import org.testng.annotations.Test;
 
 public class ChangeCustomerConfAndVerify extends GenericTest {
 
-    private LNEActions lennyActions;
     private String customerId;
     
     private static String confJson;
@@ -29,8 +26,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
     @Factory(dataProvider = "getData")
     public ChangeCustomerConfAndVerify(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
-        lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+        customerId = getGeneralData().get("Customer Id");
     }
 
     @Test(groups = { "ChangeCustomerConfAndVerify" } )
@@ -41,7 +37,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
         if (!confWasSet) { //Configuration will be set only once, and not for every EP
 	        
 	        confJson = data.get("Settings Json");
-	        lennyActions.SetCustomerConfiguration(customerId, confJson);
+	        DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 	        
 	        confWasSet = true;
         }
@@ -65,10 +61,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
 
     @AfterMethod
     public void Close(){
-        if(lennyActions!=null){
-            lennyActions.Close();
-        }
-        lennyActions.deleteWithoutVerify(customerId, "epForTest");
+        DsMgmtActions.deleteWithoutVerify(customerId, "epForTest");
         simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgent.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
     }
 

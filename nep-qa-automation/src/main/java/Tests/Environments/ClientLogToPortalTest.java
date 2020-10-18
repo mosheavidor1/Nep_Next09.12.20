@@ -1,19 +1,15 @@
 package Tests.Environments;
 
 import Actions.AgentActionsFactory;
-import Actions.AgentActionsInterface;
 import Actions.BaseAgentActions;
 import Actions.BrowserActions;
-import Tests.GenericTest;
 import Tests.RecordedTest;
-import Utils.Data.Endpoint;
 import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 
 
 public class ClientLogToPortalTest extends RecordedTest {
@@ -45,7 +41,7 @@ public class ClientLogToPortalTest extends RecordedTest {
             agent.writeEvent(entry);
             String hostname = agent.getEpNameAndDomain();
 
-            browser.LaunchApplication(general.get("Browser"));
+            browser.LaunchApplication(getGeneralData().get("Browser"));
             browser.SetApplicationUrl(data.get("Fusion Link"));
 
             browser.Login(data.get("Fusion User Name"), data.get("Fusion Password"));

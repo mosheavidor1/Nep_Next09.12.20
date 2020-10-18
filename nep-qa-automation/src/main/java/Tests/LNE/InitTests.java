@@ -26,13 +26,13 @@ public class InitTests extends GenericTest {
     @Factory(dataProvider = "getData")
     public InitTests(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+        customerId = getGeneralData().get("Customer Id");
     }
 
     @Test(groups = { "InitTests" } )
     public void initTests(){
         JLog.logger.info("Starting InitTests test ...");
-        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+        lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
         changeServicesProperties();
         simulatedAgent = new SimulatedAgentActions();
         simulatedAgent.register(customerId, "1.2.3.4", initEpName, "66-7B-EB-71-99-44", "Windows 10");

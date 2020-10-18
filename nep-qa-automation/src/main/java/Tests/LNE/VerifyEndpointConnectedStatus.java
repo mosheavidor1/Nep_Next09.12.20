@@ -20,14 +20,14 @@ public class VerifyEndpointConnectedStatus extends GenericTest {
     @Factory(dataProvider = "getData")
     public VerifyEndpointConnectedStatus(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+        customerId = getGeneralData().get("Customer Id");
     }
 
     @Test(groups = { "VerifyEndpointConnectedStatus" } , priority=99)
     public void verifyEndpointConnectedStatus() {
         try {
             JLog.logger.info("Starting verifyEndpointConnectedStatus test ...");
-            lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
+            lneActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
             long timeLeftInSeconds = TimeUnit.MINUTES.toSeconds(15) - Instant.now().minus(InitTests.whenInit.getEpochSecond(), ChronoUnit.SECONDS).getEpochSecond();
             JLog.logger.info("going to wait for endpoint to no be connected, seconds left until checking status not connected: {}",timeLeftInSeconds);
             if(timeLeftInSeconds>0){

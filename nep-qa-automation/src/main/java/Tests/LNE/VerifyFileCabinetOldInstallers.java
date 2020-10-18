@@ -2,9 +2,8 @@ package Tests.LNE;
 
 import Actions.LNEActions;
 import Tests.GenericTest;
-import Utils.JsonUtil;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -13,13 +12,13 @@ import java.util.Map;
 
 public class VerifyFileCabinetOldInstallers extends GenericTest {
 
-    private LNEActions lennyActions;
+    private static final LNEActions lennyActions = GlobalTools.getLneActions();
     private String customerId;
     
     @Factory(dataProvider = "getData")
     public VerifyFileCabinetOldInstallers(Object dataToSet) {
         super(dataToSet);
-        customerId = general.get("Customer Id");
+        customerId = getGeneralData().get("Customer Id");
     }
 
     @Test(groups = { "VerifyFileCabinetOldInstallers" } )
@@ -27,7 +26,6 @@ public class VerifyFileCabinetOldInstallers extends GenericTest {
     	
     	JLog.logger.info("Starting verifyFileCabinetOldInstallers test ...");
 
-        lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"),general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
         String confJson =data.get("Settings Json");
 
         //retrieve doc ids of installers
@@ -42,14 +40,6 @@ public class VerifyFileCabinetOldInstallers extends GenericTest {
         //make sure new installers exist
         lennyActions.DownloadInstallerWithoutAdditions(Long.valueOf(customerId), Integer.parseInt(data.get("Download timeout")));
 
-    }
-
-    @AfterMethod
-    public void Close(){
-        JLog.logger.info("Closing...");
-        if(lennyActions!=null){
-            lennyActions.Close();
-        }
     }
 
 }

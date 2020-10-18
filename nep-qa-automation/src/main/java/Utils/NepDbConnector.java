@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 
@@ -36,7 +37,7 @@ public class NepDbConnector {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");  
 			if (url.contains("{lenny-ip}")) {
-				url = url.replace("{lenny-ip}", PropertiesFile.readProperty("ClusterToTest"));
+				url = url.replace("{lenny-ip}", GlobalTools.getClusterToTest());
 			}
 			Connection conn= DriverManager.getConnection(  
 					url, username, password);  

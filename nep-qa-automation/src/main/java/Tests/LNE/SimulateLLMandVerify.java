@@ -4,6 +4,7 @@ import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterMethod;
@@ -16,7 +17,7 @@ import org.testng.annotations.Test;
 public class SimulateLLMandVerify extends GenericTest {
 
     private BaseAgentActions agent;
-    private LNEActions lennyActions;
+    private static final LNEActions lennyActions = GlobalTools.getLneActions();
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
     static final String command_linuxSIEM = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".zip was sent successfully\"";
@@ -40,8 +41,8 @@ public class SimulateLLMandVerify extends GenericTest {
     
     @BeforeTest
     public void init() {
-    	customerId = general.get("Customer Id");
-        checkUPdatesInterval = Integer.parseInt(general.get("Check Updates Timeout")) * 1000; //35 seconds
+    	customerId = getGeneralData().get("Customer Id");
+        checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
     }
 
     @Test(groups = { "SimulateLLMandVerify" } )
@@ -59,7 +60,6 @@ public class SimulateLLMandVerify extends GenericTest {
 
   	        lcaSyslogOnLenny = syslog_path + data.get("EP_HostName_1") + "/local0.log";
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-		    lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
 		
 		    agent.clearFile(agent.getAgentLogPath()); 
             agent.clearFile(LLM_Syslog_path);  
@@ -69,7 +69,7 @@ public class SimulateLLMandVerify extends GenericTest {
 		    String confJson = data.get("Settings Json");		    
             confJson = confJson.replaceAll(host_value_to_update, PropertiesFile.readProperty("ClusterToTest"));
             		
-		    lennyActions.SetCustomerConfiguration(customerId, confJson);
+            DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
 		    //TODO: compare json cofniguration on agent
 	         
@@ -174,9 +174,6 @@ public class SimulateLLMandVerify extends GenericTest {
     public void Close(){
         if (agent!=null) {
             agent.close();
-        }
-        if(lennyActions!=null){
-            lennyActions.Close();
         }
     }
 

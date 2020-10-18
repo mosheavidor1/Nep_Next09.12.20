@@ -8,7 +8,6 @@ import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.Remote.SSHManager;
 
-import java.io.*;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ import DataModel.DbJson;
 public abstract class BaseAgentActions implements AgentActionsInterface{
 	
 	private static final String configJsonReportInterval = "\"report_period\":";
-    private static final String LfmData = "LfmData";
     protected static final int checkInterval = 5000;
     public static final String nepa_caDotPemFileName = "nepa_ca.pem";
     public static final String nepa_caDotPemPath = "C:/Program Files/Trustwave/NEPAgent/certs/";

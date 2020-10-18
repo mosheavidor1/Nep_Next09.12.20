@@ -3,12 +3,10 @@ package Tests.Environments;
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
 import Actions.BrowserActions;
-import Tests.GenericTest;
 import Tests.RecordedTest;
 import Utils.Logs.JLog;
 import org.testng.annotations.*;
 
-import java.io.IOException;
 
 public class VerifyEndPointOkAtPortalTest extends RecordedTest {
     private BrowserActions action;
@@ -35,12 +33,12 @@ public class VerifyEndPointOkAtPortalTest extends RecordedTest {
         String hostname2 = agent2.getEpName();
 
 
-            action.LaunchApplication(general.get("Browser"));
-        action.SetApplicationUrl(general.get("Fusion Link"));
+            action.LaunchApplication(getGeneralData().get("Browser"));
+        action.SetApplicationUrl(getGeneralData().get("Fusion Link"));
 
-        action.Login(general.get("Fusion User Name"), general.get("Fusion Password"));
+        action.Login(getGeneralData().get("Fusion User Name"), getGeneralData().get("Fusion Password"));
 
-        action.GotoCentComSearch(general.get("Fusion Link"));
+        action.GotoCentComSearch(getGeneralData().get("Fusion Link"));
         action.GotoCentComEndpointsPage(data.get("Customer"));
 
         action.CheckEndPointOkInCentCom(hostname1);

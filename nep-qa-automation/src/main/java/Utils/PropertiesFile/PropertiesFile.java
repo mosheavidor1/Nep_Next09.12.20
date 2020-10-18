@@ -2,7 +2,6 @@ package Utils.PropertiesFile;
 
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Properties;
 import Utils.Main.RunTest;
 import org.apache.commons.lang3.SystemUtils;
@@ -14,7 +13,6 @@ public  class PropertiesFile {
 	    private static InputStream inputStream = null;
 	    private static PropertiesFile file=null;
 	    private static String filePath = "src/main/java/Utils/PropertiesFile/config.properties";
-	    public static final String [] environmentsNamesArray = {"qa","inc","stg","ams","apj","emea"};
 	    
 
 	    private PropertiesFile() {
@@ -77,45 +75,10 @@ public  class PropertiesFile {
 
 	    }
 
-		public static boolean isProduction()  {
-	    	try {
-				String current = readProperty("ClusterToTest");
-				if (current.contains("-"))
-					return true;
-				else
-					return false;
-			}
-			catch (Exception e) {
-				org.testng.Assert.fail("Could not check cluster to test at properties file: " + filePath + "\n" + e.toString());
-				return  false;
-			}
-
-		}
+		
 
 
-		public static boolean isEnvironments()  {
-	    	try {
-				String current = readProperty("ClusterToTest");
-				current = current.trim().toLowerCase();
-				return isEnvironment(current);
-			}
-			catch (Exception e) {
-				org.testng.Assert.fail("Could not check cluster to test at properties file: " + filePath + "\n" + e.toString());
-				return  false;
-			}
-
-		}
-
-		public static boolean isEnvironment(String isThisStringEnvironment){
-	    	try {
-				return Arrays.asList(environmentsNamesArray).contains(isThisStringEnvironment.trim().toLowerCase());
-			}
-			catch (Exception e) {
-				org.testng.Assert.fail("Could not check if this is an environment name: " + isThisStringEnvironment + "\n" + e.toString());
-				return  false;
-			}
-
-		}
+		
 
 
 }

@@ -1,20 +1,21 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
+<!--Runs against QA/INTC-->
 <suite name = "Download and install" configfailurepolicy="skip">
 
     <test name = "Download installer, install End Point and verify logs are sent" >
 
         <groups>
             <dependencies>
-                <group  name= "install" depends-on="download" ></group>
-                <group  name= "verify" depends-on="install" ></group>
+                <group  name= "InstallEP" depends-on="SelectCustomerDownloadInstaller" ></group>
+                <group  name= "verify" depends-on="InstallEP" ></group>
                 <group name= "logs" depends-on= "verify" ></group>
             </dependencies>
         </groups>
 
         <classes>
-            <class name = "Tests.Environments.DownloadFromPortalTest" />
+            <class name = "Tests.Environments.SelectCustomerDownloadInstaller" />
             <class name = "Tests.Environments.InstallEndPointEnvironmentsTest" />
             <class name = "Tests.Environments.VerifyEndPointOkAtPortalTest" />
             <class name = "Tests.Environments.ClientLogToPortalTest" />

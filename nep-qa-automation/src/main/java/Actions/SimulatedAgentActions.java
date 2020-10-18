@@ -133,7 +133,8 @@ public class SimulatedAgentActions {
 	}
 	
 	/**
-	 * Sends check updates post request to Lenny with the given params, returns response body as is
+	 * Sends check updates post request to Lenny with the given params and expects to 200 OK.
+	 * Returns response body as is.	 * 
 	 * 
 	 * @param epName
 	 * @param binVersion
@@ -157,7 +158,8 @@ public class SimulatedAgentActions {
 	}
 	
 	/**
-	 * Sends check updates post request to Lenny with the given params, returns the action from the response body 
+	 * Sends check updates post request to Lenny with the given params, and expects to 200 OK.
+	 * Returns the action from the response body. 
 	 * 
 	 * @param epName
 	 * @param binVersion

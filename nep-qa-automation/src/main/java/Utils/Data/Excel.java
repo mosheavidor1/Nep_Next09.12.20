@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.apache.commons.io.FileUtils;
 
 import javax.xml.parsers.SAXParser;
@@ -79,9 +78,7 @@ public class Excel  {
 				keysMap.put(columnsNames.cellList.get(i), "");
 			}
 
-			boolean isProduction = PropertiesFile.isProduction();
-			boolean isEnvironments = PropertiesFile.isEnvironments();
-			String clusterToTest = PropertiesFile.readProperty("ClusterToTest");
+			String clusterToTest = GlobalTools.getClusterToTest();
 
 			XmlRow secondRowData = handler.xmlRowList.get(1);
 			XmlRow defaultData = null;
@@ -102,13 +99,13 @@ public class Excel  {
 				if (rowData.cellList.size() > 0 && parametersArePerEnvironment) {
 					String currentLineParaSetIdentifier = rowData.cellList.get(0).trim();
 					// if it is Environments lines that has "Parameters Per Environment" equals to the environment name will be added
-					if (isEnvironments && !currentLineParaSetIdentifier.equalsIgnoreCase(clusterToTest.trim()))
+					if (GlobalTools.isPortalEnv() && !currentLineParaSetIdentifier.equalsIgnoreCase(clusterToTest.trim()))
 						continue;
 					// if it is Production, lines that has "Parameters Per Environment" equals to the production identifier will be added
-					if (isProduction && !currentLineParaSetIdentifier.equalsIgnoreCase(productionIdentifier))
+					if (GlobalTools.isProductionEnv() && !currentLineParaSetIdentifier.equalsIgnoreCase(productionIdentifier))
 						continue;
 					// if it is local cluster, lines that do not contain environments or production identifiers will be added
-					if (!(isEnvironments || isProduction) && (currentLineParaSetIdentifier.equalsIgnoreCase(productionIdentifier) || PropertiesFile.isEnvironment(currentLineParaSetIdentifier)))
+					if (!(GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) && (currentLineParaSetIdentifier.equalsIgnoreCase(productionIdentifier) || GlobalTools.isPortalEnvironment(currentLineParaSetIdentifier)))
 						continue;
 
 				}

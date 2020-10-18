@@ -6,8 +6,8 @@ import Actions.SimulatedAgentActions;
 import Actions.LNEActions.CentcomMethods;
 import Tests.GenericTest;
 import Utils.JsonUtil;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,9 +18,7 @@ import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -29,7 +27,7 @@ import org.testng.annotations.Test;
 public class SchemaVersionsAndUpgrade extends GenericTest {
 
 	private String customerId = "1020";
-    private LNEActions lennyActions;
+	private static final LNEActions lennyActions = GlobalTools.getLneActions();
     SimulatedAgentActions simulatedAgent;
     
     private static final String schema_tag = "schema_version";
@@ -50,20 +48,14 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
     public SchemaVersionsAndUpgrade(Object dataToSet) {
         super(dataToSet);
     }
-    
-    @BeforeTest
-    public void init() {
-    	lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
-    	
-    }
-    
+            
     @BeforeMethod
     public void beforeMethod() {
     	
     	
     	confJson = data.get("Settings Json");
     	confJson = JsonUtil.ChangeTagConfiguration(confJson, schema_tag, schemaVersionBaseValue);
-    	lennyActions.InitCustomerSettings(customerId, confJson);
+    	DsMgmtActions.InitCustomerSettings(customerId, confJson);
     	
     	simulatedAgent = new SimulatedAgentActions();
         simulatedAgent.register(customerId, simulatedAgentIp, simulatedAgentName, 
@@ -85,7 +77,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
 
             //In a real environment, the Centcom activates the following set config request, here we activate it instead
             confJson = JsonUtil.ChangeTagConfiguration(confJson, schema_tag, schemaVersionNewValue);            
-            lennyActions.setCustomerConfig(customerId, confJson);
+            DsMgmtActions.setCustomerConfig(customerId, confJson);
             
             JSONObject configSent = new JSONObject(confJson);
             configSent.remove("centcom_meta");
@@ -112,7 +104,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              JLog.logger.info("Starting SchemaVersionsAndUpgrade::testClusterEndpoint ...");
              
              //Define cluster
-             lennyActions.setClusterConfig(customerId, clusterName, confJson);
+             DsMgmtActions.setClusterConfig(customerId, clusterName, confJson);
 
              //Add endpoint to cluster
              Map<String, List<String>> assignments = new HashMap<>();
@@ -120,7 +112,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              epsNames.add(simulatedAgent.getName());
              assignments.put(clusterName, epsNames);
 
-             lennyActions.updateClusterMap(Long.valueOf(customerId), assignments);
+             DsMgmtActions.updateClusterMap(Long.valueOf(customerId), assignments);
              
              //In a real environment the following triggers the DS to send request for config upgrade to Centcom
              String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue, customerId);            
@@ -129,7 +121,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
 
              //In a real environment, the Centcom activates the following set config request, here we activate it instead
              confJson = JsonUtil.ChangeTagConfiguration(confJson, schema_tag, schemaVersionNewValue);            
-             lennyActions.setClusterConfig(customerId, clusterName, confJson);
+             DsMgmtActions.setClusterConfig(customerId, clusterName, confJson);
              
              JSONObject configSent = new JSONObject(confJson);
              configSent.remove("centcom_meta");
@@ -142,9 +134,9 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
 
              //remove the EP from the cluster
              assignments.put(clusterName, new LinkedList<>());
-             lennyActions.updateClusterMap(Long.valueOf(customerId), assignments);
+             DsMgmtActions.updateClusterMap(Long.valueOf(customerId), assignments);
              
-             lennyActions.setCustomerConfig(customerId, confJson);
+             DsMgmtActions.setCustomerConfig(customerId, confJson);
              
              action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue, customerId);
              org.testng.Assert.assertEquals(action, CheckUpdatesActions.CONFIGURATION_SWITCH.getActionName(), "check update result assertion failure.");
@@ -167,7 +159,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
     	 try {
              JLog.logger.info("Starting SchemaVersionsAndUpgrade::testStandaloneEndpoint ...");
 
-             lennyActions.setEndpointConfig(customerId, simulatedAgent.getName(), confJson);           
+             DsMgmtActions.setEndpointConfig(customerId, simulatedAgent.getName(), confJson);           
              
              //In a real environment the following triggers the DS to send request for config upgrade to Centcom
              String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue, customerId);
@@ -177,7 +169,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              
              //In a real environment, the Centcom activates the following set config request, here we activate it instead
              confJson = JsonUtil.ChangeTagConfiguration(confJson, schema_tag, schemaVersionNewValue);      
-             lennyActions.setEndpointConfig(customerId, simulatedAgent.getName(), confJson);   
+             DsMgmtActions.setEndpointConfig(customerId, simulatedAgent.getName(), confJson);   
              
              JSONObject configSent = new JSONObject(confJson);
              configSent.remove("centcom_meta");
@@ -189,8 +181,8 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
              JSONAssert.assertEquals("Agent configuration is not as expected. See differences at the following lines:\n ", configSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
 
              
-             lennyActions.revokeEpConfiguration(customerId, simulatedAgent.getName());             
-             lennyActions.setCustomerConfig(customerId, confJson);
+             DsMgmtActions.revokeEpConfiguration(customerId, simulatedAgent.getName());             
+             DsMgmtActions.setCustomerConfig(customerId, confJson);
              
              action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.1.1", 3, 0, schemaVersionNewValue, customerId);
              org.testng.Assert.assertEquals(action, CheckUpdatesActions.CONFIGURATION_SWITCH.getActionName(), "check update result assertion failure.");
@@ -210,17 +202,8 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
     @AfterMethod
     public void cleanup(){
     	
-    	lennyActions.deleteWithoutVerify(customerId, simulatedAgent.getName());
+    	DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgent.getName());
     	simulatedAgent.sendCheckUpdatesWithoutVerify(simulatedAgent.getName(), "1.2.0.100", 0, 0, schemaVersionNewValue, customerId);
-        
-    }
-
-    @AfterTest
-    public void Close(){
-    	    	
-        if(lennyActions!=null){
-            lennyActions.Close();
-        }
         
     }
 

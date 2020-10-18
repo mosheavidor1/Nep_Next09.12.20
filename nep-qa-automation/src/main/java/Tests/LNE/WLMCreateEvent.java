@@ -4,6 +4,7 @@ import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.Data.GlobalTools;
 import Utils.EventsLog.LogEntry;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
@@ -17,7 +18,7 @@ import org.testng.annotations.Test;
 //https://jira.trustwave.com/browse/NEP-1230
 public class WLMCreateEvent extends GenericTest {
 
-    private LNEActions lennyActions;
+   
     private BaseAgentActions agent;
     private static String customerId;
 
@@ -30,6 +31,8 @@ public class WLMCreateEvent extends GenericTest {
     private static String agentIp;
     private static final String host_value_to_update = "\\{lenny-ip\\}";
     
+    private static final LNEActions lennyActions = GlobalTools.getLneActions();
+    
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
@@ -39,8 +42,8 @@ public class WLMCreateEvent extends GenericTest {
     
     @BeforeTest
     public void init() {
-    	customerId = general.get("Customer Id");
-        checkUPdatesInterval = Integer.parseInt(general.get("Check Updates Timeout")) * 1000; //35 seconds
+    	customerId = getGeneralData().get("Customer Id");
+        checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
         
     }
 
@@ -58,7 +61,6 @@ public class WLMCreateEvent extends GenericTest {
             
             JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, expectedLines);
            
-            lennyActions = new LNEActions(PropertiesFile.readProperty("ClusterToTest"), general.get("LNE User Name"), general.get("LNE Password"), Integer.parseInt(general.get("LNE SSH port")));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
             
             //Read configuration and update the host tags
@@ -67,7 +69,7 @@ public class WLMCreateEvent extends GenericTest {
             
             agentIp = data.get("EP_HostName_1");
             
-            lennyActions.SetCustomerConfiguration(customerId, confJson);            
+            DsMgmtActions.SetCustomerConfiguration(customerId, confJson);            
             Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
             //TODO: compare json cofniguration on agent
             
@@ -202,9 +204,6 @@ public class WLMCreateEvent extends GenericTest {
     public void Close(){
         if (agent!=null) {
             agent.close();
-        }
-        if(lennyActions!=null){
-            lennyActions.Close();
         }
     }
 
