@@ -37,9 +37,11 @@
                	<class name = "Tests.LNE.SimulateLLMandVerify"/>
              	<!--<class name = "Tests.LNE.SimulateLFMandVerify"/>-->
           		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
-               	<class name = "Tests.LNE.RevokeEndpoint" />
-	            <class name = "Tests.LNE.DeleteEndpoint" />
-    	        
+               	<!--class name = "Tests.LNE.RevokeEndpoint" />
+	            <class name = "Tests.LNE.DeleteEndpoint" /-->
+                <class name = "Tests.LNE.RevokeEndpoint" />
+                <class name = "Tests.LNE.DeleteEndpoint" />
+
         </classes>
     </test>
 
