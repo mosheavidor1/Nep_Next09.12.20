@@ -60,16 +60,23 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	 * @param epServiceTimeout
 	 * @param dbJsonToShowActiveTimeout
 	 */
-	public void reinstallEndpoint(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){     
-	        
-		uninstallEndpoint(installationTimeout);                                                                      
-	    copyInstaller();                                                                                           
-	    appendToHostsFile();                                                                                                
-	    installEndpoint(installationTimeout);                                                             
-	    stopEPService(epServiceTimeout);
-	    addCaCertificate();                                                                                                 
-	    startEPService(epServiceTimeout);                                                                                 
-	} 
+	public void reinstallEndpoint(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
+
+	    try {
+
+            uninstallEndpoint(installationTimeout);
+            copyInstaller();
+            appendToHostsFile();
+            installEndpoint(installationTimeout);
+            stopEPService(epServiceTimeout);
+            addCaCertificate();
+            startEPService(epServiceTimeout);
+        }
+	    catch (Exception e) {
+            org.testng.Assert.fail("Reinstall endpoint failed " + "\n" + e.toString());
+    }
+
+}
 		
 	//Waits until check updates will run, and uninstall will be done as a result
     public void checkDeleted(int timeout) {
