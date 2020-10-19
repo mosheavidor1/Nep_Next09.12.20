@@ -103,7 +103,9 @@ public class RunTest {
         testng.addListener(tla);
 		testng.run();
 		
-		GlobalTools.getLneActions().Close();
+		if (!GlobalTools.isPortalEnv() && !GlobalTools.isProductionEnv()) {
+			GlobalTools.getLneActions().Close();
+		}
 		
 		// if a test failed throw exception for Jenkins to catch
 		int status = testng.getStatus();

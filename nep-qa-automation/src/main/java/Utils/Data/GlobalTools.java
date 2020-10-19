@@ -22,6 +22,9 @@ public class GlobalTools {
 	}
 	
 	public static LNEActions getLneActions() {
+		if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
+			org.testng.Assert.fail("Lenny actions cannot be used against portal environments. PLease check the test"); 
+		}
 		if (lennyActions != null) {
 			return lennyActions;
 		}
