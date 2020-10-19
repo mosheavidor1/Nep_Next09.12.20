@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -43,8 +44,15 @@ public class SeleniumBrowser implements Application {
 			JLog.logger.debug("Selenium browser Launch - Before switch application type: " + applicationType);
 			switch (applicationType) {
 				case "Chrome":
-					System.setProperty("webdriver.chrome.driver", "C:\\Selenium\\chromedriver.exe");
-					JLog.logger.debug("Selenium browser Launch - After set chrome property");
+
+					String chromeDriverLocation = PropertiesFile.getManagerDownloadFolder()+ "/utils/chromedriver";
+					if(SystemUtils.IS_OS_WINDOWS) {
+						chromeDriverLocation =chromeDriverLocation +".exe";
+					}
+
+
+					JLog.logger.debug("Setting Chrome driver location: "+ chromeDriverLocation);
+					System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
 
 					if (proxyIP.compareTo("") != 0) {
 						ChromeOptions options = new ChromeOptions();
@@ -77,8 +85,11 @@ public class SeleniumBrowser implements Application {
 						chromePrefs.put("safebrowsing.enabled", "false");
 
 						String downloadFilepath = PropertiesFile.getManagerDownloadFolder();
-						//Chrome does not accept / delimiter. Therefore replacing it with \ delimiter
-						downloadFilepath = downloadFilepath.replace("/","\\");
+						if(SystemUtils.IS_OS_WINDOWS) {
+							//Chrome for Windows does not accept / delimiter. Therefore replacing it with \ delimiter
+							downloadFilepath = downloadFilepath.replace("/","\\");
+						}
+
 						JLog.logger.debug("Selenium browser Launch - After reading MasterDownloadFolder property: " + downloadFilepath);
 
 						chromePrefs.put("download.default_directory", downloadFilepath);
@@ -99,6 +110,10 @@ public class SeleniumBrowser implements Application {
 						options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
 						options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
 						options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+
+						options.addArguments("--headless"); // Working without GUI
+						options.addArguments("window-size=1920,1080"); // without GUI resolution
+
 
 						JLog.logger.debug("Selenium browser Launch - Before creating new chrome driver" );
 

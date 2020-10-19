@@ -41,8 +41,9 @@ public class RecordedTest extends GenericTest{
 			} catch (Exception e) {
 				JLog.logger.warn("Could not start video recording. If multiple screens are used do not change the browser location to avoid this issue.");
 			}
-			String captureFilesPrefix = System.getProperty("user.dir") + "\\test-output\\Capture\\" + this.getClass().getSimpleName() + " " + dateFormat.format(date);
+			String captureFilesPrefix = System.getProperty("user.dir") + "/test-output/capture/" + this.getClass().getSimpleName() + " " + dateFormat.format(date);
 			screenShot = captureFilesPrefix + ".png";
+			JLog.logger.debug("screenshot file: "+ screenShot );
 			InvokedMethodListener.screenShot = screenShot;
 			InvokedMethodListener.video = captureFilesPrefix + ".avi";
 
@@ -52,15 +53,12 @@ public class RecordedTest extends GenericTest{
 
 	@AfterMethod
 	public void afterMethod() throws Exception {
-		if (!GraphicsEnvironment.isHeadless()) {
-
 			//video.stopRecording();
-
 			if (SeleniumBrowser.InstanceExist()) {
 				File scrFile = ((TakesScreenshot) SeleniumBrowser.GetDriver()).getScreenshotAs(OutputType.FILE);
 				FileUtils.copyFile(scrFile, new File(screenShot));
 			}
-		}
+
 
 
 	}
