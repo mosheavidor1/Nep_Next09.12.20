@@ -65,20 +65,9 @@ public class RunTest {
 
 			}
 		}
-		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
-		if (!TestFiles.Exists(LocalCertDirName))
-			TestFiles.CreateFolder(LocalCertDirName);
-
-		String customerId = GenericTest.getGeneralData().get("Customer Id");
-		String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
-		String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
-		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
-		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();
-		if (!TestFiles.Exists(Localclientp12))
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
-		if (!TestFiles.Exists(LocalclientCA))
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-
+		
+		prepareCustomerCaAndCertificates();
+		
 		List<Endpoint> list = new ArrayList<Endpoint>();
 
 		for (int i=startingEpParams; i < args.length; i++){
@@ -131,6 +120,36 @@ public class RunTest {
 			throw new IllegalStateException("Test failed. Throwing exception for Jenkins to catch. TestNG error code: " + status);
 		}
 
+	}
+	
+	/**
+	 * This function copies from Lenny to Manager machine the Root CA and customer certificate.
+	 * This preparation is needed so that simulated agent will be able to connect the proxy in order
+	 * to send requests to DS
+	 * 
+	 * In case we run against portal env we assume that the manager already contains the Root CA and certificate 
+	 */
+	public static void prepareCustomerCaAndCertificates() {
+		
+		if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
+			return;
+		}
+		
+		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
+		if (!TestFiles.Exists(LocalCertDirName))
+			TestFiles.CreateFolder(LocalCertDirName);
+
+		String customerId = GenericTest.getGeneralData().get("Customer Id");
+		String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
+		String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
+		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
+		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();
+		if (!TestFiles.Exists(Localclientp12))
+			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
+		if (!TestFiles.Exists(LocalclientCA))
+			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
+
+		
 	}
 
 	public static String getLocalp12Name(String customerId) {
