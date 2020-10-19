@@ -39,6 +39,8 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
     public static final String servicesFolder = "/work/services/nepa-services/";
     RequestSpecification requestSpecification;// = new RequestSpecBuilder().setBaseUri(url).build();
 
+    public static final String clientp12Path = "/work/services/ca/etc/camanager/data/customer_data/";
+    public static final String clientCApath = "/work/services/ca/etc/camanager/data/public/ca.jks";
     private static final String installUnzipCommand = "rpm -q unzip || yum -y install unzip";
 
     //scan the document from the end and stop after 1 match
@@ -1382,5 +1384,16 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
 
         connection.tailUntilFound(nepService,timeout);
 
+    }
+    public  String getClientp12Path(String customerId) {
+        String path = clientp12Path + "endpoint-111-" + customerId + ".111.p12";
+        return path;
+    }
+    public  String getClientCaPath() {
+        return clientCApath;
+    }
+
+    public  void copy2ManagerMachine(String source, String destination) {
+                connection.CopyToLocal(source, destination);
     }
 }

@@ -26,7 +26,7 @@ import org.testng.annotations.Test;
 //https://jira.trustwave.com/browse/NEP-1278
 public class SchemaVersionsAndUpgrade extends GenericTest {
 
-	private String customerId = "1020";
+	private String customerId = "1001"; // must be the same as mentioned in RunTest.java
 	private static final LNEActions lennyActions = GlobalTools.getLneActions();
     SimulatedAgentActions simulatedAgent;
     
@@ -56,9 +56,8 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
     	confJson = data.get("Settings Json");
     	confJson = JsonUtil.ChangeTagConfiguration(confJson, schema_tag, schemaVersionBaseValue);
     	DsMgmtActions.InitCustomerSettings(customerId, confJson);
-    	
-    	simulatedAgent = new SimulatedAgentActions();
-        simulatedAgent.register(customerId, simulatedAgentIp, simulatedAgentName, 
+        simulatedAgent = new SimulatedAgentActions(customerId);
+        simulatedAgent.register(customerId, simulatedAgentIp, simulatedAgentName,
          		simulatedAgentMac, simulatedAgentOs);
          
     }

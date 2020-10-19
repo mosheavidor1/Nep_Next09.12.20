@@ -34,7 +34,7 @@ public class InitTests extends GenericTest {
     public void initTests(){
         JLog.logger.info("Starting InitTests test ...");
         changeServicesProperties();
-        simulatedAgent = new SimulatedAgentActions();
+        simulatedAgent = new SimulatedAgentActions(customerId);
         simulatedAgent.register(customerId, "1.2.3.4", initEpName, "66-7B-EB-71-99-44", "Windows 10");
         simulatedAgent.sendCheckUpdatesAndGetAction(initEpName, "9.9.9.999", 1, 0, "1.1.1", customerId);
         whenInit = Instant.now();

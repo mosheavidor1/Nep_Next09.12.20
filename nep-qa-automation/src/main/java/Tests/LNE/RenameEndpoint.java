@@ -37,7 +37,7 @@ public class RenameEndpoint extends GenericTest {
     	try {
             JLog.logger.info("Starting RenameEndpoint test");
             
-            simulatedAgent = new SimulatedAgentActions();
+            simulatedAgent = new SimulatedAgentActions(customerId);
             simulatedAgent.register(customerId, simulatedAgentIp1, simulatedAgentName, 
             		simulatedAgentMac1, simulatedAgentOs);
             

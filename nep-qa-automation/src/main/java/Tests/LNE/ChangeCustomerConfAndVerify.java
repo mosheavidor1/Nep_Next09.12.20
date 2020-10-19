@@ -43,7 +43,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
         }
         //Verify that simulated agent gets this configuration
 
-        simulatedAgent = new SimulatedAgentActions();
+        simulatedAgent = new SimulatedAgentActions(customerId);
         simulatedAgent.register(customerId, "1.2.3.4", "epForTest", "84-7B-EB-21","Windows 10");
         String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
         

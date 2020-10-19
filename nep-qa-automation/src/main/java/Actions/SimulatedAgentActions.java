@@ -1,5 +1,6 @@
 package Actions;
 
+import io.restassured.authentication.CertificateAuthSettings;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
@@ -18,11 +19,14 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.exception.JsonPathException;
 import io.restassured.response.Response;
 
+import java.io.File;
+import java.net.InetAddress;
+
 import static io.restassured.RestAssured.*;
 
 public class SimulatedAgentActions {
 
-	public static final String DS_URL = "http://%s:53850/";
+	public static final String DS_URL = "https://%s:443/";
 	public static final String REGISTER = "register";
 	public static final String ENDPOINT_ID = "endpoint_id";
 	public static final String ENDPOINT_NAME = "endpoint_name";
@@ -37,7 +41,7 @@ public class SimulatedAgentActions {
 	private String agentUuid;
 	private String lastConf;
 	private String name;
-	
+
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	class RegisterBody{
 
@@ -103,11 +107,21 @@ public class SimulatedAgentActions {
 
 	}
 
-	public SimulatedAgentActions() {
+	public SimulatedAgentActions(String customerId) {
 		try {
-			JLog.logger.info("SimulatedAgentActions: {}", String.format(DS_URL, GlobalTools.getClusterToTest()));
-			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, GlobalTools.getClusterToTest())).build();
-			
+			InetAddress addr = InetAddress.getByName(GlobalTools.getClusterToTest());
+			String lne_name = addr.getHostName();
+			JLog.logger.info("SimulatedAgentActions: {}", String.format(DS_URL, lne_name));
+			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, lne_name)).build();
+			String path2p12 = PropertiesFile.getManagerDownloadFolder() + "/" + GlobalTools.getClusterToTest() + "/endpoint-111-" + customerId + ".111.p12";
+			String path2jks = PropertiesFile.getManagerDownloadFolder() + "/" + GlobalTools.getClusterToTest() + "/ca.jks";
+			RestAssured.authentication =
+					RestAssured.certificate(
+							path2jks,
+							"trustwave",
+							path2p12,
+							"trustwave",
+							CertificateAuthSettings.certAuthSettings());
 		}
 		catch (Exception e) {
 			org.testng.Assert.fail("Could not set RestAssured.baseURI", e);

@@ -46,7 +46,7 @@ public class Cleanup extends GenericTest {
         	return;
         }
         
-        simulatedAgent = new SimulatedAgentActions();
+        simulatedAgent = new SimulatedAgentActions(customerId);
         String uuid = getDbConnector().getUuidByName(epName);
         
         if (uuid == null) {
