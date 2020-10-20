@@ -2,6 +2,7 @@ package Tests.LNE;
 
 import Actions.BaseAgentActions;
 import Actions.CheckUpdatesActions;
+import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.JsonUtil;

@@ -1,4 +1,4 @@
-package Tests.LNE;
+package Actions;
 
 import static io.restassured.RestAssured.given;
 

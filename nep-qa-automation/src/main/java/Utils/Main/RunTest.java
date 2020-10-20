@@ -17,7 +17,7 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 
-import Tests.LNE.DsMgmtActions;
+import Actions.DsMgmtActions;
 
 
 public class RunTest {
@@ -65,8 +65,6 @@ public class RunTest {
 
 			}
 		}
-		
-		prepareCustomerCaAndCertificates();
 		
 		List<Endpoint> list = new ArrayList<Endpoint>();
 
@@ -122,40 +120,4 @@ public class RunTest {
 
 	}
 	
-	/**
-	 * This function copies from Lenny to Manager machine the Root CA and customer certificate.
-	 * This preparation is needed so that simulated agent will be able to connect the proxy in order
-	 * to send requests to DS
-	 * 
-	 * In case we run against portal env we assume that the manager already contains the Root CA and certificate 
-	 */
-	public static void prepareCustomerCaAndCertificates() {
-		
-		if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
-			return;
-		}
-		
-		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
-		if (!TestFiles.Exists(LocalCertDirName))
-			TestFiles.CreateFolder(LocalCertDirName);
-
-		String customerId = GenericTest.getGeneralData().get("Customer Id");
-		String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
-		String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
-		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
-		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();
-		if (!TestFiles.Exists(Localclientp12))
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
-		if (!TestFiles.Exists(LocalclientCA))
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-
-		
-	}
-
-	public static String getLocalp12Name(String customerId) {
-		return "/endpoint-111-" + customerId + ".111.p12";
-	}
-	public static String getLocalCaName() {
-		return "ca.jks";
-	}
 }

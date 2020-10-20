@@ -2,6 +2,7 @@ package Tests.LNE;
 
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
+import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.Logs.JLog;

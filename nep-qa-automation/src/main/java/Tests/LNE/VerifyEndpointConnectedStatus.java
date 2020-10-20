@@ -1,5 +1,6 @@
 package Tests.LNE;
 
+import Actions.DsMgmtActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.Data.GlobalTools;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class VerifyEndpointConnectedStatus extends GenericTest {
 
     private final String customerId;
-    private LNEActions lneActions;
+    private LNEActions lneActions = GlobalTools.getLneActions();
 
     @Factory(dataProvider = "getData")
     public VerifyEndpointConnectedStatus(Object dataToSet) {
@@ -28,7 +29,6 @@ public class VerifyEndpointConnectedStatus extends GenericTest {
     public void verifyEndpointConnectedStatus() {
         try {
             JLog.logger.info("Starting verifyEndpointConnectedStatus test ...");
-            lneActions = new LNEActions(GlobalTools.getClusterToTest(), getGeneralData().get("LNE User Name"), getGeneralData().get("LNE Password"), Integer.parseInt(getGeneralData().get("LNE SSH port")));
             long timeLeftInSeconds = TimeUnit.MINUTES.toSeconds(15) - Instant.now().minus(InitTests.whenInit.getEpochSecond(), ChronoUnit.SECONDS).getEpochSecond();
             JLog.logger.info("going to wait for endpoint to no be connected, seconds left until checking status not connected: {}",timeLeftInSeconds);
             if(timeLeftInSeconds>0){
@@ -49,7 +49,7 @@ public class VerifyEndpointConnectedStatus extends GenericTest {
 
         //delete if exist and clean cluster
         try {
-            lneActions.deleteWithoutVerify(customerId, InitTests.initEpName);
+            DsMgmtActions.deleteWithoutVerify(customerId, InitTests.initEpName);
             InitTests.simulatedAgent.sendCheckUpdatesAndGetResponse(InitTests.initEpName, "1.2.0.100", 0, 0, "1.1.1", customerId);
 
         } catch (Exception e) {
