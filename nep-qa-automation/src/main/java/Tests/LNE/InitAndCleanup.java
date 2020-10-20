@@ -19,6 +19,7 @@ public class InitAndCleanup extends GenericTest {
 
 	private BaseAgentActions agentActions;
     private String customerId;
+    private static boolean initWasDone = false;
     
     
     private SimulatedAgentActions simulatedAgent;
@@ -30,12 +31,24 @@ public class InitAndCleanup extends GenericTest {
         customerId = getGeneralData().get("Customer Id");
     }
     
-    @Test(groups = { "InitAndCleanup" })
+    /**
+	 * This function copies from Lenny to Manager machine the Root CA and customer certificate.
+	 * This preparation is needed so that simulated agent will be able to connect the proxy in order
+	 * to send requests to DS
+	 * 
+	 * In case we run against portal env we assume that the manager already contains the Root CA and certificate 
+	 */
+    @Test(groups = { "InitAndCleanup" }, priority=10)//init should run before cleanup, since cleanup alreasy uses the simulated agent
     public void init()  {
+    	
+    	 if (initWasDone) { //Init should run only once
+    		 return;
+    	 }
     	
     	 JLog.logger.info("Starting init...");
     	 
-    	 prepareCustomerCaAndCertificates();    	 
+    	 prepareCustomerCaAndCertificates();  
+    	 initWasDone = true;    	 
     	 
     	 JLog.logger.info("Finished init successfully");
     	
@@ -46,7 +59,7 @@ public class InitAndCleanup extends GenericTest {
      * This is required to be sure that the tests really test a new installation flow even if Lenny was just upgraded by update services job
      * The cleanup is tolerant for errors since we should succeed even if Lenny was re-deployed and we have no leftovers from previous runs
      */
-    @Test(groups = { "InitAndCleanup" })
+    @Test(groups = { "InitAndCleanup" }, priority=11)
     public void cleanup()  {
 
         JLog.logger.info("Starting Cleanup...");
@@ -85,19 +98,13 @@ public class InitAndCleanup extends GenericTest {
         
     }
     
-    /**
-	 * This function copies from Lenny to Manager machine the Root CA and customer certificate.
-	 * This preparation is needed so that simulated agent will be able to connect the proxy in order
-	 * to send requests to DS
-	 * 
-	 * In case we run against portal env we assume that the manager already contains the Root CA and certificate 
-	 */
+    
 	private static void prepareCustomerCaAndCertificates() {
 		
 		if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
 			return;
 		}
-		/*
+		
 		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
 		if (!TestFiles.Exists(LocalCertDirName))
 			TestFiles.CreateFolder(LocalCertDirName);
@@ -111,7 +118,7 @@ public class InitAndCleanup extends GenericTest {
 			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
 		if (!TestFiles.Exists(LocalclientCA))
 			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-*/
+
 		
 	}
 

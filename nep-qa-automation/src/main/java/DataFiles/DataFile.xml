@@ -20,7 +20,7 @@
   <WindowWidth>28800</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>16</ActiveSheet>
+  <ActiveSheet>12</ActiveSheet>
   <FirstVisibleSheet>11</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
@@ -883,7 +883,8 @@
     <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.qa.tw-test.net:3306/nep_data</Data></Cell>
     <Cell><Data ss:Type="String">nep_data</Data></Cell>
     <Cell><Data ss:Type="String">P@ssw0rd123</Data></Cell>
-    <Cell ss:Index="10" ss:StyleID="s63"/>
+    <Cell><Data ss:Type="Number">2004822</Data></Cell>
+    <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -900,7 +901,8 @@
     <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.inc.tw-test.net:3306/nep_data</Data></Cell>
     <Cell><Data ss:Type="String">nep_data</Data></Cell>
     <Cell><Data ss:Type="String">P@ssw0rd123</Data></Cell>
-    <Cell ss:Index="10" ss:StyleID="s63"/>
+    <Cell><Data ss:Type="Number">1398155</Data></Cell>
+    <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -935,11 +937,13 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <LeftColumnVisible>3</LeftColumnVisible>
+   <Selected/>
+   <LeftColumnVisible>2</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
      <ActiveRow>3</ActiveRow>
+     <ActiveCol>8</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -1090,7 +1094,6 @@
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
    <Unsynced/>
-   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
