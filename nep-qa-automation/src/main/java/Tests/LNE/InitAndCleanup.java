@@ -97,7 +97,7 @@ public class InitAndCleanup extends GenericTest {
 		if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
 			return;
 		}
-		
+		/*
 		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
 		if (!TestFiles.Exists(LocalCertDirName))
 			TestFiles.CreateFolder(LocalCertDirName);
@@ -111,7 +111,7 @@ public class InitAndCleanup extends GenericTest {
 			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
 		if (!TestFiles.Exists(LocalclientCA))
 			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-
+*/
 		
 	}
 

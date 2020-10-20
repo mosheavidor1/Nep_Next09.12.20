@@ -65,7 +65,19 @@ public class RunTest {
 
 			}
 		}
-		
+		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
+		if (!TestFiles.Exists(LocalCertDirName))
+			TestFiles.CreateFolder(LocalCertDirName);
+
+		String customerId = GenericTest.getGeneralData().get("Customer Id");
+		String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
+		String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
+		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
+		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();
+		if (!TestFiles.Exists(Localclientp12))
+			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
+		if (!TestFiles.Exists(LocalclientCA))
+			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
 		List<Endpoint> list = new ArrayList<Endpoint>();
 
 		for (int i=startingEpParams; i < args.length; i++){
@@ -119,5 +131,10 @@ public class RunTest {
 		}
 
 	}
-	
+	public static String getLocalp12Name(String customerId) {
+		return "/endpoint-111-" + customerId + ".111.p12";
+	}
+	public static String getLocalCaName() {
+		return "ca.jks";
+	}
 }
