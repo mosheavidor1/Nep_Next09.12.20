@@ -296,7 +296,7 @@ node('nep-build-centos7') {
                         }
                         finally {
                             if ( !SKIP_TESTS_WIN.contains('true') ) {
-                                archiveArtifacts artifacts: 'test-output/*' /* */
+                                archiveArtifacts allowEmptyArchive: true, artifacts: 'test-output/*' /* */
                             }
                         }
                     } // win node try
@@ -339,7 +339,7 @@ node('nep-build-centos7') {
                       'lne_logs/tail_1K_nepa-dserver.log'
                       )
 
-        archiveArtifacts artifacts: 'lne_logs/*'  /* */
+        archiveArtifacts allowEmptyArchive: true, artifacts: 'lne_logs/*'  /* */
 
         echo "finally prepare mail to send"
 
