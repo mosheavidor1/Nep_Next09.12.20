@@ -56,9 +56,7 @@ public class SimulateLFMandVerify extends GenericTest {
 		    int expectedResult1 = Integer.parseInt(data.get("ExpectedResult1"));
 		    int expectedResult2 = Integer.parseInt(data.get("ExpectedResult2"));
 		    
-		    if (data.get("EP_Type_1").equals("lnx")) {
-		    	return;
-		    }
+		    String agentType = data.get("EP_Type_1");
 		   		   		   		
 		    JLog.logger.info("Starting SimulateLFMandVerifyDelivery. Agent type: {}. Log type: {}. Expected results: {} and {}.", data.get("EP_Type_1"), log_type, expectedResult1, expectedResult2);
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
@@ -67,11 +65,8 @@ public class SimulateLFMandVerify extends GenericTest {
 		    String confJson = data.get("Basic Conf");             
 		    DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
-		   
 		    
-		    prepareDirectories();
-		    agent.clearFile(agent.getDbJsonPath());
-		    agent.clearFile(agent.getAgentLogPath()); 
+		    resetAgent(agentType);
 		    
 		    //Read configuration and update the host tags
 		    confJson = data.get("Settings Json");		    
@@ -100,6 +95,25 @@ public class SimulateLFMandVerify extends GenericTest {
     		JLog.logger.error("Test failed", e);
             org.testng.Assert.fail("Test failed " + e.toString());
     	}
+    }
+    
+    /**
+     * This function resets the agent between runs; cleans log files and monitored folders.
+     * For windows we must stop the agent in order to clear the db.json
+     */
+    private void resetAgent(String agentType) {
+    	int timeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
+    	
+    	if (agentType.equals("win")){
+    		agent.stopEPService(timeout);
+    	}
+	    prepareDirectories();
+	    agent.clearFile(agent.getDbJsonPath());
+	    agent.clearFile(agent.getAgentLogPath()); 
+	    
+	    if (agentType.equals("win")){
+	    	agent.startEPService(timeout);
+	    }
     }
 
      private void prepareDirectories() {

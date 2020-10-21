@@ -61,10 +61,15 @@ public class SimulateLLMandVerify extends GenericTest {
 
   	        lcaSyslogOnLenny = syslog_path + data.get("EP_HostName_1") + "/local0.log";
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+		    
+		    int timeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
+		    agent.stopEPService(timeout);
 		
 		    agent.clearFile(agent.getAgentLogPath()); 
             agent.clearFile(LLM_Syslog_path);  
             agent.clearFile(agent.getDbJsonPath());
+            
+            agent.startEPService(timeout);
             
 		    //Read configuration and update the host tags
 		    String confJson = data.get("Settings Json");		    

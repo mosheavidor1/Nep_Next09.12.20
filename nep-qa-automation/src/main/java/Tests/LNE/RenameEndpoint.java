@@ -1,6 +1,5 @@
 package Tests.LNE;
 
-import Actions.CheckUpdatesActions;
 import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Actions.LNEActions.CentcomMethods;
@@ -61,10 +60,9 @@ public class RenameEndpoint extends GenericTest {
     public void Close(){
         
     	if (simulatedAgent != null) {
-    		DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgentName);
+    		DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgentNewName);
     		
-    		String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.2.0.100", 0, 0, "1.1.1", customerId);
-        	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
+    		simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.2.0.100", 0, 0, "1.1.1", customerId);
            
     	}
         

@@ -79,6 +79,7 @@ public class InitAndCleanup extends GenericTest {
         
         if (uuid == null) {
         	JLog.logger.info("Endpoint {} was not found in DB, nothing to clean, skipping.", epName);
+        	return;
         }
         
         JLog.logger.info("Agent exists, going to delete it from DS Mgmt.");
@@ -106,19 +107,23 @@ public class InitAndCleanup extends GenericTest {
 		}
 		
 		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
-		if (!TestFiles.Exists(LocalCertDirName))
+		if (!TestFiles.Exists(LocalCertDirName)) {
 			TestFiles.CreateFolder(LocalCertDirName);
-
+		}
+		
 		String customerId = GenericTest.getGeneralData().get("Customer Id");
-		String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
-		String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
+		
 		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
-		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();
-		if (!TestFiles.Exists(Localclientp12))
+		if (!TestFiles.Exists(Localclientp12)) {
+			String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
 			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
-		if (!TestFiles.Exists(LocalclientCA))
+		}
+		
+		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();		
+		if (!TestFiles.Exists(LocalclientCA)) {
+			String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
 			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-
+		}
 		
 	}
 
