@@ -5,7 +5,6 @@ import Actions.LNEActions;
 import Tests.GenericTest;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -14,6 +13,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
+//Second step of https://jira.trustwave.com/browse/NEP-1279
+//First step exists in InitAndCleanup, then need to waits a while...so other tests are running including BinaryUpdate...
 public class VerifyEndpointConnectedStatus extends GenericTest {
 
     private final String customerId;
@@ -29,12 +30,12 @@ public class VerifyEndpointConnectedStatus extends GenericTest {
     public void verifyEndpointConnectedStatus() {
         try {
             JLog.logger.info("Starting verifyEndpointConnectedStatus test ...");
-            long timeLeftInSeconds = TimeUnit.MINUTES.toSeconds(15) - Instant.now().minus(InitTests.whenInit.getEpochSecond(), ChronoUnit.SECONDS).getEpochSecond();
+            long timeLeftInSeconds = TimeUnit.MINUTES.toSeconds(15) - Instant.now().minus(InitAndCleanup.whenInit.getEpochSecond(), ChronoUnit.SECONDS).getEpochSecond();
             JLog.logger.info("going to wait for endpoint to no be connected, seconds left until checking status not connected: {}",timeLeftInSeconds);
             if(timeLeftInSeconds>0){
                 Thread.sleep(1/*TimeUnit.SECONDS.toMillis(timeLeftInSeconds)*/);
             }
-            lneActions.verifyCallToUpdateEpStateCentcomCommand(LNEActions.CentcomMethods.UPDATE_ENDPOINT_STATE,customerId,InitTests.initEpName,"NOT_CONNECTED");
+            lneActions.verifyCallToUpdateEpStateCentcomCommand(LNEActions.CentcomMethods.UPDATE_ENDPOINT_STATE,customerId,InitAndCleanup.epNameForConnectivityTest,"NOT_CONNECTED");
             
 
         } catch (InterruptedException e) {
@@ -49,8 +50,8 @@ public class VerifyEndpointConnectedStatus extends GenericTest {
 
         //delete if exist and clean cluster
         try {
-            DsMgmtActions.deleteWithoutVerify(customerId, InitTests.initEpName);
-            InitTests.simulatedAgent.sendCheckUpdatesAndGetResponse(InitTests.initEpName, "1.2.0.100", 0, 0, "1.1.1", customerId);
+            DsMgmtActions.deleteWithoutVerify(customerId, InitAndCleanup.epNameForConnectivityTest);
+            InitAndCleanup.simulatedAgentForConnectivityTest.sendCheckUpdatesAndGetResponse(InitAndCleanup.epNameForConnectivityTest, "1.2.0.100", 0, 0, "1.1.1", customerId);
 
         } catch (Exception e) {
 

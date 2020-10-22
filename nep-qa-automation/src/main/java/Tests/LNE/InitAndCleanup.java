@@ -3,12 +3,17 @@ package Tests.LNE;
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
 import Actions.DsMgmtActions;
+import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.TestFiles;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
@@ -18,10 +23,12 @@ import org.testng.annotations.Test;
 public class InitAndCleanup extends GenericTest {
 
 	private BaseAgentActions agentActions;
+	private LNEActions lneActions = GlobalTools.getLneActions();
     private String customerId;
     private static boolean initWasDone = false;
-    
-    
+    public static String epNameForConnectivityTest = "ChiefEp";
+    public static Instant whenInit = Instant.now();
+    public static SimulatedAgentActions simulatedAgentForConnectivityTest;
     private SimulatedAgentActions simulatedAgent;
     
 
@@ -48,11 +55,14 @@ public class InitAndCleanup extends GenericTest {
     	 JLog.logger.info("Starting init...");
     	 
     	 prepareCustomerCaAndCertificates();  
+    	 changeServicesProperties();
     	 initWasDone = true;    	 
     	 
     	 JLog.logger.info("Finished init successfully");
     	
     }
+    
+    
 
     /**
      * Need to delete existing endpoints from DS side + check update until we get uninstall action (then entities are actually deleted for DB)
@@ -99,6 +109,20 @@ public class InitAndCleanup extends GenericTest {
         
     }
     
+    //First step of https://jira.trustwave.com/browse/NEP-1279
+    @Test(groups = { "InitAndCleanup" }, priority=12 )
+    public void defineAgentForConnectivityTest(){
+        JLog.logger.info("Starting InitTests test ...");
+        
+        simulatedAgentForConnectivityTest = new SimulatedAgentActions(customerId);
+        simulatedAgentForConnectivityTest.register(customerId, "1.2.3.4", epNameForConnectivityTest, "66-7B-EB-71-99-44", "Windows 10");
+        simulatedAgentForConnectivityTest.sendCheckUpdatesAndGetAction(epNameForConnectivityTest, "9.9.9.999", 1, 0, "1.1.1", customerId);
+        whenInit = Instant.now();
+        lneActions.verifyCallToUpdateEpStateCentcomCommand(LNEActions.CentcomMethods.UPDATE_ENDPOINT_STATE, customerId, epNameForConnectivityTest,"OK");
+        JLog.logger.info("registered ep {} and verified status, status OK ",epNameForConnectivityTest);
+
+    }
+    
     
 	private static void prepareCustomerCaAndCertificates() {
 		
@@ -126,6 +150,46 @@ public class InitAndCleanup extends GenericTest {
 		}
 		
 	}
+	
+	private void changeServicesProperties() {
+        try{
+            Map<String, String> dsPropertiesChange = new HashMap<>();
+            Map<String, String> dsMgmtPropertiesChange = new HashMap<>();
+            Map<String, String> isPropertiesChange = new HashMap<>();
+
+
+            dsMgmtPropertiesChange.put("ep-conn-check.run-every-milliseconds","300000");
+
+
+            boolean dsPropertyChanged = lneActions.changePropertyInPropertySet(LNEActions.NepService.DS, dsPropertiesChange);
+            boolean dsMgmtPropertyChanged = lneActions.changePropertyInPropertySet(LNEActions.NepService.DS_MGMT, dsMgmtPropertiesChange);
+            boolean isPropertyChanged = lneActions.changePropertyInPropertySet(LNEActions.NepService.IS, isPropertiesChange);
+
+            if(dsPropertyChanged || dsMgmtPropertyChanged || isPropertyChanged){
+                lneActions.restartStubServiceWaitForFinish(60);
+              
+
+                if(dsPropertyChanged){
+                    lneActions.restartDsService();
+//                    lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS,300);
+                }
+                if(dsMgmtPropertyChanged){
+                    lneActions.restartDsMgmtService();
+//                    lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS_MGMT,300);
+                }
+                if(isPropertyChanged){
+                    lneActions.restartIsService();
+//                    lneActions.restartServiceWaitForFinish(LNEActions.NepService.IS,300);
+                }
+
+                Thread.sleep(60000);
+            }
+
+
+        }catch (InterruptedException e){
+
+        }
+    }
 
 	private static String getLocalp12Name(String customerId) {
 		return "/endpoint-111-" + customerId + ".111.p12";
