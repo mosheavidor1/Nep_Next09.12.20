@@ -30,24 +30,21 @@ public class RecordedTest extends GenericTest{
 
 	@BeforeMethod
 	public void BeforeMethod() {
-		if (!GraphicsEnvironment.isHeadless()) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH.mm.ss");
-			Date date = new Date();
-			//remove video creation just to check if that is damaging select customer
-			//video = new VideoCapture(".\\test-output\\Capture", this.getClass().getSimpleName() + " " + dateFormat.format(date));
+		SimpleDateFormat dateFormat = new SimpleDateFormat("-dd-MM-yyyy-HH.mm.ss");
+		Date date = new Date();
+		//remove video creation just to check if that is damaging select customer
+		/*video = new VideoCapture(".\\test-output\\Capture", this.getClass().getSimpleName() + " " + dateFormat.format(date));
+		try {
+			//video.startRecording();
+		} catch (Exception e) {
+			JLog.logger.warn("Could not start video recording. If multiple screens are used do not change the browser location to avoid this issue.");
+		}*/
+		String captureFilesPrefix = System.getProperty("user.dir") + "/test-output/capture/" + this.getClass().getSimpleName() +  dateFormat.format(date);
+		screenShot = captureFilesPrefix + ".png";
+		JLog.logger.debug("screenshot file: "+ screenShot );
+		InvokedMethodListener.screenShot = screenShot;
+		InvokedMethodListener.video = captureFilesPrefix + ".avi";
 
-			try {
-				//video.startRecording();
-			} catch (Exception e) {
-				JLog.logger.warn("Could not start video recording. If multiple screens are used do not change the browser location to avoid this issue.");
-			}
-			String captureFilesPrefix = System.getProperty("user.dir") + "/test-output/capture/" + this.getClass().getSimpleName() + " " + dateFormat.format(date);
-			screenShot = captureFilesPrefix + ".png";
-			JLog.logger.debug("screenshot file: "+ screenShot );
-			InvokedMethodListener.screenShot = screenShot;
-			InvokedMethodListener.video = captureFilesPrefix + ".avi";
-
-		}
 	}
 
 
