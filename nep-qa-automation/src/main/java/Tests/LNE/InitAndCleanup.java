@@ -134,20 +134,17 @@ public class InitAndCleanup extends GenericTest {
 		if (!TestFiles.Exists(LocalCertDirName)) {
 			TestFiles.CreateFolder(LocalCertDirName);
 		}
+
+        TestFiles.DeleteAllFiles(LocalCertDirName);
+
+        String customerId = GenericTest.getGeneralData().get("Customer Id");
+
+        String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
+		GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
 		
-		String customerId = GenericTest.getGeneralData().get("Customer Id");
-		
-		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
-		if (!TestFiles.Exists(Localclientp12)) {
-			String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
-		}
-		
-		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();		
-		if (!TestFiles.Exists(LocalclientCA)) {
-			String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-		}
+		String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
+		GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
+
 		
 	}
 	
