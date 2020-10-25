@@ -234,10 +234,13 @@ public class SimulatedAgentActions {
 				customerId, ip, hostname, osType, macAddress);
 
 		RegisterBody registerBody = new RegisterBody(customerId, ip, hostname, macAddress, osType);
+		JLog.logger.debug("Register body: " + registerBody);
 
 		JsonPath jsonPathEvaluator = null;
 
 		try {
+			JLog.logger.debug("Request Specification: " + requestSpecification);
+
 			jsonPathEvaluator =
 					given().spec(requestSpecification)
 							.contentType("application/json")
@@ -249,6 +252,7 @@ public class SimulatedAgentActions {
 							.assertThat()
 							.statusCode(HttpStatus.SC_OK)
 							.extract().response().body().jsonPath();
+			JLog.logger.debug("Json path evaluator: " + jsonPathEvaluator);
 
 			String uuid = jsonPathEvaluator.get(ENDPOINT_ID);
 //			String name = jsonPathEvaluator.get(ENDPOINT_NAME);
