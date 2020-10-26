@@ -214,6 +214,7 @@ public class DsMgmtActions {
     }
 
     public static void revokeEpConfiguration (String customerId, String epName) {
+    	JLog.logger.info("Sending revoke configuration request for customer {}, ep {}", customerId, epName);
 
         String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
 
@@ -238,6 +239,7 @@ public class DsMgmtActions {
     }
 
     public static void revoke(String customerId, String epName) {
+    	JLog.logger.info("Sending revoke request for customer {}, ep {}", customerId, epName);
 
         String body = buildJsonBody( Arrays.asList("customerId", "epName"), Arrays.asList(customerId, epName));
 
@@ -271,6 +273,7 @@ public class DsMgmtActions {
 
     public static void deleteAndVerifyResponse(String customerId, String epName) {
 
+    	JLog.logger.info("Sending delete request for customer {}, ep {}", customerId, epName);
         int response = sendDelete(customerId, epName);
 
         if (response == 200)
