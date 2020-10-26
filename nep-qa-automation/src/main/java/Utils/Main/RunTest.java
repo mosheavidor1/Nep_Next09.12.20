@@ -24,6 +24,7 @@ public class RunTest {
 	public static final String suitesFolder = "src/main/java/TestSuites/";
 	public static final String windowsIdentifier = "win";
 	public static final String linuxIdentifier = "lnx";
+	private static final String localhost = "127.0.0.1";
 	public static String runAtDirectory ="";
 
 	public static void main(String[] args) throws URISyntaxException {
@@ -48,7 +49,11 @@ public class RunTest {
 		if (args.length > 1){
 			clusterToTest = args[1];
 			GlobalTools.setClusterToTest(clusterToTest);
-			new DsMgmtActions(clusterToTest);//TODO: to adjust to portal environments
+			if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
+				new DsMgmtActions(localhost);
+			} else {
+				new DsMgmtActions(clusterToTest);
+			}
 		}
 		else
 			throw new IllegalStateException("Test failed, missing cluster to test in arguments. Throwing exception for Jenkins to catch.");

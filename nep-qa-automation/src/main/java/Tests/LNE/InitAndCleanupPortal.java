@@ -20,7 +20,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 
-public class InitAndCleanup extends GenericTest {
+public class InitAndCleanupPortal extends GenericTest {
 
 	private BaseAgentActions agentActions;
 	private LNEActions lneActions = GlobalTools.getLneActions();
@@ -33,7 +33,7 @@ public class InitAndCleanup extends GenericTest {
     
 
     @Factory(dataProvider = "getData")
-    public InitAndCleanup(Object dataToSet) {
+    public InitAndCleanupPortal(Object dataToSet) {
         super(dataToSet);
         customerId = getGeneralData().get("Customer Id");
     }
@@ -45,6 +45,7 @@ public class InitAndCleanup extends GenericTest {
 	 * 
 	 * In case we run against portal env we assume that the manager already contains the Root CA and certificate 
 	 */
+    /*
     @Test(groups = { "InitAndCleanup" }, priority=10)//init should run before cleanup, since cleanup alreasy uses the simulated agent
     public void init()  {
     	
@@ -54,13 +55,12 @@ public class InitAndCleanup extends GenericTest {
     	
     	 JLog.logger.info("Starting init...");
     	 
-    	 prepareCustomerCaAndCertificates();  
-    	 changeServicesProperties();
+    	 prepareCustomerCaAndCertificates();
     	 initWasDone = true;    	 
     	 
     	 JLog.logger.info("Finished init successfully");
     	
-    }
+    }*/
     
     
 
@@ -108,22 +108,8 @@ public class InitAndCleanup extends GenericTest {
         JLog.logger.info("Finished Cleanup successfully");
         
     }
-    
-    //First step of https://jira.trustwave.com/browse/NEP-1279
-    @Test(groups = { "InitAndCleanup" }, priority=12 )
-    public void defineAgentForConnectivityTest(){
-        JLog.logger.info("Starting InitTests test ...");
-        
-        simulatedAgentForConnectivityTest = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
-        simulatedAgentForConnectivityTest.register(customerId, "1.2.3.4", epNameForConnectivityTest, "66-7B-EB-71-99-44", "Windows 10");
-        simulatedAgentForConnectivityTest.sendCheckUpdatesAndGetAction(epNameForConnectivityTest, "9.9.9.999", 1, 0, "1.1.1", customerId);
-        whenInit = Instant.now();
-        lneActions.verifyCallToUpdateEpStateCentcomCommand(LNEActions.CentcomMethods.UPDATE_ENDPOINT_STATE, customerId, epNameForConnectivityTest,"OK");
-        JLog.logger.info("registered ep {} and verified status, status OK ",epNameForConnectivityTest);
-
-    }
-    
-    
+       
+    /*
 	private static void prepareCustomerCaAndCertificates() {
 		
 		if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
@@ -134,67 +120,31 @@ public class InitAndCleanup extends GenericTest {
 		if (!TestFiles.Exists(LocalCertDirName)) {
 			TestFiles.CreateFolder(LocalCertDirName);
 		}
-
-        TestFiles.DeleteAllFiles(LocalCertDirName);
-
-        String customerId = GenericTest.getGeneralData().get("Customer Id");
-
-        String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
-		GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
 		
-		String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
-		GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-
+		String customerId = GenericTest.getGeneralData().get("Customer Id");
+		
+		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
+		if (!TestFiles.Exists(Localclientp12)) {
+			String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
+			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
+		}
+		
+		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();		
+		if (!TestFiles.Exists(LocalclientCA)) {
+			String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
+			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
+		}
 		
 	}
 	
-	private void changeServicesProperties() {
-        try{
-            Map<String, String> dsPropertiesChange = new HashMap<>();
-            Map<String, String> dsMgmtPropertiesChange = new HashMap<>();
-            Map<String, String> isPropertiesChange = new HashMap<>();
-
-
-            dsMgmtPropertiesChange.put("ep-conn-check.run-every-milliseconds","300000");
-
-
-            boolean dsPropertyChanged = lneActions.changePropertyInPropertySet(LNEActions.NepService.DS, dsPropertiesChange);
-            boolean dsMgmtPropertyChanged = lneActions.changePropertyInPropertySet(LNEActions.NepService.DS_MGMT, dsMgmtPropertiesChange);
-            boolean isPropertyChanged = lneActions.changePropertyInPropertySet(LNEActions.NepService.IS, isPropertiesChange);
-
-            if(dsPropertyChanged || dsMgmtPropertyChanged || isPropertyChanged){
-                lneActions.restartStubServiceWaitForFinish(60);
-              
-
-                if(dsPropertyChanged){
-                    lneActions.restartDsService();
-//                    lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS,300);
-                }
-                if(dsMgmtPropertyChanged){
-                    lneActions.restartDsMgmtService();
-//                    lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS_MGMT,300);
-                }
-                if(isPropertyChanged){
-                    lneActions.restartIsService();
-//                    lneActions.restartServiceWaitForFinish(LNEActions.NepService.IS,300);
-                }
-
-                Thread.sleep(60000);
-            }
-
-
-        }catch (InterruptedException e){
-
-        }
-    }
-
+	
 	private static String getLocalp12Name(String customerId) {
 		return "/endpoint-111-" + customerId + ".111.p12";
 	}
 	private static String getLocalCaName() {
 		return "ca.jks";
 	}
-
+*/
     @AfterMethod
     public void Close(){
     	if (agentActions!=null) {

@@ -1,10 +1,10 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<!--Runs against QA/INTC-->
-<suite name = "Download and install" configfailurepolicy="skip">
+<!--Runs against portal QA env-->
+<suite name = "Smoke tests - Portal QA env" configfailurepolicy="skip">
 
-    <test name = "Download installer, install End Point and verify logs are sent" >
+    <test name = "Smoke tests - Portal QA env" >
 
         <groups>
             <dependencies>

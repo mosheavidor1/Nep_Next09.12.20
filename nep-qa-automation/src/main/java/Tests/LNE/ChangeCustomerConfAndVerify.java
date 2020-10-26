@@ -34,7 +34,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
     public void changeCustomerConfAndVerify()  {
 
         JLog.logger.info("Starting ChangeCustomerConfAndVerify...");
-        
+       
         if (!confWasSet) { //Configuration will be set only once, and not for every EP
 	        
 	        confJson = data.get("Settings Json");
@@ -44,7 +44,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
         }
         //Verify that simulated agent gets this configuration
 
-        simulatedAgent = new SimulatedAgentActions(customerId);
+        simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
         simulatedAgent.register(customerId, "1.2.3.4", "epForTest", "84-7B-EB-21","Windows 10");
         String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
         

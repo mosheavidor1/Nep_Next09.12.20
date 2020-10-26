@@ -34,7 +34,7 @@ public class DeleteEndpoint extends GenericTest {
 
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 
-            simulatedAgent = new SimulatedAgentActions(customerId);
+            simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
             simulatedAgent.register(customerId, SimulatedAgentIp, SimulatedAgentName, "84-7B-EB-21-99-99","Windows 10");
 
             String originalEndpointId = agent.getEpIdFromDbJson();

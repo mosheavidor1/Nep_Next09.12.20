@@ -8,9 +8,10 @@
         <groups>
             <dependencies>
             	<group  name= "InitAndCleanup" depends-on="InitCustomer" ></group>
-                <group  name= "InstallEP" depends-on="InitCustomer" ></group>
+                <group  name= "InstallEP" depends-on="InitAndCleanup" ></group>
                 <group  name= "Binary" depends-on="InstallEP" ></group>
                 <group  name= "VerifyEndpointConnectedStatus" depends-on="Binary" ></group><!-- This test should run after BinaryUpdate -->
+                <group  name= "SchemaVersionsAndUpgrade" depends-on="InstallEP" ></group>
 
             </dependencies>
         </groups>
@@ -20,7 +21,7 @@
             <class name = "Tests.LNE.InitAndCleanup"  />
             <class name = "Tests.LNE.InstallEP" />
            <class name = "Tests.LNE.BinaryUpdate" />
-            <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />
+          <!--  <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />-->
             <class name = "Tests.LNE.VerifyEndpointConnectedStatus" />
         </classes>
     </test>

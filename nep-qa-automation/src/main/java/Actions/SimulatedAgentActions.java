@@ -19,8 +19,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.exception.JsonPathException;
 import io.restassured.response.Response;
 
-import java.io.File;
-import java.net.InetAddress;
 
 import static io.restassured.RestAssured.*;
 
@@ -107,12 +105,10 @@ public class SimulatedAgentActions {
 
 	}
 
-	public SimulatedAgentActions(String customerId) {
+	public SimulatedAgentActions(String dsName, String customerId) {
 		try {
-			//InetAddress addr = InetAddress.getByName(GlobalTools.getClusterToTest());
-			String lne_name = "endpoint-protection-services.local.tw-test.net";//addr.getHostName();
-			JLog.logger.info("SimulatedAgentActions: {}", String.format(DS_URL, lne_name));
-			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, lne_name)).build();
+			JLog.logger.info("SimulatedAgentActions, DS URL: {}", String.format(DS_URL, dsName));
+			requestSpecification = new RequestSpecBuilder().setBaseUri(String.format(DS_URL, dsName)).build();
 			String path2p12 = PropertiesFile.getManagerDownloadFolder() + "/" + GlobalTools.getClusterToTest() + "/endpoint-111-" + customerId + ".111.p12";
 			String path2jks = PropertiesFile.getManagerDownloadFolder() + "/" + GlobalTools.getClusterToTest() + "/ca.jks";
 			RestAssured.authentication =

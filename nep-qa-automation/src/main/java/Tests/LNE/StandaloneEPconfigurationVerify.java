@@ -63,11 +63,11 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             JSONObject epConfigSent = new JSONObject(epConf);
             epConfigSent.remove("centcom_meta");
 	    	
-            simulatedAgent1 = new SimulatedAgentActions(customerId);
+            simulatedAgent1 = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
             simulatedAgent1.register(customerId, simulatedAgentIp1, simulatedAgentName1, 
             		simulatedAgentMac1, simulatedAgentOs);
             
-            simulatedAgent2 = new SimulatedAgentActions(customerId);
+            simulatedAgent2 = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
             simulatedAgent2.register(customerId, simulatedAgentIp2, simulatedAgentName2, 
             		simulatedAgentMac2, simulatedAgentOs);
             

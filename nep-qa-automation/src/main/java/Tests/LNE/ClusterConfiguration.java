@@ -39,10 +39,10 @@ public class ClusterConfiguration extends GenericTest {
         //delete simulated agents
         Map<String, List<String>> assignments = new HashMap<>();
 
-        simulatedAgentInCluster = new SimulatedAgentActions(customerId);
+        simulatedAgentInCluster = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
         simulatedAgentInCluster.register(customerId, "1.2.3.4", ep1Name, "84-7B-EB-21-99-99", "Windows 10");
 
-        simulatedAgentNotInCluster = new SimulatedAgentActions(customerId);
+        simulatedAgentNotInCluster = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
         simulatedAgentNotInCluster.register(customerId, "1.2.3.5", ep2Name, "85-7B-EB-21-99-99", "Windows 10");
 //        JLog.logger.info("sleeping 60 seconds until finish registering");
 //        Thread.sleep(60000);
