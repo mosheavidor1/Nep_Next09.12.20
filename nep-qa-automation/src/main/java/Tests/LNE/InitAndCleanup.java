@@ -85,7 +85,7 @@ public class InitAndCleanup extends GenericTest {
         }
         
         simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
-        String uuid = getDbConnector().getUuidByName(epName);
+        String uuid = getDbConnector().getUuidByName(epName, customerId);
         
         if (uuid == null) {
         	JLog.logger.info("Endpoint {} was not found in DB, nothing to clean, skipping.", epName);

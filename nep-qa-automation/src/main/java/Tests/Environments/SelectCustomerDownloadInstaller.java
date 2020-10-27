@@ -2,6 +2,8 @@ package Tests.Environments;
 
 import Actions.BrowserActions;
 import Tests.RecordedTest;
+import Utils.Logs.JLog;
+
 import org.testng.annotations.*;
 
 
@@ -17,6 +19,8 @@ public class SelectCustomerDownloadInstaller extends RecordedTest {
 
     @Test(groups = { "SelectCustomerDownloadInstaller" } )
     public void selectCustomerDownloadInstaller () {
+    	
+    	JLog.logger.info("Starting selectCustomerDownloadInstaller...");
 
         action.CreateAndCleanDownloadFolder();
 
@@ -42,6 +46,8 @@ public class SelectCustomerDownloadInstaller extends RecordedTest {
         action.VerifyFilesExist(Integer.parseInt(data.get("Wait files to be downloaded timeout in seconds")));
 
         action.VerifyInstallerSignature();
+        
+        JLog.logger.info("Finished selectCustomerDownloadInstaller.");
 
 
     }

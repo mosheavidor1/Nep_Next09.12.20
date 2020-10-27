@@ -1,4 +1,4 @@
-package Tests.LNE;
+package Tests.Environments;
 
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
@@ -23,7 +23,6 @@ import org.testng.annotations.Test;
 public class InitAndCleanupPortal extends GenericTest {
 
 	private BaseAgentActions agentActions;
-	private LNEActions lneActions = GlobalTools.getLneActions();
     private String customerId;
     private static boolean initWasDone = false;
     public static String epNameForConnectivityTest = "ChiefEp";
@@ -85,7 +84,7 @@ public class InitAndCleanupPortal extends GenericTest {
         }
         
         simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
-        String uuid = getDbConnector().getUuidByName(epName);
+        String uuid = getDbConnector().getUuidByName(epName, customerId);
         
         if (uuid == null) {
         	JLog.logger.info("Endpoint {} was not found in DB, nothing to clean, skipping.", epName);

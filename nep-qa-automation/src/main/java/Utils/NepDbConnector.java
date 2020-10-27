@@ -21,7 +21,7 @@ public class NepDbConnector {
 	
 	//private static Statement stmt;
 	
-	public static final String SELECT_UUID = "select uuid_text from endpoint_data where name = ?";
+	public static final String SELECT_UUID = "select uuid_text from endpoint_data where name = ? and customer_id = ?";
 	public static final String GET_EP_ERROR = "select error_msg from endpoint_errors where id = (select id from endpoint_data where name=?)";
 	public static final String RESET_WINDOWS_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'win_binary_update'";
 	public static final String RESET_LINUX_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'linux_binary_update'";
@@ -67,9 +67,10 @@ public class NepDbConnector {
 		 
 	}
 	*/
-	public String getUuidByName(String name) {
+	public String getUuidByName(String name, String customerId) {
 		try {
 			selectUuidStmt.setString(1, name);
+			selectUuidStmt.setLong(2, new Long(customerId));
 			ResultSet rs = selectUuidStmt.executeQuery();
 			if (!rs.next()) {
 				return null;
