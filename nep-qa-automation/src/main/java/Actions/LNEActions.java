@@ -8,6 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,6 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -827,7 +832,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
     //DO we want to use the jenkins job?
     public void uploadLinuxFilesToBucket(String s3Bucket, List<String> linuxFiles) {
 
-        String linuxUpdFolderLNE = "/home/binaries/linux/";
+        String linuxUpdFolderLNE = "/home/binaries/centos/";
 
         String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
         String localFolderForLinuxFiles = masterDownloadDirectory + "/linux/";
@@ -852,7 +857,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                     "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
                     ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
                     " cut -d '=' -f 2` ; cd /home/; s3_cmd upload_file " + s3Bucket + " binaries" +
-                    "/linux/" + file);
+                    "/centos/" + file);
             JLog.logger.info("Response: " + response);
         }
     }
@@ -969,7 +974,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                     "-properties/nepa-dserver.properties | cut -d '=' -f 2` ; export " + "AWS_REGION=`grep aws" +
                     ".updates.bucket-region /work/services/stub-srv/etc/nep-properties/nepa-dserver" + ".properties |" +
                     " cut -d '=' -f 2` ; cd /home/; s3_cmd delete_file " + s3Bucket + " binaries" +
-                    "/linux/" + file);
+                    "/centos/" + file);
             JLog.logger.info("Response: " + response);
         }
     }
@@ -1050,8 +1055,15 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
                 FileOutputStream out = new FileOutputStream(localFilePath);
                 props.setProperty(key, val);
                 props.store(out, null);
+
                 ans=true;
                 out.close();
+
+                // Replace line endings to linux format
+                String fileContent = FileUtils.readFileToString(new File(localFilePath), StandardCharsets.UTF_8).replaceAll("\\r\\n?", "\n");
+                Path propertyFilePath = Paths.get(localFilePath);
+                Files.write(propertyFilePath, fileContent.getBytes());
+
                 connection.CopyToRemote(localFilePath,remoteFilePath);
 
             }

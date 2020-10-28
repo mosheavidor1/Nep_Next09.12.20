@@ -18,8 +18,8 @@ import java.util.List;
 public class ManagerActions {
 
     public static final String windowsInstallationFile = "TrustwaveEndpoint.exe";
-    public static final String linuxInstallationFile = "TrustwaveEndpoint.lnx";
-    public static final String linuxSha256InstallationFile = "TrustwaveEndpoint.lnx.sha256";
+    public static final String linuxInstallationFile = "TrustwaveEndpoint.centos";
+    public static final String linuxSha256InstallationFile = "TrustwaveEndpoint.centos.sha256";
     public static final String archiveFolderName = "archive";
     public static final String utilsFolderName = "utils";
     private static final String uninstallFolderName = "uninstall";

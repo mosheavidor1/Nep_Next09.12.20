@@ -24,12 +24,12 @@ public class NepDbConnector {
 	public static final String SELECT_UUID = "select uuid_text from endpoint_data where name = ? and customer_id = ?";
 	public static final String GET_EP_ERROR = "select error_msg from endpoint_errors where id = (select id from endpoint_data where name=?)";
 	public static final String RESET_WINDOWS_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'win_binary_update'";
-	public static final String RESET_LINUX_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'linux_binary_update'";
+	public static final String RESET_CENTOS_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'centos_binary_update'";
 	public static final String RESET_BIN_VER_EP_REQ = "update endpoint_data set bin_ver_ep_request=bin_version";
 	
 	public static PreparedStatement selectUuidStmt;
 	public static PreparedStatement getEpErrorStmt;
-	public static PreparedStatement resetLinuxUpdateVerStmt;
+	public static PreparedStatement resetCentosUpdateVerStmt;
 	public static PreparedStatement resetWinUpdateVerStmt;
 	public static PreparedStatement resetEpBinVerEpReqStmt;
 	
@@ -46,7 +46,7 @@ public class NepDbConnector {
 			
 			selectUuidStmt = conn.prepareStatement(SELECT_UUID);
 			getEpErrorStmt = conn.prepareStatement(GET_EP_ERROR);
-			resetLinuxUpdateVerStmt = conn.prepareStatement(RESET_LINUX_UPDATE_VER);
+			resetCentosUpdateVerStmt = conn.prepareStatement(RESET_CENTOS_UPDATE_VER);
 			resetWinUpdateVerStmt = conn.prepareStatement(RESET_WINDOWS_UPDATE_VER);
 			resetEpBinVerEpReqStmt = conn.prepareStatement(RESET_BIN_VER_EP_REQ);
 		}
@@ -87,7 +87,7 @@ public class NepDbConnector {
 
 	public void cleanGlobalVersionsAfterBinaryUpdate() {
 		try {
-			int res = resetLinuxUpdateVerStmt.executeUpdate();
+			int res = resetCentosUpdateVerStmt.executeUpdate();
 			if (res == 1) {
 				JLog.logger.info("Set linux version in global_versions executed successfully.");
 			}
