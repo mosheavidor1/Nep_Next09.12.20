@@ -5,7 +5,7 @@ DISPLAY_VERSION = "${env.NEP_BRANCH == "next" ? "${BUILD_NUMBER}-${env.NEP_BRANC
 
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 
-NODE_TO_RUN = nep-qa-nightly-27-223
+NODE_TO_RUN = "nep-qa-nightly-27-223"
 
 node(NODE_TO_RUN) {
 
