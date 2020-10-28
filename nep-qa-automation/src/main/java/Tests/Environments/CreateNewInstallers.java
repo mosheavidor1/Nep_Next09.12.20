@@ -21,7 +21,7 @@ public class CreateNewInstallers extends RecordedTest {
     public void CreateNewInstalllersAndDeleteOldInstallers () {
         try {
 
-            JLog.logger.info("Starting Create New IOnstallers...");
+            JLog.logger.info("Starting Create New Installers...");
 
             action.LaunchApplication(getGeneralData().get("Browser"));
             action.SetApplicationUrl(getGeneralData().get("Fusion Link"));
@@ -35,6 +35,8 @@ public class CreateNewInstallers extends RecordedTest {
 
             action.GotoCentComSearch(getGeneralData().get("Fusion Link"));
             action.PublishNewDownloads(data.get("Customer"), Integer.parseInt(data.get("Wait for publish to be completed")));
+            
+            JLog.logger.info("Finished Create New Installers.");
         }
         catch (Exception e){
             org.testng.Assert.fail("Could not create new installers " +e.toString());

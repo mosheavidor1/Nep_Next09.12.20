@@ -5,10 +5,10 @@ import Actions.BaseAgentActions;
 import Actions.DsMgmtActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.Utils;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -33,7 +33,7 @@ public class SimulateLFMandVerify extends GenericTest {
     
     private Vector<String> destLogFiles;
     
-    private static final String host_value_to_update = "\\{lenny-ip\\}";
+   
     
     
     String expectedResult1, expectedResult2;
@@ -62,15 +62,15 @@ public class SimulateLFMandVerify extends GenericTest {
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		    
 		    //Set Basic configuration with LFM false
-		    String confJson = data.get("Basic Conf");             
-		    DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
+		    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getDefaultConfiguration());
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
 		    
 		    resetAgent(agentType);
 		    
 		    //Read configuration and update the host tags
-		    confJson = data.get("Settings Json");		    
-            confJson = confJson.replaceAll(host_value_to_update, GlobalTools.getClusterToTest());
+		    String confJsonName = data.get("Configuration Name");
+		    String confJson = ConfigHandling.getConfiguration(confJsonName);	    
+            confJson = confJson.replaceAll(ConfigHandling.lennyIpPlaceholder, GlobalTools.getClusterToTest());
             
             DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
@@ -194,8 +194,7 @@ public class SimulateLFMandVerify extends GenericTest {
         }
         
         //Set Basic configuration with LFM false
-	    String confJson = data.get("Basic Conf");             
-	    DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
+	    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getDefaultConfiguration());
 	    
     }
 

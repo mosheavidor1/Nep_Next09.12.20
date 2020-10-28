@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import Actions.LNEActions;
 import Tests.GenericTest;
-import Utils.PropertiesFile.PropertiesFile;
 
 public class GlobalTools {
 	
@@ -12,6 +11,11 @@ public class GlobalTools {
 	private static LNEActions lennyActions;
 	private static Boolean portalEnv;
 	private static Boolean productionEnv;
+	
+	public static final String currentSchemaVersion = "1.1.1";
+	public static final String currentBinaryVersion = "1.3";
+	public static final String previousBinaryVersion = "1.2";
+	
 	
 	public static final String [] environmentsNamesArray = {"qa","inc","stg","ams","apj","emea"};
     
@@ -51,6 +55,10 @@ public class GlobalTools {
 			productionEnv = false;
 		}
     	return productionEnv;
+	}
+	
+	public static boolean isLennyEnv() {
+		return (!portalEnv && !productionEnv);
 	}
 	
 	public static boolean isPortalEnv()  {

@@ -32,7 +32,7 @@ public class InstallEP extends GenericTest {
     	JLog.logger.info("Starting InstallEndPoint test ...");
     	
         agentActions = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-        agentActions.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")), Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout") ));
+        agentActions.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")));
         
         try {
         	Thread.sleep(2000);//Sleep 2 seconds

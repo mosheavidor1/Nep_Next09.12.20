@@ -4,6 +4,7 @@ import Actions.CheckUpdatesActions;
 import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.Logs.JLog;
 
 import org.json.JSONObject;
@@ -37,7 +38,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
        
         if (!confWasSet) { //Configuration will be set only once, and not for every EP
 	        
-	        confJson = data.get("Settings Json");
+        	confJson = ConfigHandling.getConfiguration("Changed Configuration");
 	        DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 	        
 	        confWasSet = true;
@@ -57,6 +58,8 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
         configSent.remove("centcom_meta");
         JSONObject configReceived = new JSONObject(simulatedAgentConf );
         JSONAssert.assertEquals("Agent configuration is not as expected. See differences at the following lines:\n ", configSent.toString(), configReceived.toString(), JSONCompareMode.LENIENT);
+        
+        JLog.logger.info("ChangeCustomerConfAndVerify finished successfully.");
 
     }
 

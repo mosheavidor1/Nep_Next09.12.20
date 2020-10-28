@@ -6,6 +6,7 @@ import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Actions.LNEActions.CentcomMethods;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.JsonUtil;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
@@ -55,7 +56,7 @@ public class SchemaVersionsAndUpgrade extends GenericTest {
     public void beforeMethod() {
     	
     	 JLog.logger.info("Starting SchemaVersionsAndUpgrade::beforeMethod");
-    	confJson = data.get("Settings Json");
+    	confJson = ConfigHandling.getDefaultConfiguration();
     	confJson = JsonUtil.ChangeTagConfiguration(confJson, schema_tag, schemaVersionBaseValue);
     	DsMgmtActions.InitCustomerSettings(customerId, confJson);
         simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);

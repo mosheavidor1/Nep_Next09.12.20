@@ -3,6 +3,7 @@ package Tests.LNE;
 import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.JsonUtil;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterTest;
@@ -34,7 +35,7 @@ public class ClusterConfiguration extends GenericTest {
     public void setClusterConfiguration() {
         JLog.logger.info("Starting setClusterConfiguration test ...");
 
-        String confJson = data.get("Settings Json");
+        String confJson = ConfigHandling.getDefaultConfiguration();
 
         //delete simulated agents
         Map<String, List<String>> assignments = new HashMap<>();
@@ -99,10 +100,11 @@ public class ClusterConfiguration extends GenericTest {
         simulatedAgentInClusterConf = simulatedAgentInCluster.getConf(customerId);
 
         if (JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "check_update_period", 666) ||
-                JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)
-        ) {
+                JsonUtil.CompareKeyValue(simulatedAgentInClusterConf, "report_period", 666)) {
             org.testng.Assert.fail("setClusterConfiguration test failed, ep removed from cluster should have general configuration");
+            return;
         }
+        JLog.logger.info("Finished setClusterConfiguration successfully.");
 
 
 }

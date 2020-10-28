@@ -5,9 +5,9 @@ import Actions.BaseAgentActions;
 import Actions.DsMgmtActions;
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Factory;
@@ -33,7 +33,6 @@ public class SimulateLLMandVerify extends GenericTest {
     String lcaSyslogOnLenny;
     private static String customerId;
     
-    private static final String host_value_to_update = "\\{lenny-ip\\}";
     
     @Factory(dataProvider = "getData")
     public SimulateLLMandVerify(Object dataToSet) {
@@ -72,8 +71,9 @@ public class SimulateLLMandVerify extends GenericTest {
             agent.startEPService(timeout);
             
 		    //Read configuration and update the host tags
-		    String confJson = data.get("Settings Json");		    
-            confJson = confJson.replaceAll(host_value_to_update, GlobalTools.getClusterToTest());
+            String confJsonName = data.get("Configuration Name");
+		    String confJson = ConfigHandling.getConfiguration(confJsonName);	  	    
+            confJson = confJson.replaceAll(ConfigHandling.lennyIpPlaceholder, GlobalTools.getClusterToTest());
             		
             DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
@@ -181,9 +181,7 @@ public class SimulateLLMandVerify extends GenericTest {
         if (agent!=null) {
             agent.close();
         }
-      //Set Basic configuration with LFM false
-	    String confJson = data.get("Basic Conf");             
-	    DsMgmtActions.SetCustomerConfiguration(customerId, confJson);	    
+	    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getDefaultConfiguration());	    
     }
 
 

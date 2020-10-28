@@ -93,7 +93,7 @@ public class BrowserActions extends ManagerActions {
             dash.WaitUntilObjectClickable(DashboardPage.dashboradByID,120);
         }
         catch (Exception e){
-
+        	JLog.logger.error("Login exception.", e);
         }
 
     }
@@ -192,6 +192,7 @@ public class BrowserActions extends ManagerActions {
                 org.testng.Assert.fail("Event written to log: " + entry.eventID + " Is not matched to the event ID found at portal: " + foundID);
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not verify log entry appear at portal.", e);
             org.testng.Assert.fail("Could not verify log entry appear at portal. " + "\n" + e.toString());
         }
 
@@ -213,6 +214,7 @@ public class BrowserActions extends ManagerActions {
             PublishConfiguration(waitForPublishInSec);
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not publish new downloads for customer: {}",customerName, e);
             org.testng.Assert.fail("Could not publish new downloads for customer: " + customerName + "\n" + e.toString());
         }
 
@@ -230,6 +232,7 @@ public class BrowserActions extends ManagerActions {
             PublishConfiguration(waitForPublishInSec);
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not change configuration and publish for customer: {}",customerName, e);
             org.testng.Assert.fail("Could not change configuration and publish for customer: " + customerName + "\n" + e.toString());
         }
 
@@ -251,6 +254,7 @@ public class BrowserActions extends ManagerActions {
             centSearch.GetCustomerRow(customerName).click();
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not select customer at CentCom search page. customer: {}",customerName, e);
             org.testng.Assert.fail("Could not select customer at CentCom search page. customer: " + customerName + "\n" + e.toString());
         }
 
@@ -294,6 +298,7 @@ public class BrowserActions extends ManagerActions {
                 org.testng.Assert.fail("Publish configuration not completed successfully. Could not find publish completed \"100%\" indication after timeout of: " + waitForPublishInSec + "(sec) See screenshot/video links below");
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not publish configuration", e);
             org.testng.Assert.fail("Could not publish configuration" + "\n" + e.toString());
         }
 
@@ -313,7 +318,8 @@ public class BrowserActions extends ManagerActions {
 
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not check endpoint status at CentCom for customer: " + customerName + " hostname: "  +  "\n" + e.toString());
+        	JLog.logger.error("Could not check endpoint status at CentCom for customer: {}", customerName, e);
+            org.testng.Assert.fail("Could not check endpoint status at CentCom for customer: " + customerName +  "\n" + e.toString());
         }
 
     }
@@ -348,6 +354,7 @@ public class BrowserActions extends ManagerActions {
 
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not check endpoint status at CentCom for hostname: {}", hostname, e);
             org.testng.Assert.fail("Could not check endpoint status at CentCom for hostname: " + hostname +  "\n" + e.toString());
         }
 
@@ -395,6 +402,7 @@ public class BrowserActions extends ManagerActions {
 
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not select customer at portal. Customer: {}", customerName, e);
             org.testng.Assert.fail("Could not select customer at portal. Customer: " + customerName + "\n" + e.toString());
         }
 
@@ -431,6 +439,7 @@ public class BrowserActions extends ManagerActions {
                 fc.removeButtonConfirm_element.click();
             }
         } catch (Exception e) {
+        	JLog.logger.error("Could not delete all endpoint downloads at portal.", e);
             org.testng.Assert.fail("Could not delete all endpoint downloads at portal." + "\n" + e.toString());
         }
 
@@ -463,6 +472,7 @@ public class BrowserActions extends ManagerActions {
 
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not download endpoint installation files", e);
             org.testng.Assert.fail("Could not download endpoint installation files" + "\n" + e.toString());
         }
 
@@ -505,6 +515,7 @@ public class BrowserActions extends ManagerActions {
             }
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not download endpoint installation files", e);
             org.testng.Assert.fail("Could not download endpoint installation files" + "\n" + e.toString());
         }
 
@@ -553,6 +564,7 @@ public class BrowserActions extends ManagerActions {
             }
         }
         catch (Exception e) {
+        	JLog.logger.error("Could not download endpoint installation files", e);
             org.testng.Assert.fail("Could not download endpoint installation files" + "\n" + e.toString());
         }
 

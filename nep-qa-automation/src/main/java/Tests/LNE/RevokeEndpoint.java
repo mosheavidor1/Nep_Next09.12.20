@@ -5,13 +5,14 @@ import Actions.BaseAgentActions;
 import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 
-
+//https://jira.trustwave.com/browse/NEP-1257
 public class RevokeEndpoint extends GenericTest {
 
     private BaseAgentActions agent;
@@ -32,28 +33,36 @@ public class RevokeEndpoint extends GenericTest {
 
         try {
             JLog.logger.info("Starting RevokeEndpoint test with {} agent", data.get("EP_Type_1"));
+            
+            JLog.logger.info("Going to set default configuration for this customer. Check update period - 30 seconds");
+            DsMgmtActions.setCustomerConfig(getGeneralData().get("Customer Id"), ConfigHandling.getDefaultConfiguration());
+            
 
             agent =  AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+            String originalEndpointId = agent.getEpIdFromDbJson();
 
+            JLog.logger.info("Going to register another simulated agent with name {}", SimulatedAgentName);
             simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
             simulatedAgent.register(customerId, SimulatedAgentIp, SimulatedAgentName, "84-7B-EB-21-99-99","Windows 10");
 
+            JLog.logger.info("Going to revoke the real agent and make sure the service is uninstalled");
             DsMgmtActions.revoke(customerId, agent.getEpName());
             agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
 
+            JLog.logger.info("Going to make sure that the simulated agent keeps getting updates and not 'uninstall'");
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
+            org.testng.Assert.assertNotEquals(action, "uninstall", "check update result assertion failure.");
 
+            JLog.logger.info("Going to install the origin agent back and make sure it gets the same uuid as before");
+            agent.installEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")));
+            String newEndpointId = agent.getEpIdFromDbJson();
+            org.testng.Assert.assertEquals(originalEndpointId, newEndpointId, "New uuid should equals the one before revoking.");
 
-            agent.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")), Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout") ));
-
+            JLog.logger.info("Going to remove the simulated agent");
             DsMgmtActions.deleteWithoutVerify(customerId, SimulatedAgentName);
             simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
-            // Assert after installing the agent back
-            // Verify the other agent didn't get uninstall command
-            org.testng.Assert.assertEquals(action, "no update", String.format("check update result assertion failure. Expected: 'no update', got '%s' ", action));
-
-            JLog.logger.info("RevokeEndpoint test completed.");
+            JLog.logger.info("Finished RevokeEndpoint successfully.");
 
         } catch (Exception e) {
             org.testng.Assert.fail("RevokeEndpoint test failed " + "\n" + e.toString());

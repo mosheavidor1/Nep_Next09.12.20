@@ -1,26 +1,16 @@
 package Tests;
 
 import Applications.SeleniumBrowser;
-import Utils.Capture.VideoCapture;
-import Utils.Data.Excel;
 import Utils.Logs.JLog;
-import Utils.Main.RunTest;
-import Utils.PropertiesFile.PropertiesFile;
 import Utils.TestNG.InvokedMethodListener;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
-import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Listeners;
-
-import java.awt.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 public class RecordedTest extends GenericTest{
 

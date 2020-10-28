@@ -3,17 +3,12 @@ package Tests.Environments;
 import Actions.AgentActionsFactory;
 import Actions.BaseAgentActions;
 import Actions.DsMgmtActions;
-import Actions.LNEActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
-import Utils.TestFiles;
-import Utils.Data.GlobalTools;
+import Utils.ConfigHandling;
 import Utils.Logs.JLog;
-import Utils.PropertiesFile.PropertiesFile;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
@@ -24,7 +19,6 @@ public class InitAndCleanupPortal extends GenericTest {
 
 	private BaseAgentActions agentActions;
     private String customerId;
-    private static boolean initWasDone = false;
     public static String epNameForConnectivityTest = "ChiefEp";
     public static Instant whenInit = Instant.now();
     public static SimulatedAgentActions simulatedAgentForConnectivityTest;
@@ -37,29 +31,6 @@ public class InitAndCleanupPortal extends GenericTest {
         customerId = getGeneralData().get("Customer Id");
     }
     
-    /**
-	 * This function copies from Lenny to Manager machine the Root CA and customer certificate.
-	 * This preparation is needed so that simulated agent will be able to connect the proxy in order
-	 * to send requests to DS
-	 * 
-	 * In case we run against portal env we assume that the manager already contains the Root CA and certificate 
-	 */
-    /*
-    @Test(groups = { "InitAndCleanup" }, priority=10)//init should run before cleanup, since cleanup alreasy uses the simulated agent
-    public void init()  {
-    	
-    	 if (initWasDone) { //Init should run only once
-    		 return;
-    	 }
-    	
-    	 JLog.logger.info("Starting init...");
-    	 
-    	 prepareCustomerCaAndCertificates();
-    	 initWasDone = true;    	 
-    	 
-    	 JLog.logger.info("Finished init successfully");
-    	
-    }*/
     
     
 
@@ -71,7 +42,7 @@ public class InitAndCleanupPortal extends GenericTest {
     @Test(groups = { "InitAndCleanup" }, priority=11)
     public void cleanup()  {
 
-        JLog.logger.info("Starting Cleanup...");
+        JLog.logger.info("Starting Cleanup agents");
         
         agentActions = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         
@@ -106,44 +77,13 @@ public class InitAndCleanupPortal extends GenericTest {
         
         JLog.logger.info("Finished Cleanup successfully");
         
+        
+        JLog.logger.info("Going to set default configuration for this customer.");
+        DsMgmtActions.setCustomerConfig(getGeneralData().get("Customer Id"), ConfigHandling.getDefaultConfiguration());
+        
     }
        
-    /*
-	private static void prepareCustomerCaAndCertificates() {
-		
-		if (GlobalTools.isPortalEnv() || GlobalTools.isProductionEnv()) {
-			return;
-		}
-		
-		String LocalCertDirName = PropertiesFile.getManagerDownloadFolder()+ "/" + GlobalTools.getClusterToTest();
-		if (!TestFiles.Exists(LocalCertDirName)) {
-			TestFiles.CreateFolder(LocalCertDirName);
-		}
-		
-		String customerId = GenericTest.getGeneralData().get("Customer Id");
-		
-		String Localclientp12 = LocalCertDirName + "/" + getLocalp12Name(customerId);
-		if (!TestFiles.Exists(Localclientp12)) {
-			String LNEclientp12 = GlobalTools.getLneActions().getClientp12Path(customerId);
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientp12,LocalCertDirName);
-		}
-		
-		String LocalclientCA = LocalCertDirName + "/" + getLocalCaName();		
-		if (!TestFiles.Exists(LocalclientCA)) {
-			String LNEclientCA = GlobalTools.getLneActions().getClientCaPath();
-			GlobalTools.getLneActions().copy2ManagerMachine(LNEclientCA,LocalCertDirName);
-		}
-		
-	}
-	
-	
-	private static String getLocalp12Name(String customerId) {
-		return "/endpoint-111-" + customerId + ".111.p12";
-	}
-	private static String getLocalCaName() {
-		return "ca.jks";
-	}
-*/
+   
     @AfterMethod
     public void Close(){
     	if (agentActions!=null) {

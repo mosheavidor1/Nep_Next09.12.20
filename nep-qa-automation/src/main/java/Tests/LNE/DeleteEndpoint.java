@@ -5,12 +5,13 @@ import Actions.BaseAgentActions;
 import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-
+//https://jira.trustwave.com/browse/NEP-1260
 public class DeleteEndpoint extends GenericTest {
 
     private BaseAgentActions agent;
@@ -30,37 +31,37 @@ public class DeleteEndpoint extends GenericTest {
     public void deleteEndpoint()  {
 
         try {
-            agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+        	JLog.logger.info("Starting DeleteEndpoint test with {} agent", data.get("EP_Type_1"));
+        	
+        	JLog.logger.info("Going to set default configuration for this customer. Check update period - 30 seconds");
+            DsMgmtActions.setCustomerConfig(getGeneralData().get("Customer Id"), ConfigHandling.getDefaultConfiguration());
             
-            JLog.logger.info("Starting DeleteEndpoint test with {} agent", data.get("EP_Type_1"));
-
+        	
+            agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
+            String originalEndpointId = agent.getEpIdFromDbJson();            
+            
+            JLog.logger.info("Going to register another simulated agent with name {}", SimulatedAgentName);
             simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
             simulatedAgent.register(customerId, SimulatedAgentIp, SimulatedAgentName, "84-7B-EB-21-99-99","Windows 10");
-
-            String originalEndpointId = agent.getEpIdFromDbJson();
-
+           
+            JLog.logger.info("Going to delete the real agent and make sure the service is uninstalled");
             DsMgmtActions.deleteAndVerifyResponse(customerId, agent.getEpName());
             agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
 
+            JLog.logger.info("Going to make sure that the simulated agent keeps getting updates and not 'uninstall'");
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
+            org.testng.Assert.assertNotEquals(action, "uninstall", "check update result assertion failure.");
 
-
-            agent.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")), Integer.parseInt(getGeneralData().get("From EP service start until logs show EP active timeout") ));
+            JLog.logger.info("Going to install the origin agent back and make sure it gets a new uuid");
+            agent.installEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")));
             String newEndpointId = agent.getEpIdFromDbJson();
+            org.testng.Assert.assertNotEquals(originalEndpointId, newEndpointId, "New uuid should not equal the one before deleting.");
 
+            JLog.logger.info("Going to remove the simulated agent");
             DsMgmtActions.deleteWithoutVerify(customerId, SimulatedAgentName);
             simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
 
-            // Verify the agent got new unique id to be sure it is a new installation
-            if(originalEndpointId.compareTo(newEndpointId) == 0){
-                org.testng.Assert.fail("Delete endpoint test failed, the unique id is the same after the installation. Original EP IP: "+ originalEndpointId + " New EP ID: " + newEndpointId + " Machine: " + data.get("EP_HostName_1") );
-            }
-
-            // Assert after installing the agent back
-            // Verify the other agent didn't get uninstall command
-            org.testng.Assert.assertEquals(action, "no update", String.format("check update result assertion failure. Expected: 'no update', got '%s' ", action));
-
-            JLog.logger.info("DeleteEndpoint test completed.");
+            JLog.logger.info("Finished DeleteEndpoint successfully.");
 
         } catch (Exception e) {
             org.testng.Assert.fail("DeleteEndpoint test failed " + "\n" + e.toString());

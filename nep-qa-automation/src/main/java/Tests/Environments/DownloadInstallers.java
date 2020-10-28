@@ -37,9 +37,10 @@ public class DownloadInstallers extends RecordedTest {
 
             action.VerifyFilesExist(Integer.parseInt(data.get("Wait files to be downloaded timeout in seconds")));
 
-            action.VerifyInstallerSignature();
+            action.VerifyInstallerSignature();  
+            
 
-            JLog.logger.info("Finished selectCustomerDownloadInstaller.");
+            JLog.logger.info("Finished download Installers.");
         }
         catch (Exception e){
             org.testng.Assert.fail("Could not create download installers from file cabinet " +e.toString());

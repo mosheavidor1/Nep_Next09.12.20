@@ -5,6 +5,7 @@ import Actions.CheckUpdatesActions;
 import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.JsonUtil;
 import Utils.Logs.JLog;
 
@@ -33,6 +34,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     private static final String simulatedAgentMac2 = "84-7B-EB-21-23";
     private static final String simulatedAgentName1 = "ep1";
     private static final String simulatedAgentName2 = "ep2";
+    private static final String configIdentifier = "Changed Configuration";
     
     SimulatedAgentActions simulatedAgent1 = null;
     SimulatedAgentActions simulatedAgent2 = null;
@@ -49,14 +51,14 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     	try {
             JLog.logger.info("Starting StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration ...");
             
-            String customerConf = data.get("config");
+            String customerConf = ConfigHandling.getConfiguration(configIdentifier);
             customerConf = JsonUtil.ChangeTagConfiguration(customerConf, tag_to_update, customerLevelValue);
             
             //Prepare for verification
             JSONObject customerConfigSent = new JSONObject(customerConf);
             customerConfigSent.remove("centcom_meta");
             
-            String epConf = data.get("config");
+            String epConf = ConfigHandling.getConfiguration(configIdentifier);
             epConf = JsonUtil.ChangeTagConfiguration(epConf, tag_to_update, endpointLevelValue);
             
             //Prepare for verification
@@ -102,7 +104,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
             //agent2 expects to get the customer conf
             sendCheckUpdatesAndGetConfAndVerify(simulatedAgent2, simulatedAgentName2, customerConfigSent, CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName());
 	        
-	        JLog.logger.info("StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration completed.");
+	        JLog.logger.info("Finished StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration successfully.");
 
         } catch (Exception e) {
             org.testng.Assert.fail("StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration", e);

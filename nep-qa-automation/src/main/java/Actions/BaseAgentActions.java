@@ -59,23 +59,43 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	 * @param epServiceTimeout
 	 * @param dbJsonToShowActiveTimeout
 	 */
-	public void reinstallEndpoint(int installationTimeout, int epServiceTimeout, int dbJsonToShowActiveTimeout){
+	public void reinstallEndpoint(int installationTimeout, int epServiceTimeout){
 
 	    try {
 
             uninstallEndpoint(installationTimeout);
             copyInstaller();
-            appendToHostsFile();
-            installEndpoint(installationTimeout);
-            stopEPService(epServiceTimeout);
-            addCaCertificate();
-            startEPService(epServiceTimeout);
+            if (GlobalTools.isLennyEnv()) {
+            	appendToHostsFile();
+            }
+            installEndpoint(installationTimeout, epServiceTimeout);
         }
 	    catch (Exception e) {
             org.testng.Assert.fail("Reinstall endpoint failed " + "\n" + e.toString());
-    }
+	    }
 
-}
+	}
+	
+	/**
+	 * Installs the endpoint w/o uninstalling it first. 
+	 * In addition, it copies the CA certificate in case this is Lenny env
+	 */
+	public void installEndpoint(int installationTimeout, int epServiceTimeout) {
+
+	    try {
+
+            installEndpoint(installationTimeout);
+            if (GlobalTools.isLennyEnv()) {
+            	stopEPService(epServiceTimeout);
+            	addCaCertificate();
+            	startEPService(epServiceTimeout);
+            }
+        }
+	    catch (Exception e) {
+            org.testng.Assert.fail("Reinstall endpoint failed " + "\n" + e.toString());
+	    }
+
+	}
 		
 	//Waits until check updates will run, and uninstall will be done as a result
     public void checkDeleted(int timeout) {
@@ -171,6 +191,11 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         String pathToEPHostsFile = null;
 
         try {
+        	if (!GlobalTools.isLennyEnv()) {
+        		JLog.logger.warn("appendToHostsFile: not Lenny env, skipping");
+        		return;
+        	}
+        	
             String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
             String localHostsCopy = masterDownloadDirectory + "/" + "HostsCopy";
 

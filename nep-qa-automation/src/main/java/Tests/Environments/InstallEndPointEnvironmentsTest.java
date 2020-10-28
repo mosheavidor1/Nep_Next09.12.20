@@ -21,13 +21,12 @@ public class InstallEndPointEnvironmentsTest extends RecordedTest {
     @Test(groups = { "InstallEP" } )
     public void InstallTest () {
     	
-    	JLog.logger.info("Starting InstallEndPointEnvironmentsTest::InstallTest ...");
+    	JLog.logger.info("Starting InstallEndPointEnvironmentsTest::InstallTest for {} agent", data.get("EP_Type_1"));
     	
         agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-        agent.uninstallEndpoint(Integer.parseInt(data.get("Installation timeout")));
-        agent.copyInstaller();
-        agent.installEndpoint(Integer.parseInt(data.get("Installation timeout")));
-
+        agent.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")));
+        
+        JLog.logger.info("Finished InstallEndPointEnvironmentsTest::InstallTest");
     }
 
     @AfterMethod

@@ -187,14 +187,7 @@ public class InitAndCleanup extends GenericTest {
 
         }
     }
-
-	private static String getLocalp12Name(String customerId) {
-		return "/endpoint-111-" + customerId + ".111.p12";
-	}
-	private static String getLocalCaName() {
-		return "ca.jks";
-	}
-
+	
     @AfterMethod
     public void Close(){
     	if (agentActions!=null) {

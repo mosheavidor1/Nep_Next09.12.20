@@ -68,7 +68,7 @@ public class Excel  {
 
 			int numOfRows = handler.xmlRowList.size();
 			if (numOfRows < 2){
-				JLog.logger.error("Could not get valid data from sheet: " + sheetName + " Number of valid rows found: " + numOfRows);
+				JLog.logger.error("Could not get valid data from sheet: {}. Number of valid rows found: {}", sheetName, numOfRows);
 				//org.testng.Assert.fail("Could not get valid data from sheet: " + sheetName + " Number of valid rows found: " + numOfRows);
 			}
 			ArrayList<HashMap<String, String>> testData = new ArrayList<HashMap<String, String>>();
