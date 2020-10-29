@@ -31,7 +31,7 @@ public class GenericTest {
 
 	}
 	
-	public NepDbConnector getDbConnector() {
+	public static NepDbConnector getDbConnector() {
 		if (dbConnector == null) {
 			dbConnector = new NepDbConnector(general.get("DB URL"), general.get("DB user"), general.get("DB password"));
 		}

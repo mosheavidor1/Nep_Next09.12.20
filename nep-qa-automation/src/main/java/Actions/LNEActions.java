@@ -92,12 +92,12 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
     }
 
     public enum CentcomMethods{
-        REGISTER("registerEndpoint"),
+        REGISTER("REGISTER"),
         REQUEST_UPGRADE("requestUpgrade"),
         UPDATE_ENDPOINT("updateEndpoint"),
         REVOKE_ENDPOINT("revokeEndpoint"),
         RENAME_ENDPOINT("renameEndpoint"),
-        UPDATE_ENDPOINT_STATE("updateEndpointState");
+        UPDATE_ENDPOINT_STATE("UPDATE_STATE");
 
         private String methodName;
 

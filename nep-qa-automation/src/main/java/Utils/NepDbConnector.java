@@ -26,13 +26,17 @@ public class NepDbConnector {
 	public static final String RESET_WINDOWS_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'win_binary_update'";
 	public static final String RESET_CENTOS_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'centos_binary_update'";
 	public static final String RESET_BIN_VER_EP_REQ = "update endpoint_data set bin_ver_ep_request=bin_version";
-	
+	public static final String VERIFY_CENTCOM_CALLS = "select id from centcom_calls where type = ? and plain_data like ? and plain_data like ? and plain_data like ? and updated_on > ? ";
+	public static final String GET_DB_TIMESTAMP = "SELECT CURRENT_TIMESTAMP()";
+
 	public static PreparedStatement selectUuidStmt;
 	public static PreparedStatement getEpErrorStmt;
 	public static PreparedStatement resetCentosUpdateVerStmt;
 	public static PreparedStatement resetWinUpdateVerStmt;
 	public static PreparedStatement resetEpBinVerEpReqStmt;
-	
+	public static PreparedStatement verifyCentComCalls;
+	public static PreparedStatement getDbTimestamp;
+
 	public NepDbConnector(String url, String username, String password) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");  
@@ -49,6 +53,8 @@ public class NepDbConnector {
 			resetCentosUpdateVerStmt = conn.prepareStatement(RESET_CENTOS_UPDATE_VER);
 			resetWinUpdateVerStmt = conn.prepareStatement(RESET_WINDOWS_UPDATE_VER);
 			resetEpBinVerEpReqStmt = conn.prepareStatement(RESET_BIN_VER_EP_REQ);
+			verifyCentComCalls = conn.prepareStatement(VERIFY_CENTCOM_CALLS);
+			getDbTimestamp = conn.prepareStatement(GET_DB_TIMESTAMP);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException("Failed to connect to Nep DB", ex);
@@ -128,5 +134,42 @@ public class NepDbConnector {
 			org.testng.Assert.fail("Failed to clean endpoints bin_ver_ep_request value", ex);
 		}
 	}
+
+	public ResultSet getCentComCallByType(String centComCall, String epName, String endpointIP, String customerID, String timestamp) {
+		try {
+			verifyCentComCalls.setString(1, centComCall);
+			epName = "%name=" + epName + ",%";
+			verifyCentComCalls.setString(2, epName);
+			customerID = "%customerId=" + customerID + "%";
+			verifyCentComCalls.setString(3, customerID);
+			endpointIP = "%Ip=" + endpointIP + ",%";
+			verifyCentComCalls.setString(4, endpointIP);
+			verifyCentComCalls.setString(5, timestamp);
+			ResultSet rs = verifyCentComCalls.executeQuery();
+			return rs;
+		} catch (Exception ex) {
+			String message = "Could not verify CentCom call: " + centComCall + " Endpoint name: " + epName + " Customer id: " + customerID + " after timestamp: " + timestamp + "\n" + ex.toString();
+			org.testng.Assert.fail(message);
+			return null;
+		}
+	}
+
+
+	public String GetDbCurrentTimestamp() {
+		try {
+			ResultSet rs = getDbTimestamp.executeQuery();
+			if (!rs.next()) {
+				return null;
+			}
+			return rs.getString(1);
+
+		} catch (Exception ex) {
+			String message = "Could not get DB current time stamp. Query: " + getDbTimestamp + "\n" + ex.toString();
+			org.testng.Assert.fail(message);
+			return null;
+
+		}
+	}
+
 
 }
