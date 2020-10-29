@@ -1,11 +1,13 @@
 package Utils;
 
+import Utils.Logs.JLog;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 public class TestFiles {
@@ -79,22 +81,21 @@ public class TestFiles {
 
     }
 
-
     public static void Copy(String source, String destination){
         try {
             File from = new File(source);
             File to = new File(destination);
-            Files.copy(from.toPath(),to.toPath());
+            Files.copy(from.toPath(),to.toPath(), StandardCopyOption.REPLACE_EXISTING);
             if(!to.exists())
                 org.testng.Assert.fail("Could not copy file from:" + source + "  to: " + destination);
 
         }
         catch (Exception e){
+            JLog.logger.error("Could not copy file from:" + source + "  to: " + destination + "\n" + e.toString());
             org.testng.Assert.fail("Could not copy file from:" + source + "  to: " + destination + "\n" + e.toString());
         }
 
     }
-
 
     public static boolean Exists(String path) {
         File file = new File(path);
@@ -171,5 +172,32 @@ public class TestFiles {
         }
 
     }
+
+    public static boolean CheckIfLineExists(String path, String ifContainThisStringCommentLine , char commentSign)  {
+        BufferedReader reader=null;
+        try {
+            reader = new BufferedReader(new FileReader(path));
+            String currentLine;
+
+            boolean found =false;
+            while ((currentLine = reader.readLine()) != null) {
+                if (currentLine.contains(ifContainThisStringCommentLine)) {
+                    if (currentLine.length() > 0 && currentLine.trim().charAt(0) != commentSign) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            reader.close();
+            return found;
+
+        }
+        catch (Exception e){
+            org.testng.Assert.fail("Could not check if line exists at the following file: " + path + "\n" + e.toString());
+            return false;
+        }
+
+    }
+
 
 }

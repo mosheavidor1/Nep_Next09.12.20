@@ -1,5 +1,6 @@
 package Actions;
 
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 import Utils.TestFiles;
@@ -176,6 +177,52 @@ public class ManagerActions {
             org.testng.Assert.fail("Could not create test download folder and clean it" + "\n" + e.toString());
 
         }
+    }
+
+    public static void appendToHostsFile () {
+
+        String pathToEPHostsFile = null;
+
+        try {
+            if (!GlobalTools.isLennyEnv()) {
+                JLog.logger.warn("appendToHostsFile: not Lenny env, skipping");
+                return;
+            }
+
+            String masterDownloadDirectory = PropertiesFile.getManagerDownloadFolder();
+            String localHostsCopy = masterDownloadDirectory + "/" + "HostsCopy";
+
+            //get manager hosts file location according to OS
+            if(SystemUtils.IS_OS_WINDOWS) {
+                pathToEPHostsFile = WinAgentActions.windowsHostsFile;
+                if (pathToEPHostsFile.charAt(0) == '/') {
+                    pathToEPHostsFile = pathToEPHostsFile.substring(1);
+                }
+            }
+            else {
+                pathToEPHostsFile = LinuxAgentActions.linuxHostsFile;
+            }
+
+            String toAppend = GlobalTools.getClusterToTest() + " " + BaseAgentActions.hostsFileRedirection;
+
+            //if the line exists do nothing
+            if ( TestFiles.CheckIfLineExists(pathToEPHostsFile, toAppend, BaseAgentActions.hostsFileCommentChar) ) {
+                return;
+            }
+            JLog.logger.warn("Changing Manager(Where Java is running) hosts file redirection. This operation requires administrator privileges. If copy hosts file fail add this line to hosts file: " + toAppend);
+
+
+            TestFiles.Copy(pathToEPHostsFile,localHostsCopy);
+            TestFiles.RemoveLines(localHostsCopy, BaseAgentActions.hostsFileRedirection, BaseAgentActions.hostsFileCommentChar);
+
+            TestFiles.AppendToFile(localHostsCopy, toAppend, true);
+            TestFiles.Copy(localHostsCopy,pathToEPHostsFile);
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not change test manager hosts file: " + pathToEPHostsFile  + "\n" + e.toString());
+        }
+
     }
 
 

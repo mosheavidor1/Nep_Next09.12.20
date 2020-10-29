@@ -3,6 +3,7 @@ package Utils.Data;
 import java.util.Arrays;
 
 import Actions.LNEActions;
+import Actions.ManagerActions;
 import Tests.GenericTest;
 
 public class GlobalTools {
@@ -32,6 +33,7 @@ public class GlobalTools {
 		if (lennyActions != null) {
 			return lennyActions;
 		}
+		ManagerActions.appendToHostsFile();
 		lennyActions = new LNEActions(GlobalTools.getClusterToTest(), GenericTest.getGeneralData().get("LNE User Name"), 
 				GenericTest.getGeneralData().get("LNE Password"), Integer.parseInt(GenericTest.getGeneralData().get("LNE SSH port")));
 		return lennyActions;
