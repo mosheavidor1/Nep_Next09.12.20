@@ -1,5 +1,6 @@
 package Pages.Portal;
 
+import Applications.SeleniumBrowser;
 import Pages.GenericPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -47,14 +48,33 @@ public class CentComSearchDetailsPage extends GenericPage {
 
     private static final String rowXpath ="//twa-table-row[not(contains(@class,'hidden'))]";
     public static final By rowBy = By.xpath(rowXpath);
-    private final String hostNameRowXpath = rowXpath + "//div[contains(text(),'XXX')]";
+    private static final String hostNameRowXpath = rowXpath + "//div[normalize-space(text())='XXX']";
 
-    public By GetHostNameRowBy(String hostName){
+    public static By GetHostNameRowBy(String hostName){
         String xpath = hostNameRowXpath.replace("XXX",hostName);
         By host = By.xpath(xpath);
         return host;
-
     }
+
+    public static WebElement GetHostNameRowWebElement(String hostName){
+        WebElement epRow = SeleniumBrowser.GetDriver().findElement(GetHostNameRowBy(hostName));
+        return epRow;
+    }
+
+    private static final String actionsButtonXpath ="//twa-menu[@twatooltip='Actions']";
+    @FindBy(how= How.XPATH,using=actionsButtonXpath)
+    public WebElement actionButton_element;
+
+    private static final String deleteEndpointsXpath ="//span[contains(text(),'Delete Endpoint')]";
+    public static final By deleteEndpointsBy = By.xpath(deleteEndpointsXpath);
+    @FindBy(how= How.XPATH,using=deleteEndpointsXpath)
+    public WebElement deleteEndpointsMenu_element;
+
+    private static final String continueButtonConfirmDeleteXpath ="//div[@class='pane modal visible']//twa-button[@aria-label='Continue']";
+    public static final By continueButtonConfirmDeleteBy = By.xpath(continueButtonConfirmDeleteXpath);
+    @FindBy(how= How.XPATH,using=continueButtonConfirmDeleteXpath)
+    public WebElement continueButtonConfirmDelete_element;
+
 
 
     /*for future implantation

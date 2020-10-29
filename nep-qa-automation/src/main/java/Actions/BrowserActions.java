@@ -340,10 +340,12 @@ public class BrowserActions extends ManagerActions {
             detailsPage.WaitUntilPageLoad();
             detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
             detailsPage.WaitUntilObjectClickable(detailsPage.rowBy);
+            By epLine = detailsPage.GetHostNameRowBy(hostname);
+            detailsPage.WaitUntilObjectClickable(epLine);
 
-            Thread.sleep(5000); //after all 3 wait above needs some more - to be investigated
+            Thread.sleep(3000); //after all 4 wait above needs some more - to be investigated
 
-            if (!detailsPage.IsElementExist(detailsPage.GetHostNameRowBy(hostname))) {
+            if (!detailsPage.IsElementExist(epLine)) {
                 org.testng.Assert.fail("Could not find hostname: " + hostname);
             }
 
@@ -570,6 +572,62 @@ public class BrowserActions extends ManagerActions {
 
     }
 
+
+    public void DeleteEpFromCentCom(String hostname) {
+        try {
+            CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
+
+            detailsPage.binocularsButton_element.click();
+
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectClickable(detailsPage.valueToSearchBy);
+            detailsPage.valueToSearch_element.clear();
+            detailsPage.valueToSearch_element.sendKeys(hostname + "\n");
+
+            detailsPage.refreshButton_element.click();
+
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
+            detailsPage.WaitUntilObjectClickable(detailsPage.rowBy);
+            By epLineBy = detailsPage.GetHostNameRowBy(hostname);
+
+            Thread.sleep(2000); //after all 3 wait above needs some more - to be investigated
+
+            if (!detailsPage.IsElementExist(epLineBy)) {
+                JLog.logger.warn("Could not find the following EP at CentCom: "+ hostname);
+                return;
+            }
+
+            WebElement epLineElement = detailsPage.GetHostNameRowWebElement(hostname);
+            epLineElement.click();
+
+            detailsPage.actionButton_element.click();
+
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectClickable(detailsPage.deleteEndpointsBy);
+
+            detailsPage.deleteEndpointsMenu_element.click();
+
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectClickable(detailsPage.continueButtonConfirmDeleteBy);
+
+            detailsPage.continueButtonConfirmDelete_element.click();
+
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectDisappear(epLineBy);
+
+            if (detailsPage.IsElementExist(epLineBy)) {
+                org.testng.Assert.fail("After deleting endpoint from CentCom the ep still appears at CentCom EP name: " + hostname );
+            }
+
+            JLog.logger.info("Successfully deleted endpoint: " + hostname);
+
+        }
+        catch (Exception e) {
+            org.testng.Assert.fail("Could not delete from CentCom endpoint: " + hostname +  "\n" + e.toString());
+        }
+
+    }
 
 
 
