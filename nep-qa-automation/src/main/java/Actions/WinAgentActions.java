@@ -16,7 +16,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     public static final String windowsInstallationFile = ManagerActions.windowsInstallationFile;
     public static final String windowsHostsFile = "/C:/Windows/System32/drivers/etc/hosts";
     public static final String exexInstPath = "C:\\Program Files\\Trustwave\\NEPAgent";
-    public static final String dbJsonPath = "C:/ProgramData/Trustwave/NEPAgent/db.json";
+    public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
     public static final String versionJsonWindowsPath = "/C:/Program Files/Trustwave/NEPAgent/version.json";
     private static final String winLog = "C:\\ProgramData\\Trustwave\\NEPAgent\\logs\\NewAgent_0.log";
     private static final String command_winSIEM = "type " + winLog + " | find /n \".zip was sent successfully\"";

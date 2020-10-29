@@ -5,8 +5,10 @@ import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.ConfigHandling;
 import Utils.JsonUtil;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
-import org.testng.annotations.AfterTest;
+
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -35,9 +37,7 @@ public class ClusterConfiguration extends GenericTest {
     public void setClusterConfiguration() {
         JLog.logger.info("Starting setClusterConfiguration test ...");
 
-        String confJson = ConfigHandling.getDefaultConfiguration();
-
-        //delete simulated agents
+        String confJson = ConfigHandling.getDefaultConfiguration();       
         Map<String, List<String>> assignments = new HashMap<>();
 
         simulatedAgentInCluster = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
@@ -45,8 +45,6 @@ public class ClusterConfiguration extends GenericTest {
 
         simulatedAgentNotInCluster = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
         simulatedAgentNotInCluster.register(customerId, "1.2.3.5", ep2Name, "85-7B-EB-21-99-99", "Windows 10");
-//        JLog.logger.info("sleeping 60 seconds until finish registering");
-//        Thread.sleep(60000);
 
         DsMgmtActions.setClusterConfig(customerId, clusterName, confJson);
 
@@ -66,8 +64,8 @@ public class ClusterConfiguration extends GenericTest {
         DsMgmtActions.setClusterConfig(customerId, clusterName, updatedClusterConfig);
 
 
-        String actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 1, 0, "1.1.1", customerId);
-        String actionAgentNotInCluster = simulatedAgentNotInCluster.sendCheckUpdatesAndGetAction(simulatedAgentNotInCluster.getName(), "9.9.9.999", 1, 0, "1.1.1", customerId);
+        String actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), GlobalTools.currentBinaryBuild, 1, 0, GlobalTools.currentSchemaVersion, customerId);
+        String actionAgentNotInCluster = simulatedAgentNotInCluster.sendCheckUpdatesAndGetAction(simulatedAgentNotInCluster.getName(), GlobalTools.currentBinaryBuild, 1, 0, GlobalTools.currentSchemaVersion, customerId);
 
 
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"), "setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update, action: " + actionAgentInCluster);
@@ -93,7 +91,7 @@ public class ClusterConfiguration extends GenericTest {
         assignments.put(clusterName, new LinkedList<>());
         DsMgmtActions.updateClusterMap(Long.valueOf(customerId), assignments);
 
-        actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), "9.9.9.999", 0, 0, "1.1.1", customerId);
+        actionAgentInCluster = simulatedAgentInCluster.sendCheckUpdatesAndGetAction(simulatedAgentInCluster.getName(), GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
         org.testng.Assert.assertTrue(actionAgentInCluster.contains("switch"), "setClusterConfiguration test failed, ep added to cluster should have received configuration switch when checking update");
 
 
@@ -110,14 +108,14 @@ public class ClusterConfiguration extends GenericTest {
 }
 
 
-    @AfterTest
+    @AfterMethod
     public void close(){
 
         //delete if exist and clean cluster
     	DsMgmtActions.updateClusterMap(Long.valueOf(customerId), new HashMap<>());
     	DsMgmtActions.deleteWithoutVerify(customerId, ep1Name);
-        simulatedAgentInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
+        simulatedAgentInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentInCluster.getName(), GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
         DsMgmtActions.deleteWithoutVerify(customerId, ep2Name);
-        simulatedAgentNotInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentNotInCluster.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
+        simulatedAgentNotInCluster.sendCheckUpdatesAndGetResponse(simulatedAgentNotInCluster.getName(), GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
     }
 }

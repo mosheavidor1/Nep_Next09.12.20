@@ -12,12 +12,12 @@
                 <group  name= "DownloadInstallers" depends-on="CreateNewInstallers" ></group>
                 <group  name= "InstallEP" depends-on="DownloadInstallers" ></group>
                 <group  name= "verify" depends-on="InstallEP" ></group>
-                <group name= "logs" depends-on= "verify" ></group>
-                <group  name= "ChangeCustomerConfAndVerify" depends-on="verify" ></group>
-                <group  name= "ClusterConfiguration" depends-on="verify" ></group>
+                <group name= "logs" depends-on= "InstallEP" ></group>
+                <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
+                <group  name= "ClusterConfiguration" depends-on="InstallEP" ></group>
                 <group  name= "StandaloneEPconfiguration" depends-on="InitAndCleanup" ></group>
-                <group  name= "RevokeEndpoint" depends-on="verify" ></group>
-                <group  name= "DeleteEndpoint" depends-on="verify" ></group>
+                <group  name= "RevokeEndpoint" depends-on="InstallEP" ></group>
+                <group  name= "DeleteEndpoint" depends-on="InstallEP" ></group>
                 
             </dependencies>
         </groups>
@@ -27,9 +27,9 @@
             <class name = "Tests.Environments.CreateNewInstallers" />
             <class name = "Tests.Environments.DownloadInstallers" />
             <class name = "Tests.Environments.InstallEndPointEnvironmentsTest" />
-            <class name = "Tests.Environments.VerifyEndPointOkAtPortalTest" />
+           <!-- <class name = "Tests.Environments.VerifyEndPointOkAtPortalTest" />-->
            <!-- <class name = "Tests.Environments.ClientLogToPortalTest" />-->
-            <class name = "Tests.LNE.ChangeCustomerConfAndVerify" />            	
+             <class name = "Tests.LNE.ChangeCustomerConfAndVerify" />            	
     		<class name = "Tests.LNE.ClusterConfiguration" />         		
       		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
            	<class name = "Tests.LNE.RevokeEndpoint" />

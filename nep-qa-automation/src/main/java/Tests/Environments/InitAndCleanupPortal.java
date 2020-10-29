@@ -6,6 +6,7 @@ import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.ConfigHandling;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 
 import java.time.Instant;
@@ -73,7 +74,7 @@ public class InitAndCleanupPortal extends GenericTest {
         }
         
         
-        simulatedAgent.sendCheckUpdatesWithoutVerify(uuid, epName,"1.2.0.100", 0, 0, "1.1.1", customerId);
+        simulatedAgent.sendCheckUpdatesWithoutVerify(uuid, epName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
         
         JLog.logger.info("Finished Cleanup successfully");
         

@@ -103,7 +103,8 @@ public class InitAndCleanup extends GenericTest {
         }
         
         
-        simulatedAgent.sendCheckUpdatesWithoutVerify(uuid, epName,"1.2.0.100", 0, 0, "1.1.1", customerId);
+        simulatedAgent.sendCheckUpdatesWithoutVerify(uuid, epName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
+        
         
         JLog.logger.info("Finished Cleanup successfully");
         
@@ -116,7 +117,7 @@ public class InitAndCleanup extends GenericTest {
         
         simulatedAgentForConnectivityTest = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
         simulatedAgentForConnectivityTest.register(customerId, "1.2.3.4", epNameForConnectivityTest, "66-7B-EB-71-99-44", "Windows 10");
-        simulatedAgentForConnectivityTest.sendCheckUpdatesAndGetAction(epNameForConnectivityTest, "9.9.9.999", 1, 0, "1.1.1", customerId);
+        simulatedAgentForConnectivityTest.sendCheckUpdatesAndGetAction(epNameForConnectivityTest, GlobalTools.currentBinaryBuild, 1, 0, GlobalTools.currentSchemaVersion, customerId);
         whenInit = Instant.now();
         lneActions.verifyCallToUpdateEpStateCentcomCommand(LNEActions.CentcomMethods.UPDATE_ENDPOINT_STATE, customerId, epNameForConnectivityTest,"OK");
         JLog.logger.info("registered ep {} and verified status, status OK ",epNameForConnectivityTest);

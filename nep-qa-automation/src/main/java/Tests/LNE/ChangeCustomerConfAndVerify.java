@@ -5,6 +5,7 @@ import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.ConfigHandling;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 
 import org.json.JSONObject;
@@ -47,7 +48,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
 
         simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
         simulatedAgent.register(customerId, "1.2.3.4", "epForTest", "84-7B-EB-21","Windows 10");
-        String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),"1.2.0.100", 0, 0, "1.1.1", customerId);
+        String action = simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgent.getName(),GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
         
         org.testng.Assert.assertTrue(action.contains(CheckUpdatesActions.CONFIGURATION_UPDATE.getActionName()), "ChangeCustomerConfAndVerify: simulated agent was expected to get conf change, but got a different action: " + action);
         
@@ -66,7 +67,8 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
     @AfterMethod
     public void Close(){
         DsMgmtActions.deleteWithoutVerify(customerId, "epForTest");
-        simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgent.getName(), "1.2.0.100", 0, 0, "1.1.1", customerId);
+        simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgent.getName(), GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
+        
     }
 
 }

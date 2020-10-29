@@ -6,6 +6,7 @@ import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.ConfigHandling;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Factory;
@@ -18,7 +19,6 @@ public class DeleteEndpoint extends GenericTest {
     private SimulatedAgentActions simulatedAgent;
     private String SimulatedAgentName = "SimulatedAgentForDeleteTest";
     private String SimulatedAgentIp = "1.2.3.4";
-    private String SimulatedAgentBinVer = "1.1.1";
     private String customerId;
 
     @Factory(dataProvider = "getData")
@@ -49,18 +49,15 @@ public class DeleteEndpoint extends GenericTest {
             agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
 
             JLog.logger.info("Going to make sure that the simulated agent keeps getting updates and not 'uninstall'");
-            String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
+            String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, GlobalTools.currentBinaryBuild, 3, 0, GlobalTools.currentSchemaVersion, customerId);
+            
             org.testng.Assert.assertNotEquals(action, "uninstall", "check update result assertion failure.");
 
             JLog.logger.info("Going to install the origin agent back and make sure it gets a new uuid");
             agent.installEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")));
             String newEndpointId = agent.getEpIdFromDbJson();
             org.testng.Assert.assertNotEquals(originalEndpointId, newEndpointId, "New uuid should not equal the one before deleting.");
-
-            JLog.logger.info("Going to remove the simulated agent");
-            DsMgmtActions.deleteWithoutVerify(customerId, SimulatedAgentName);
-            simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, SimulatedAgentBinVer, 3, 0, "1.1.2", customerId);
-
+            
             JLog.logger.info("Finished DeleteEndpoint successfully.");
 
         } catch (Exception e) {
@@ -74,6 +71,12 @@ public class DeleteEndpoint extends GenericTest {
         if(agent !=null){
             agent.close();
         }
+        if (simulatedAgent != null) {
+        	JLog.logger.info("Going to remove the simulated agent");
+        	DsMgmtActions.deleteWithoutVerify(customerId, SimulatedAgentName);
+        	simulatedAgent.sendCheckUpdatesAndGetResponse(SimulatedAgentName, GlobalTools.currentBinaryBuild, 3, 0, GlobalTools.currentSchemaVersion, customerId);
+        }
+
     }
 
 

@@ -224,9 +224,9 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     public String getEpIdFromDbJson() {
 
         String endpointId = "";
+        String dbJsonRemoteFile= getDbJsonPath();
 
         try {
-            String dbJsonRemoteFile = getDbJsonPath();
             if (connection.IsFileExists(dbJsonRemoteFile)) {
                 String dbJsonFileContent = connection.GetTextFromFile(dbJsonRemoteFile);
                 JLog.logger.debug("db.json content: " +dbJsonFileContent);
@@ -235,10 +235,12 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
                 endpointId = dbJson.getEndpointId();
                 JLog.logger.debug("Endpoint ID from db.json: " +endpointId);
 
+            } else {
+            	org.testng.Assert.fail("Could not find db.json file." + dbJsonRemoteFile);
             }
         }
         catch (Exception e) {
-            org.testng.Assert.fail("Could not get endpoint id from db.json file." + "\n" + e.toString(), e);
+            org.testng.Assert.fail("Could not get endpoint id from db.json file: " + "\n" + e.toString(), e );
         }
         return endpointId;
 

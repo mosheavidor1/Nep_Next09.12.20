@@ -51,7 +51,7 @@ public class VerifyEndpointConnectedStatus extends GenericTest {
         //delete if exist and clean cluster
         try {
             DsMgmtActions.deleteWithoutVerify(customerId, InitAndCleanup.epNameForConnectivityTest);
-            InitAndCleanup.simulatedAgentForConnectivityTest.sendCheckUpdatesAndGetResponse(InitAndCleanup.epNameForConnectivityTest, "1.2.0.100", 0, 0, "1.1.1", customerId);
+            InitAndCleanup.simulatedAgentForConnectivityTest.sendCheckUpdatesAndGetResponse(InitAndCleanup.epNameForConnectivityTest, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
 
         } catch (Exception e) {
 

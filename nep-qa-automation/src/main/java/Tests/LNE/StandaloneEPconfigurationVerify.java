@@ -7,6 +7,7 @@ import Actions.SimulatedAgentActions;
 import Tests.GenericTest;
 import Utils.ConfigHandling;
 import Utils.JsonUtil;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 
 import org.json.JSONObject;
@@ -114,7 +115,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     
     private void sendCheckUpdatesAndGetConfAndVerify(SimulatedAgentActions simAgent, String epName, JSONObject expectedConf, String expectedAction) {    	
     	
-    	String action = simAgent.sendCheckUpdatesAndGetAction(epName, "1.1.1", 0, 0, "1.1.1", customerId);
+    	String action = simAgent.sendCheckUpdatesAndGetAction(epName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
         org.testng.Assert.assertEquals(action, expectedAction, "check update result failure, got unexpected action: ");
         
         String receivedConf = simAgent.getConf(customerId);
@@ -136,7 +137,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     	if (simulatedAgent1 != null) {
     		DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgentName1);
     		
-    		String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, "1.2.0.100", 0, 0, "1.1.1", customerId);
+    		String action = simulatedAgent1.sendCheckUpdatesAndGetAction(simulatedAgentName1, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
         	org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
            
     	}
@@ -144,7 +145,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
     	if (simulatedAgent2 != null) {
     		DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgentName2);
     	
-    		String action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, "1.2.0.100", 0, 0, "1.1.1", customerId);
+    		String action = simulatedAgent2.sendCheckUpdatesAndGetAction(simulatedAgentName2, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
     		org.testng.Assert.assertEquals(action, CheckUpdatesActions.UNINSTALL.getActionName(), "check update result failure, got unexpected action: ");
     	}
         

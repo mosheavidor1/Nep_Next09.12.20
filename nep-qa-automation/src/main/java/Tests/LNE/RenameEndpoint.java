@@ -41,7 +41,7 @@ public class RenameEndpoint extends GenericTest {
             simulatedAgent.register(customerId, simulatedAgentIp1, simulatedAgentName, 
             		simulatedAgentMac1, simulatedAgentOs);
             
-            simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgentNewName, "1.3", 0, 0, "1.1.1", customerId);
+            simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgentNewName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
             
             GlobalTools.getLneActions().verifyCallToCentcom(CentcomMethods.RENAME_ENDPOINT, customerId, simulatedAgentName, simulatedAgentNewName);
             
@@ -62,7 +62,7 @@ public class RenameEndpoint extends GenericTest {
     	if (simulatedAgent != null) {
     		DsMgmtActions.deleteWithoutVerify(customerId, simulatedAgentNewName);
     		
-    		simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, "1.2.0.100", 0, 0, "1.1.1", customerId);
+    		simulatedAgent.sendCheckUpdatesAndGetAction(simulatedAgentName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
            
     	}
         
