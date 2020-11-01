@@ -1,7 +1,6 @@
 import java.time.LocalDateTime
 
 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
-//DISPLAY_VERSION = "${env.NEP_BRANCH == "next" ? "${BUILD_NUMBER}-${env.NEP_BRANCH}"  :  "${BUILD_NUMBER}"}"
 DISPLAY_VERSION =  "${BUILD_NUMBER}-${env.NEP_BRANCH}"
 
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
@@ -55,20 +54,9 @@ node(NODE_TO_RUN) {
         }
 
         stage('Run Tests and Prepare results') {
-            if (WAIT_FOR_EVENTS.isEmpty()) {
-                
-            }
-            else {
-                //JAVA_JAR_CMD = """
-                //  java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENV_NAME}" "WaitForEvents120" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
-                //""".trim()
-            }
             
-            // JAVA_JAR_CMD = """
-            //      java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENV_NAME}" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
-            //    """.trim()
-
             WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
+            
             JAVA_JAR_CMD = """
                 java -jar ${MODULE_ARTIFACT_DST} SmokeIntC.xml ${ENV_NAME} ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
             """.trim()
@@ -77,24 +65,7 @@ node(NODE_TO_RUN) {
 
             sh """
                 ${JAVA_JAR_CMD}
-               
             """
-            
-
-            // bat """
-            //     ${JAVA_JAR_CMD}
-            //      if ERRORLEVEL 1  set test_result=false
-
-            //      xcopy ${WORKSPACE}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K /Y
-            //      mkdir ${WORKSPACE}\\test-output\\tmp\\pics
-            //      xcopy ${WORKSPACE}\\test-output\\capture\\*.png ${WORKSPACE}\\test-output\\tmp\\pics\\  /O /X /E /H /K /Y
-
-            //      if "%test_result%" == "false" EXIT 1
-            // """
-        }
-
-        stage('Send Email') {
-            sendEmail("Success")
         }
     }
     catch (err) {
