@@ -47,7 +47,10 @@ public class RevokeEndpoint extends GenericTest {
 
             JLog.logger.info("Going to revoke the real agent and make sure the service is uninstalled");
             DsMgmtActions.revoke(customerId, agent.getEpName());
-            agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
+            boolean deleted = agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
+            if(!deleted){
+                org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still running.");
+            }
 
             JLog.logger.info("Going to make sure that the simulated agent keeps getting updates and not 'uninstall'");
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);

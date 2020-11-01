@@ -293,6 +293,9 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     }
 	
 	public String getClearFileCommand(String filename) {
+		if (filename.startsWith("/")) {
+			filename = filename.substring(1);
+		}
 		return "powershell \"Clear-Content " + filename + "\"";
 	}
 

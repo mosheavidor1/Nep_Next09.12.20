@@ -46,7 +46,10 @@ public class DeleteEndpoint extends GenericTest {
            
             JLog.logger.info("Going to delete the real agent and make sure the service is uninstalled");
             DsMgmtActions.deleteAndVerifyResponse(customerId, agent.getEpName());
-            agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
+            boolean deleted = agent.checkDeleted(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
+            if(!deleted){
+                org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still running.");
+            }
 
             JLog.logger.info("Going to make sure that the simulated agent keeps getting updates and not 'uninstall'");
             String action = simulatedAgent.sendCheckUpdatesAndGetAction(SimulatedAgentName, GlobalTools.currentBinaryBuild, 3, 0, GlobalTools.currentSchemaVersion, customerId);

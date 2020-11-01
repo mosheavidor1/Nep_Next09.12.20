@@ -18,13 +18,17 @@ public class InstallEndPointEnvironmentsTest extends RecordedTest {
         super(dataToSet);
     }
 
+    /**
+     * Install the service on agent. 
+     * Should run after InitAndCleanupPortal which make sure that service on agent is actually uninstalled 
+     */
     @Test(groups = { "InstallEP" } )
     public void InstallTest () {
     	
     	JLog.logger.info("Starting InstallEndPointEnvironmentsTest::InstallTest for {} agent", data.get("EP_Type_1"));
     	
         agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-        agent.reinstallEndpoint(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")));
+        agent.copyInstallerAndInstall(Integer.parseInt(getGeneralData().get("EP Installation timeout")), Integer.parseInt(getGeneralData().get("EP Service Timeout")));
         
         JLog.logger.info("Finished InstallEndPointEnvironmentsTest::InstallTest");
     }

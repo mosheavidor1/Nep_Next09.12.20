@@ -64,6 +64,18 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	    try {
 
             uninstallEndpoint(installationTimeout);
+            copyInstallerAndInstall(installationTimeout, epServiceTimeout);
+        }
+	    catch (Exception e) {
+            org.testng.Assert.fail("Reinstall endpoint failed " + "\n" + e.toString());
+	    }
+
+	}
+	
+	public void copyInstallerAndInstall(int installationTimeout, int epServiceTimeout){
+
+	    try {
+
             copyInstaller();
             if (GlobalTools.isLennyEnv()) {
             	appendToHostsFile();
@@ -71,7 +83,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
             installEndpoint(installationTimeout, epServiceTimeout);
         }
 	    catch (Exception e) {
-            org.testng.Assert.fail("Reinstall endpoint failed " + "\n" + e.toString());
+            org.testng.Assert.fail("copyInstallerAndInstall endpoint failed " + "\n" + e.toString());
 	    }
 
 	}
@@ -98,7 +110,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	}
 		
 	//Waits until check updates will run, and uninstall will be done as a result
-    public void checkDeleted(int timeout) {
+    public boolean checkDeleted(int timeout) {
 
         boolean deleted = false;
 
@@ -120,9 +132,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         	JLog.logger.info("Got interrupted exception");
         }
 
-        if(!deleted){
-            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still running.");
-        }
+        return deleted;
     }
 
     public void copyInstaller(){

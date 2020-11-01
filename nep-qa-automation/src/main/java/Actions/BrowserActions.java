@@ -572,8 +572,11 @@ public class BrowserActions extends ManagerActions {
 
     }
 
-
-    public void DeleteEpFromCentCom(String hostname) {
+    /**
+     * Delete the endpoint with name 'hostname' from Centcom UI
+     * Returns - true if an endpoint with this name was found, else otherwise 
+     */
+    public boolean DeleteEpFromCentCom(String hostname) {
         try {
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
 
@@ -595,7 +598,7 @@ public class BrowserActions extends ManagerActions {
 
             if (!detailsPage.IsElementExist(epLineBy)) {
                 JLog.logger.warn("Could not find the following EP at CentCom: "+ hostname);
-                return;
+                return false;
             }
 
             WebElement epLineElement = detailsPage.GetHostNameRowWebElement(hostname);
@@ -626,6 +629,7 @@ public class BrowserActions extends ManagerActions {
         catch (Exception e) {
             org.testng.Assert.fail("Could not delete from CentCom endpoint: " + hostname +  "\n" + e.toString());
         }
+        return true;
 
     }
 
