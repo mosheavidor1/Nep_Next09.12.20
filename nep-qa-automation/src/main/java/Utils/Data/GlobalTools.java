@@ -16,7 +16,7 @@ public class GlobalTools {
 	public static final String currentSchemaVersion = "1.1.1";
 	public static final String currentBinaryVersion = "1.3.0";
 	public static final String previousBinaryVersion = "1.2.0";
-	public static final String currentBinaryBuild = "1.3.0.30";
+	public static final String currentBinaryBuild = "1.3.0.100000";//Used by simulated agents so that they will behave as most updated
 
 	
 	public static final String [] environmentsNamesArray = {"qa","inc","stg","ams","apj","emea"};
