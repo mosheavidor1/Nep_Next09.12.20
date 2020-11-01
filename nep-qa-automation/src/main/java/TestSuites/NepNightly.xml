@@ -12,6 +12,7 @@
                 <group  name= "Binary" depends-on="InstallEP" ></group>
                 <group  name= "VerifyEndpointConnectedStatus" depends-on="Binary" ></group><!-- This test should run after BinaryUpdate -->
                 <group  name= "SchemaVersionsAndUpgrade" depends-on="InstallEP" ></group>
+                <group  name= "SimulateLFMandVerify" depends-on="InstallEP" ></group>
 
             </dependencies>
         </groups>
@@ -23,6 +24,7 @@
            <class name = "Tests.LNE.BinaryUpdate" />
           <!--  <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />-->
             <class name = "Tests.LNE.VerifyEndpointConnectedStatus" />
+            <class name = "Tests.LNE.SimulateLFMandVerify" /> 
         </classes>
     </test>
 

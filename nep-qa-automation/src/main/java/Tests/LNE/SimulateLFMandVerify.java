@@ -49,6 +49,7 @@ public class SimulateLFMandVerify extends GenericTest {
         destLogFiles = null;
     }
 
+    
     @Test(groups = { "SimulateLFMandVerify" } )
     public void SimulateLFMandVerifyDelivery()  {
     	try {
@@ -65,7 +66,7 @@ public class SimulateLFMandVerify extends GenericTest {
 		    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getDefaultConfiguration());
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
 		    
-		    resetAgent(agentType);
+		    resetAgentAndPrepareDirs(agentType);
 		    
 		    //Read configuration and update the host tags
 		    String confJsonName = data.get("Configuration Name");
@@ -77,7 +78,7 @@ public class SimulateLFMandVerify extends GenericTest {
 		    //TODO: compare json cofniguration on agent
 		
 		    
-		    Thread.sleep(30000);//30 seconds
+		    Thread.sleep(60000);//60 seconds
 		    createLogs();
 		    Thread.sleep(schedule_report_timeout);
 	
@@ -101,19 +102,19 @@ public class SimulateLFMandVerify extends GenericTest {
      * This function resets the agent between runs; cleans log files and monitored folders.
      * For windows we must stop the agent in order to clear the db.json
      */
-    private void resetAgent(String agentType) {
+    private void resetAgentAndPrepareDirs(String agentType) {
     	int timeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
     	
-    	if (agentType.equals("win")){
+    	//if (agentType.equals("win")){
     		agent.stopEPService(timeout);
-    	}
+    //	}
 	    prepareDirectories();
 	    agent.clearFile(agent.getDbJsonPath());
 	    agent.clearFile(agent.getAgentLogPath()); 
 	    
-	    if (agentType.equals("win")){
+	  //  if (agentType.equals("win")){
 	    	agent.startEPService(timeout);
-	    }
+	   // }
     }
 
      private void prepareDirectories() {
