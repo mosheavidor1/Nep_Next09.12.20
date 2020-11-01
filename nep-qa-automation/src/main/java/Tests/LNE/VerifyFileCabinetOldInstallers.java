@@ -2,6 +2,7 @@ package Tests.LNE;
 
 import Actions.LNEActions;
 import Tests.GenericTest;
+import Utils.ConfigHandling;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
@@ -26,7 +27,8 @@ public class VerifyFileCabinetOldInstallers extends GenericTest {
     	
     	JLog.logger.info("Starting verifyFileCabinetOldInstallers test ...");
 
-        String confJson =data.get("Settings Json");
+        String confJson = ConfigHandling.getDefaultConfiguration();
+
 
         //retrieve doc ids of installers
         Map<String, String> docIds = lennyActions.getInstallersDocIds(Long.valueOf(customerId), Integer.parseInt(data.get("Download timeout")));
