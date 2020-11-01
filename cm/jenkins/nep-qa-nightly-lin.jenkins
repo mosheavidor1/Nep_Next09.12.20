@@ -34,7 +34,9 @@ node(NODE_TO_RUN) {
             
             // print params:
             echo """
-            QA-AUTOMATION_VERSION :  ${QA-AUTOMATION_VERSION}
+            PROPERTIES_FILE_PATH      = ${PROPERTIES_FILE_PATH}
+            NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}
+
             ENV_NAME:             :  ${ENV_NAME}
             NEP_BRANCH            :  ${NEP_BRANCH}
             EMAIL_LIST            :  ${EMAIL_LIST}
