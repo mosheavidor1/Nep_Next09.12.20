@@ -58,12 +58,12 @@ node(NODE_TO_RUN) {
             }
             else {
                 //JAVA_JAR_CMD = """
-                //  java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENVIRONMENT_NAME}" "WaitForEvents120" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
+                //  java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENV_NAME}" "WaitForEvents120" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
                 //""".trim()
             }
             
             // JAVA_JAR_CMD = """
-            //      java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENVIRONMENT_NAME}" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
+            //      java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENV_NAME}" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
             //    """.trim()
 
             WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
@@ -113,7 +113,7 @@ def sendEmail(status) {
     // emailext attachmentsPattern: "test-output/*", 
     emailext attachmentsPattern: "test-output/emailable-report.html, test-output/capture/*",
         body: '${SCRIPT, template="groovy-html.template"}, ${FILE,path="test-output/emailable-report.html"}',
-        subject: "${env.JOB_NAME} (env:${ENVIRONMENT_NAME})- TEST # ${DISPLAY_VERSION} - " + status,
+        subject: "${env.JOB_NAME} (env:${ENV_NAME})- TEST # ${DISPLAY_VERSION} - " + status,
         mimeType: 'text/html',
         from: 'svc_wafbuild@trustwave.com',
         to: "${EMAIL_LIST}"
