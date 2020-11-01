@@ -14,9 +14,9 @@ public class GlobalTools {
 	private static Boolean productionEnv;
 	
 	public static final String currentSchemaVersion = "1.1.1";
-	public static final String currentBinaryVersion = "1.3.0";
-	public static final String previousBinaryVersion = "1.2.0";
-	public static final String currentBinaryBuild = "1.2.0.50";
+	public static final String currentBinaryVersion = "1.4.0";
+	public static final String previousBinaryVersion = "1.3.0";
+	public static final String currentBinaryBuild = "1.4.0.20";
 	
 	
 	public static final String [] environmentsNamesArray = {"qa","inc","stg","ams","apj","emea"};
