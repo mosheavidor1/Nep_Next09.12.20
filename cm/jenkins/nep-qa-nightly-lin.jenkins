@@ -111,8 +111,7 @@ node(NODE_TO_RUN) {
 
 def sendEmail(status) {
     // emailext attachmentsPattern: "test-output/*", 
-    emailext
-        attachmentsPattern: "test-output/emailable-report.html, test-output/capture/*",
+    emailext attachmentsPattern: "test-output/emailable-report.html, test-output/capture/*",
         body: '${SCRIPT, template="groovy-html.template"}, ${FILE,path="test-output/emailable-report.html"}',
         subject: "${env.JOB_NAME} (env:${ENVIRONMENT_NAME})- TEST # ${DISPLAY_VERSION} - " + status,
         mimeType: 'text/html',
