@@ -24,7 +24,6 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
     
     private SimulatedAgentActions simulatedAgent;
     
-    private static boolean confWasSet = false;
 
     @Factory(dataProvider = "getData")
     public ChangeCustomerConfAndVerify(Object dataToSet) {
@@ -37,13 +36,9 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
 
         JLog.logger.info("Starting ChangeCustomerConfAndVerify...");
        
-        if (!confWasSet) { //Configuration will be set only once, and not for every EP
+    	confJson = ConfigHandling.getConfiguration("Changed Configuration");
+        DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
 	        
-        	confJson = ConfigHandling.getConfiguration("Changed Configuration");
-	        DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
-	        
-	        confWasSet = true;
-        }
         //Verify that simulated agent gets this configuration
 
         simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
