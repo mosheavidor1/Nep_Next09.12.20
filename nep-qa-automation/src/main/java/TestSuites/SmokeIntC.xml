@@ -16,8 +16,8 @@
                 <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
                 <group  name= "ClusterConfiguration" depends-on="InstallEP" ></group>
                 <group  name= "StandaloneEPconfiguration" depends-on="InitAndCleanup" ></group>
-                <group  name= "RevokeEndpoint" depends-on="InstallEP" ></group>
-                <group  name= "DeleteEndpoint" depends-on="InstallEP" ></group>
+                <group  name= "RevokeEndpoint" depends-on="verify" ></group>
+                <group  name= "DeleteEndpoint" depends-on="verify" ></group>
                 
             </dependencies>
         </groups>
