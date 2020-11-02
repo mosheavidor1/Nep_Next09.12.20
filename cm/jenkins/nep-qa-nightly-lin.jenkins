@@ -23,14 +23,14 @@ node(NODE_TO_RUN) {
                 echo "PROPERTIES_FILE_PATH = ${PROPERTIES_FILE_PATH}"
                 echo "NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}"
                 env.currentTime = LocalDateTime.now()
-                
+
                 MODULE_ARTIFACT_SRC = "http://${NEXUS_PROXY}/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
                 // MODULE_ARTIFACT_SRC = "http://${NEXUS_PROXY}/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
             }
         }
 
         stage('Prepare Environment') {
-            
+
             // print params:
             echo """
             PROPERTIES_FILE_PATH      = ${PROPERTIES_FILE_PATH}
@@ -40,10 +40,10 @@ node(NODE_TO_RUN) {
             NEP_BRANCH            :  ${NEP_BRANCH}
             EMAIL_LIST            :  ${EMAIL_LIST}
             """
-            
+
             // clean Workspace
             deleteDir()
-            
+
             git branch: "${env.NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
         }
 
@@ -54,18 +54,18 @@ node(NODE_TO_RUN) {
         }
 
         stage('Run Tests and Prepare results') {
-            
-            WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
-            
-            JAVA_JAR_CMD = """
-                java -jar ${MODULE_ARTIFACT_DST} SmokeIntC.xml ${ENV_NAME} ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
-            """.trim()
+            timeout(time: 60, unit: 'MINUTES') {
+                WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
 
-            echo "$JAVA_JAR_CMD"
+                JAVA_JAR_CMD = """
+                   java -jar ${MODULE_ARTIFACT_DST} SmokeIntC.xml ${ENV_NAME} ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
+                """.trim()
 
-            sh """
-                ${JAVA_JAR_CMD}
-            """
+               echo "$JAVA_JAR_CMD"
+               sh """
+                   ${JAVA_JAR_CMD}
+               """
+            }
         }
     }
     catch (err) {
@@ -83,7 +83,7 @@ node(NODE_TO_RUN) {
 }
 
 def sendEmail(status) {
-    // emailext attachmentsPattern: "test-output/*", 
+    // emailext attachmentsPattern: "test-output/*",
     emailext attachmentsPattern: "test-output/emailable-report.html, test-output/capture/*",
         body: '${SCRIPT, template="groovy-html.template"}, ${FILE,path="test-output/emailable-report.html"}',
         subject: "${env.JOB_NAME} (env:${ENV_NAME})- TEST # ${DISPLAY_VERSION} - " + status,
