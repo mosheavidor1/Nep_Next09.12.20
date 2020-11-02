@@ -20,8 +20,8 @@
   <WindowWidth>23040</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>13</ActiveSheet>
-  <FirstVisibleSheet>12</FirstVisibleSheet>
+  <ActiveSheet>4</ActiveSheet>
+  <FirstVisibleSheet>4</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -247,17 +247,19 @@
   </WorksheetOptions>
  </Worksheet>
  <Worksheet ss:Name="VerifyEndPointOkAtPortalTest">
-  <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="2" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="14.55">
-   <Column ss:Width="131.4"/>
-   <Column ss:Width="137.4"/>
+   <Column ss:Width="131.4" ss:Span="1"/>
+   <Column ss:Index="3" ss:Width="137.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Customer</Data></Cell>
+    <Cell><Data ss:Type="String">EP Appear At CentCom Timeout</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">120</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -272,10 +274,11 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
+     <ActiveRow>2</ActiveRow>
      <ActiveCol>1</ActiveCol>
     </Pane>
    </Panes>
@@ -536,7 +539,7 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>15</ActiveRow>
+     <ActiveRow>1</ActiveRow>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -970,7 +973,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <LeftColumnVisible>15</LeftColumnVisible>
    <Panes>
     <Pane>
