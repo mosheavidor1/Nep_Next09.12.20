@@ -47,7 +47,9 @@ public class InstallEP extends GenericTest {
         String epName = agentActions.getEpName();
         String epIP =agentActions.getEpIp();
 
-        DbActions.verifyCallToCentcom(LNEActions.CentcomMethods.REGISTER, epName, epIP ,customerId,  timestamp);
+
+        String timeout = getGeneralData().get("Verify CentCom Call Timeout");
+        DbActions.verifyCallToCentcom(LNEActions.CentcomMethods.REGISTER, epName, epIP ,customerId,  timestamp ,Integer.parseInt(timeout));
 
 
     }

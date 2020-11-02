@@ -9,11 +9,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class DbActions {
-    public static final int verifyCallToCentcomTimeout = 60 ; // 60 sec
     protected static final int checkInterval = 5 ; // 5 sec
 
 
-    static public void verifyCallToCentcom(LNEActions.CentcomMethods method, String endpointName, String endPointIP ,String customerID, String timestamp) {
+    static public void verifyCallToCentcom(LNEActions.CentcomMethods method, String endpointName, String endPointIP ,String customerID, String timestamp, int timeout) {
         String message = "CentCom call: " + method.getMethodName() + " Endpoint name: " + endpointName + " Endpoint IP: "+ endPointIP + " Customer id: " + customerID + " after timestamp: " + timestamp  ;
         JLog.logger.info("Verifying " + message + " Query: " + NepDbConnector.VERIFY_CENTCOM_CALLS);
         try {
@@ -21,7 +20,7 @@ public class DbActions {
 
             LocalDateTime start = LocalDateTime.now();
             LocalDateTime current = start;
-            Duration durationTimeout = Duration.ofSeconds(verifyCallToCentcomTimeout);
+            Duration durationTimeout = Duration.ofSeconds(timeout);
 
             ResultSet rs = db.getCentComCallByType(method.getMethodName(), endpointName, endPointIP ,customerID, timestamp);
             message = message + " Parametrized Query: " + NepDbConnector.verifyCentComCalls;
