@@ -3,22 +3,8 @@
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 
 node('nep-build-centos7') {
-
-	MODULE_ARTIFACT_SRC = ""
-	node('master') {
-		stage("Read modules versions from  files on Master") {
-			def params = readProperties file: "${PROPERTIES_FILE_PATH}"	
-			NEP_QA_AUTOMATION_VERSION = params['qaautomation_version']
-            // nexus proxy - 10.85.26.45
-			MODULE_ARTIFACT_SRC = "http://10.85.26.45/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
-			
-			echo "PROPERTIES_FILE_PATH = ${PROPERTIES_FILE_PATH}"
-			echo "NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}"
-		}
-	}
-		
     try {
-        LOCK_NAME = (NEP_BRANCH == 'master') ? 'master_smoke_lock' : 'next_smoke_lock' 
+        LOCK_NAME = (NEP_BRANCH == 'master') ? 'master_smoke_lock' : 'next_smoke_lock'
 
         echo "buildCauses:  ${currentBuild.buildCauses}"
         isStartedByNEPSET = "${currentBuild.buildCauses}".contains('nepset-multijob')
@@ -26,6 +12,60 @@ node('nep-build-centos7') {
         echo "groovy version : ${GroovySystem.version}"
 
         lock (LOCK_NAME) {
+
+            MODULE_ARTIFACT_SRC = ""
+            node('master') {
+                stage("Read modules versions from files on Master") {
+                    def params = readProperties file: "${PROPERTIES_FILE_PATH}"
+                    NEP_QA_AUTOMATION_VERSION = params['qaautomation_version']
+
+                    if(DS_VERSION.isEmpty()) {
+                        DS_VERSION = params['dserver_version']
+                        DS_DATE = params['dserver_date']
+                    }
+                    else {
+                        DS_DATE = "no data"
+                    }
+
+                    if(DS_MGMT_VERSION.isEmpty()) {
+                        DS_MGMT_VERSION = params['dservermgmt_version']
+                        DS_MGMT_DATE = params['dservermgmt_date']
+                    }
+                    else {
+                        DS_MGMT_DATE = "no data"
+                    }
+
+                    if(IS_VERSION.isEmpty()) {
+                        IS_VERSION = params['is_version']
+                        IS_DATE = params['is_date']
+                    }
+                    else {
+                        IS_DATE = "no data"
+                    }
+                    // WinEP
+                    // bootstrapper_version=1.3.0.1572
+                    // bootstrapper_date=2020-11-01T15:26:01.455
+                    // LinEP
+                    // twendpointlnx_version=1.3.0.823
+                    // twendpointlnx_date=2020-11-01T15:25:20.927
+
+
+                    // nexus proxy - 10.85.26.45
+                    MODULE_ARTIFACT_SRC = "http://10.85.26.45/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
+
+                    echo """
+                    PROPERTIES_FILE_PATH = ${PROPERTIES_FILE_PATH}
+                    NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}
+                    DS_VERSION = ${DS_VERSION}
+                    DS_DATE = ${DS_DATE}
+                    DS_MGMT_VERSION = ${DS_MGMT_VERSION}
+                    DS_MGMT_VERSION = ${DS_MGMT_DATE}
+                    IS_VERSION = = ${IS_VERSION}
+                    IS_VERSION = = ${IS_DATE}
+
+                    """
+                }
+            }
 
             stage("Get modules versions") {
 
@@ -54,6 +94,25 @@ node('nep-build-centos7') {
                 LIN_AGENT_IP = (NEP_BRANCH == 'master') ? '10.85.24.204' : '10.85.24.202'
                 LIN_CENTOS8_AGENT_IP = '10.85.24.39'
                 S3_BUCKET_ID = VM_NAME.toLowerCase()
+
+                //nepa-is-1.3.0.988.war
+                //MODULE_ARTIFACT_SRC = "http://${NEXUS_PROXY}/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
+                //               https://nexus01.trustwave.com/content/repositories/releases/com/trustwave/nep/services/nepa-is/${IS_VERSION}/nepa-is-${IS_VERSION}.war
+                NEXUS_PROXY = "10.85.26.45"
+                IS_WAR_POM = "http://${NEXUS_PROXY}/content/repositories/releases/com/trustwave/nep/services/nepa-is/${IS_VERSION}/pom.xml"
+                IS_WAR_POM_FILE = "nepa_is.xml"
+                sh """
+                    curl -v -L --retry 3 --retry-delay 10 -o "$IS_WAR_POM_FILE"  "${IS_WAR_POM}"
+                """
+
+                WIN_EP_VER = sh (
+                    script: "grep -oP '(?<=<nepa-bootstrapper-version>).*?(?=</nepa-bootstrapper-version>)' ${IS_WAR_POM_FILE}",
+                    returnStdout : true).trim()
+
+                LIN_EP_VER = sh (
+                    script: "grep -oP '(?<=<tw-endpoint-lnx-version>).*?(?=</tw-endpoint-lnx-version>)' ${IS_WAR_POM_FILE}",
+                    returnStdout : true).trim()
+
 
                 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
                 deleteDir()
@@ -343,11 +402,42 @@ node('nep-build-centos7') {
 
         echo "finally prepare mail to send"
 
-        if ( currentBuild.result == null ) {
+        if (currentBuild.result == null) {
             currentBuild.result  = 'SUCCESS'
         }
 
-        if( isStartedByNEPSET && currentBuild.result == 'SUCCESS') {
+        if (currentBuild.result == 'SUCCESS') {
+           node('master') {
+                F="/var/jenkins_home/workspace/smoke-params-${env.NEP_BRANCH}"
+            	sh """
+            	    touch $F
+                    echo "dserver_version=${DS_VERSION}" > $F
+                    echo "dserver_date=${DS_DATE}" >> $F
+		            echo "dservermgmt_version=${DS_MGMT_VERSION}" >> $F
+                    echo "dservermgmt_date=${DS_MGMT_DATE}" >> $F
+                    echo "is_version=${IS_VERSION}" >> $F
+                    echo "is_date=${IS_DATE}" >> $F
+		            echo "bootstrapper_version=${WIN_EP_VER}" >> $F
+                    echo "bootstrapper_date=no data" >> $F
+		            echo "twendpointlnx_version=${WIN_EP_VER}" >> $F
+                    echo "twendpointlnx_date=no data" >> $F
+                    cat $F
+            	"""
+
+           // fileOperations (
+           //   [fileCopyOperation (excludes: '',
+           //                       flattenFiles: true,
+           //                       includes: "$F",
+           //                       renameFiles: false,
+           //                       sourceCaptureExpression: '',
+           //                       targetLocation: "/var/jenkins_home/workspace/smoke-params-${env.NEP_BRANCH}",
+           //                       targetNameExpression: '')
+           //                       ]
+           //                       )
+           }
+        }
+
+        if (isStartedByNEPSET && currentBuild.result == 'SUCCESS') {
             echo "do not sent email if called by upstream nepset multijob and result is SUCCESS"
         }
         else {
@@ -413,7 +503,7 @@ def prepareMailBody() {
     def tdTitleMain =  (SETTINGS_XML.contains('NepNightly.xml'))
         ? "NEP Regression test results for ${NEP_BRANCH}"
         : "NEP Smoke test results for ${NEP_BRANCH}"
-        
+
     echo "currentBuild.result: ${currentBuild.result}  titleBgColor : ${titleBgColor}"
 
     writeFile(file: 'mail_body.html', text:  """
