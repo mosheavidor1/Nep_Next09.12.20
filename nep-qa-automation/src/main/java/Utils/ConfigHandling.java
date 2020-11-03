@@ -19,7 +19,9 @@ public class ConfigHandling {
 	public static final String dsHostPlaceHolder = "\\{ds-host\\}";
 
 	public static final String schemaVersionPlaceHolder = "\\{schema-version\\}";
-	
+
+	public static final String scpHostPlaceHolder = "\\{scp-host\\}";
+
 	/**
 	 * Gets json configuration from Configurations excel sheet, 'Basic Configuration' column
 	 * Schema-version and ds-host placeholders are replaced by real values
@@ -44,6 +46,7 @@ public class ConfigHandling {
 		String jsonConfig = GenericTest.getConfigurations().get(configName);
 		jsonConfig = replaceSchemaVersion(jsonConfig);
 		jsonConfig = replaceDsHost(jsonConfig);
+		jsonConfig = replaceScpHost(jsonConfig);
 		return jsonConfig;
 	}
 	
@@ -61,5 +64,10 @@ public class ConfigHandling {
 	private static String replaceDsHost(String jsonConfig) {
 		return jsonConfig.replaceAll(ConfigHandling.dsHostPlaceHolder, GenericTest.getGeneralData().get("DS Name"));
 	}
+
+	private static String replaceScpHost(String jsonConfig) {
+		return jsonConfig.replaceAll(ConfigHandling.scpHostPlaceHolder, GenericTest.getGeneralData().get("SCP Host"));
+	}
+
 
 }
