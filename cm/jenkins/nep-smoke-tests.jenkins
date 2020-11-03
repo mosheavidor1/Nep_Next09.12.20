@@ -8,7 +8,9 @@ node('nep-build-centos7') {
 
         echo "buildCauses:  ${currentBuild.buildCauses}"
         isStartedByNEPSET = "${currentBuild.buildCauses}".contains('nepset-multijob')
-        currentBuild.displayName = "${BUILD_NUMBER}" + "-${env.NEP_BRANCH}"
+        TYPE_RUN_LABEL = isRegressionRun() ? "REGR" : "SMOK"
+        currentBuild.displayName = "${BUILD_NUMBER}" + "-${TYPE_RUN_LABEL}-${env.NEP_BRANCH}"
+
         echo "groovy version : ${GroovySystem.version}"
 
         lock (LOCK_NAME) {
@@ -458,6 +460,10 @@ def getLastLogs( remoteObj, logToGet, lastNLines, destName)
            into: destName,
            override: true
 
+}
+
+def isRegressionRun() {
+    return SETTINGS_XML.contains('NepNightly.xml')
 }
 
 def sendEmailExt()
