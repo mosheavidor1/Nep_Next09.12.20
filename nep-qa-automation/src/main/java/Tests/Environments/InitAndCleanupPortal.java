@@ -106,9 +106,6 @@ public class InitAndCleanupPortal extends RecordedTest {
     private boolean deleteEndpointFromCentCom (String hostname) {
         try {
 
-	        //agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-	        
-	
 	        browserActions.LaunchApplication(getGeneralData().get("Browser"));
 	        browserActions.SetApplicationUrl(getGeneralData().get("Fusion Link"));
 	
