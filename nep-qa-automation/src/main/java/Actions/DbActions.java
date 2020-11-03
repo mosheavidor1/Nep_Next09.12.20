@@ -12,7 +12,7 @@ public class DbActions {
     protected static final int checkInterval = 5 ; // 5 sec
 
 
-    static public void verifyCallToCentcom(LNEActions.CentcomMethods method, String endpointName, String endPointIP ,String customerID, String timestamp, int timeout) {
+    static public void verifyCallToCentcom(LNEActions.CentcomMethods method, String endpointName, String endpointOldName, String endPointIP ,String customerID, String timestamp, int timeout) {
         String message = "CentCom call: " + method.getMethodName() + " Endpoint name: " + endpointName + " Endpoint IP: "+ endPointIP + " Customer id: " + customerID + " after timestamp: " + timestamp  ;
         JLog.logger.info("Verifying " + message + " Query: " + NepDbConnector.VERIFY_CENTCOM_CALLS);
         try {
@@ -22,7 +22,7 @@ public class DbActions {
             LocalDateTime current = start;
             Duration durationTimeout = Duration.ofSeconds(timeout);
 
-            ResultSet rs = db.getCentComCallByType(method.getMethodName(), endpointName, endPointIP ,customerID, timestamp);
+            ResultSet rs = db.getCentComCallByType(method.getMethodName(), endpointName, endpointOldName, endPointIP  ,customerID, timestamp);
             message = message + " Parametrized Query: " + NepDbConnector.verifyCentComCalls;
 
 
@@ -33,7 +33,7 @@ public class DbActions {
                 JLog.logger.debug("Waiting for DB entry to appear at centcom_calls table. Query: " +message);
                 Thread.sleep(checkInterval *1000);
                 current = LocalDateTime.now();
-                rs = db.getCentComCallByType(method.getMethodName(), endpointName, endPointIP ,customerID, timestamp);
+                rs = db.getCentComCallByType(method.getMethodName(), endpointName, endpointOldName, endPointIP  ,customerID, timestamp);
 
             }
 

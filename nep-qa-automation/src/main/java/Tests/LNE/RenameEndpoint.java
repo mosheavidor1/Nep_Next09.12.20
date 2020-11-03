@@ -1,5 +1,6 @@
 package Tests.LNE;
 
+import Actions.DbActions;
 import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Actions.LNEActions.CentcomMethods;
@@ -32,19 +33,23 @@ public class RenameEndpoint extends GenericTest {
         customerId = getGeneralData().get("Customer Id");
     }
 
+
     @Test(groups = { "RenameEndpoint" })
     public void renameEndpoint()  {
     	try {
             JLog.logger.info("Starting RenameEndpoint test");
-            
+
+            String timestamp = DbActions.getCurrentDbTimeStamp();
+
             simulatedAgent = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
             simulatedAgent.register(customerId, simulatedAgentIp1, simulatedAgentName, 
             		simulatedAgentMac1, simulatedAgentOs);
             
             simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgentNewName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
-            
-            GlobalTools.getLneActions().verifyCallToCentcom(CentcomMethods.RENAME_ENDPOINT, customerId, simulatedAgentName, simulatedAgentNewName);
-            
+
+            String timeout = getGeneralData().get("Verify CentCom Call Timeout");
+            DbActions.verifyCallToCentcom(CentcomMethods.RENAME_ENDPOINT, simulatedAgentNewName, simulatedAgentName, simulatedAgentIp1 ,customerId,  timestamp ,Integer.parseInt(timeout));
+
 	        
 	        JLog.logger.info("RenameEndpoint completed successfully.");
 

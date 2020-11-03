@@ -49,7 +49,7 @@ public class InstallEP extends GenericTest {
 
 
         String timeout = getGeneralData().get("Verify CentCom Call Timeout");
-        DbActions.verifyCallToCentcom(LNEActions.CentcomMethods.REGISTER, epName, epIP ,customerId,  timestamp ,Integer.parseInt(timeout));
+        DbActions.verifyCallToCentcom(LNEActions.CentcomMethods.REGISTER, epName, null, epIP ,customerId,  timestamp ,Integer.parseInt(timeout));
 
 
     }
