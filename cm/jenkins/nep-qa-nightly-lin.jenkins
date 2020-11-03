@@ -54,7 +54,8 @@ node(NODE_TO_RUN) {
         }
 
         stage('Run Tests and Prepare results') {
-            timeout(time: 60, unit: 'MINUTES') {
+            REGR_TIMEOUT = 120
+            timeout(time: REGR_TIMEOUT, unit: 'MINUTES') {
                 WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
 
                 JAVA_JAR_CMD = """
