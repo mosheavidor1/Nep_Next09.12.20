@@ -1,7 +1,7 @@
 import java.time.LocalDateTime
 
 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
-DISPLAY_VERSION = "${env.NEP_BRANCH == "next" ? "${BUILD_NUMBER}-${env.NEP_BRANCH}"  :  "${BUILD_NUMBER}"}"
+DISPLAY_VERSION =  "${BUILD_NUMBER}-${env.NEP_BRANCH}"
 
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 
@@ -19,81 +19,75 @@ node(NODE_TO_RUN) {
             stage("Read version on Master node") {
                 def params = readProperties file: "${PROPERTIES_FILE_PATH}"
                 NEP_QA_AUTOMATION_VERSION = params['qaautomation_version']
-                MODULE_ARTIFACT_SRC = "http://${NEXUS_PROXY}/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
 
                 echo "PROPERTIES_FILE_PATH = ${PROPERTIES_FILE_PATH}"
                 echo "NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}"
-
                 env.currentTime = LocalDateTime.now()
+
+                MODULE_ARTIFACT_SRC = "http://${NEXUS_PROXY}/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
+                // MODULE_ARTIFACT_SRC = "http://${NEXUS_PROXY}/service/local/artifact/maven/redirect?r=public&g=com.trustwave.nep.nep-qa&a=nep-qa-automation&e=jar&c=jar-with-dependencies&v=LATEST"
             }
         }
 
-        stage('Get sources from BitBucket') {
+        stage('Prepare Environment') {
+
+            // print params:
+            echo """
+            PROPERTIES_FILE_PATH      = ${PROPERTIES_FILE_PATH}
+            NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}
+
+            ENV_NAME:             :  ${ENV_NAME}
+            NEP_BRANCH            :  ${NEP_BRANCH}
+            EMAIL_LIST            :  ${EMAIL_LIST}
+            """
+
+            // clean Workspace
+            deleteDir()
+
             git branch: "${env.NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
         }
 
         stage('get jar from nexus') {
-
             sh """
-            curl -v --retry 3 --retry-delay 10 -o "${MODULE_ARTIFACT_DST}"  "${MODULE_ARTIFACT_SRC}"
+            curl -v -L --retry 3 --retry-delay 10 -o "${MODULE_ARTIFACT_DST}"  "${MODULE_ARTIFACT_SRC}"
             """
-                
         }
 
         stage('Run Tests and Prepare results') {
-            if (WAIT_FOR_EVENTS.isEmpty()) {
-                
+            REGR_TIMEOUT = 120
+            timeout(time: REGR_TIMEOUT, unit: 'MINUTES') {
+                WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
+
+                JAVA_JAR_CMD = """
+                   java -jar ${MODULE_ARTIFACT_DST} SmokeIntC.xml ${ENV_NAME} ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
+                """.trim()
+
+               echo "$JAVA_JAR_CMD"
+               sh """
+                   ${JAVA_JAR_CMD}
+               """
             }
-            else {
-                //JAVA_JAR_CMD = """
-                //  java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENVIRONMENT_NAME}" "WaitForEvents120" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
-                //""".trim()
-            }
-            
-            // JAVA_JAR_CMD = """
-            //      java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}"  "${ENVIRONMENT_NAME}" "win]10.85.25.187]solo-user]breach12345" "lnx]10.85.26.231]root]trustwave"
-            //    """.trim()
-
-            WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
-            JAVA_JAR_CMD = """
-                java -jar ${MODULE_ARTIFACT_DST} SmokeIntC.xml inc ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
-            """.trim()
-
-            echo "$JAVA_JAR_CMD"
-
-            sh """
-                ${JAVA_JAR_CMD}
-               
-            """
-            
-
-            // bat """
-            //     ${JAVA_JAR_CMD}
-            //      if ERRORLEVEL 1  set test_result=false
-
-            //      xcopy ${WORKSPACE}\\test-output\\* C:\\jenkins\\builds\\${DISPLAY_VERSION}\\  /O /X /E /H /K /Y
-            //      mkdir ${WORKSPACE}\\test-output\\tmp\\pics
-            //      xcopy ${WORKSPACE}\\test-output\\capture\\*.png ${WORKSPACE}\\test-output\\tmp\\pics\\  /O /X /E /H /K /Y
-
-            //      if "%test_result%" == "false" EXIT 1
-            // """
-        }
-
-        stage('Send Email') {
-            sendEmail("Success")
         }
     }
     catch (err) {
         currentBuild.result = "FAILURE"
-        sendEmail("Failed")
         throw err
+    }
+    finally {
+        if (currentBuild.result == 'SUCCESS') {
+            sendEMail("Success")
+        }
+        else {
+            sendEmail("Failure")
+        }
     }
 }
 
 def sendEmail(status) {
-    emailext attachmentsPattern: "test-output/emailable-report.html, test-output/tmp/**/*.png",
+    // emailext attachmentsPattern: "test-output/*",
+    emailext attachmentsPattern: "test-output/emailable-report.html, test-output/capture/*",
         body: '${SCRIPT, template="groovy-html.template"}, ${FILE,path="test-output/emailable-report.html"}',
-        subject: "${env.JOB_NAME} (env:${ENVIRONMENT_NAME})- TEST # ${DISPLAY_VERSION} - " + status,
+        subject: "${env.JOB_NAME} (env:${ENV_NAME})- TEST # ${DISPLAY_VERSION} - " + status,
         mimeType: 'text/html',
         from: 'svc_wafbuild@trustwave.com',
         to: "${EMAIL_LIST}"
