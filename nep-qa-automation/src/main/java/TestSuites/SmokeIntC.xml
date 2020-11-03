@@ -25,15 +25,15 @@
         <classes>
  			<class name = "Tests.Environments.InitAndCleanupPortal" />
             <class name = "Tests.Environments.CreateNewInstallers" />
-            <!--class name = "Tests.Environments.DownloadInstallers" />
+            <class name = "Tests.Environments.DownloadInstallers" />
             <class name = "Tests.Environments.InstallEndPointEnvironmentsTest" />
             <class name = "Tests.Environments.VerifyEndPointOkAtPortalTest" />
-            <class name = "Tests.Environments.ClientLogToPortalTest" />-->
-             <!--class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
+            <!--class name = "Tests.Environments.ClientLogToPortalTest" /!-->
+             <class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
     		<class name = "Tests.LNE.ClusterConfiguration" />         		
       		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
            	<class name = "Tests.LNE.RevokeEndpoint" />
-           <class name = "Tests.LNE.DeleteEndpoint" /!-->
+           <class name = "Tests.LNE.DeleteEndpoint" />
 
         </classes>
     </test>
