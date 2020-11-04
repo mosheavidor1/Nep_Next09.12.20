@@ -445,6 +445,10 @@ node('nep-build-centos7') {
         else {
             sendEmailExt()
         }
+    
+        if (currentBuild.result == 'FAILURE') {
+           error "Pipeline failed, please read logs..."
+        }
     }
 }
 
