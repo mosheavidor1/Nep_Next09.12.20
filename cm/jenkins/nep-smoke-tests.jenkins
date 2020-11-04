@@ -373,45 +373,53 @@ node('nep-build-centos7') {
         throw exc
     }
     finally {
-        fileOperations([folderCreateOperation('lne_logs')])
+        try {
+            fileOperations([folderCreateOperation('lne_logs')])
 
-        /* cut logs that are attached only to 1000 last lines
-        sshGet remote: remote_LNE,
+            /* cut logs that are attached only to 1000 last lines
+               sshGet remote: remote_LNE,
                from: '/work/services/stub-srv/var/log/nep/nep_centcom_client.log',
                into: 'lne_logs',
                override: true
 
-        sshGet remote: remote_LNE,
+               sshGet remote: remote_LNE,
                from: '/work/services/nepa-services/ds/var/log/nepa-dserver/nepa-dserver.log',
                into: 'lne_logs',
                override: true
 
-        */
+            */
 
-        getLastLogs (remote_LNE,
-                     '/work/services/stub-srv/var/log/nep/nep_centcom_client.log',
-                     '1000',
-                      'lne_logs/tail_1K_nep_centcom_client.log'
-                      )
+            getLastLogs (remote_LNE,
+                         '/work/services/stub-srv/var/log/nep/nep_centcom_client.log',
+                         '1000',
+                         'lne_logs/tail_1K_nep_centcom_client.log'
+                        )
 
-        getLastLogs (remote_LNE,
-                     '/work/services/nepa-services/ds/var/log/nepa-dserver/nepa-dserver.log',
-                     '1000',
-                      'lne_logs/tail_1K_nepa-dserver.log'
-                      )
+            getLastLogs (remote_LNE,
+                         '/work/services/nepa-services/ds/var/log/nepa-dserver/nepa-dserver.log',
+                         '1000',
+                         'lne_logs/tail_1K_nepa-dserver.log'
+                        )
 
-        archiveArtifacts allowEmptyArchive: true, artifacts: 'lne_logs/*'  /* */
-
-        echo "finally prepare mail to send"
-
-        if (currentBuild.result == null) {
-            currentBuild.result  = 'SUCCESS'
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'lne_logs/*'  /* */
         }
+        catch (exc)
+        {
+            echo "Error getting remote logs"
+            exc.printStackTrace()
+        }
+        finally {
+            echo "finally prepare mail to send"
 
-        if (currentBuild.result == 'SUCCESS') {
-           node('master') {
-                F="/var/jenkins_home/workspace/smoke-params-${env.NEP_BRANCH}"
-            	sh """
+            if (currentBuild.result == null) {
+                currentBuild.result  = 'SUCCESS'
+            }
+
+        
+            if (currentBuild.result == 'SUCCESS') {
+                node('master') {
+                    F="/var/jenkins_home/workspace/smoke-params-${env.NEP_BRANCH}"
+                    sh """
             	    touch $F
                     echo "dserver_version=${DS_VERSION}" > $F
                     echo "dserver_date=${DS_DATE}" >> $F
@@ -424,32 +432,33 @@ node('nep-build-centos7') {
 		            echo "twendpointlnx_version=${LIN_EP_VER}" >> $F
                     echo "twendpointlnx_date=no data" >> $F
                     cat $F
-            	"""
+                    """
 
-           // fileOperations (
-           //   [fileCopyOperation (excludes: '',
-           //                       flattenFiles: true,
-           //                       includes: "$F",
-           //                       renameFiles: false,
-           //                       sourceCaptureExpression: '',
-           //                       targetLocation: "/var/jenkins_home/workspace/smoke-params-${env.NEP_BRANCH}",
-           //                       targetNameExpression: '')
-           //                       ]
-           //                       )
-           }
-        }
+                    // fileOperations (
+                    //   [fileCopyOperation (excludes: '',
+                    //                       flattenFiles: true,
+                    //                       includes: "$F",
+                    //                       renameFiles: false,
+                    //                       sourceCaptureExpression: '',
+                    //                       targetLocation: "/var/jenkins_home/workspace/smoke-params-${env.NEP_BRANCH}",
+                    //                       targetNameExpression: '')
+                    //                       ]
+                    //                       )
+                }
+            }
 
-        if (isStartedByNEPSET && currentBuild.result == 'SUCCESS') {
-            echo "do not sent email if called by upstream nepset multijob and result is SUCCESS"
-        }
-        else {
-            sendEmailExt()
-        }
+            if (isStartedByNEPSET && currentBuild.result == 'SUCCESS') {
+                echo "do not sent email if called by upstream nepset multijob and result is SUCCESS"
+            }
+            else {
+                sendEmailExt()
+            }
     
-        if (currentBuild.result == 'FAILURE') {
-           error "Pipeline failed, please read logs..."
-        }
-    }
+            if (currentBuild.result == 'FAILURE') {
+                error "Pipeline failed, please read logs..."
+            }
+        } // internal finally
+    } // external finally
 }
 
 
