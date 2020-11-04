@@ -603,10 +603,12 @@ public class BrowserActions extends ManagerActions {
 
             detailsPage.WaitUntilPageLoad();
             detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
-            detailsPage.WaitUntilObjectClickable(detailsPage.rowBy);
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
+
             By epLineBy = detailsPage.GetHostNameRowBy(hostname);
 
-            Thread.sleep(2000); //after all 3 wait above needs some more - to be investigated
+            Thread.sleep(3000); //after all 3 wait above needs some more - to be investigated
 
             if (!detailsPage.IsElementExist(epLineBy)) {
                 JLog.logger.warn("Could not find the following EP at CentCom: "+ hostname);
