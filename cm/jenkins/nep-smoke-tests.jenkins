@@ -421,7 +421,7 @@ node('nep-build-centos7') {
                     echo "is_date=${IS_DATE}" >> $F
 		            echo "bootstrapper_version=${WIN_EP_VER}" >> $F
                     echo "bootstrapper_date=no data" >> $F
-		            echo "twendpointlnx_version=${WIN_EP_VER}" >> $F
+		            echo "twendpointlnx_version=${LIN_EP_VER}" >> $F
                     echo "twendpointlnx_date=no data" >> $F
                     cat $F
             	"""
