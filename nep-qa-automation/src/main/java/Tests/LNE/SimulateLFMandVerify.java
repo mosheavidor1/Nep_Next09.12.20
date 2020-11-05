@@ -10,7 +10,6 @@ import Utils.Utils;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -25,15 +24,14 @@ public class SimulateLFMandVerify extends GenericTest {
     private static String customerId;
     
     private static final String scp_path = "/work/services/siem/var/siem/data/nep/";
-    private static final int schedule_report_timeout = 120000; //120 seconds
     private static final String wasSentSuccessString = " was sent successfully";
-    private static int checkUPdatesInterval;
     private static final String filePrefixFormat = "%s-src.";    
     private static final String fileSuffixFormat = ".%s-tag.log";
+    private static int agentInstallTimeout;
+    private static int verifyLogsTimeout = 120;//120 seconds
+    private static int checkUPdatesInterval;
     
     private Vector<String> destLogFiles;
-    
-   
     
     
     String expectedResult1, expectedResult2;
@@ -45,12 +43,14 @@ public class SimulateLFMandVerify extends GenericTest {
     @BeforeTest
     public void init() {
     	customerId = getGeneralData().get("Customer Id");
-        checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
         destLogFiles = null;
+        agentInstallTimeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
+        checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
+        
     }
-
     
-    @Test(groups = { "SimulateLFMandVerify" } )
+    
+    @Test(groups = { "SimulateLFMandVerify" }, priority=60 )
     public void SimulateLFMandVerifyDelivery()  {
     	try {
 		    String log_type = data.get("Log_Type");
@@ -60,27 +60,36 @@ public class SimulateLFMandVerify extends GenericTest {
 		    String agentType = data.get("EP_Type_1");
 		   		   		   		
 		    JLog.logger.info("Starting SimulateLFMandVerifyDelivery. Agent type: {}. Log type: {}. Expected results: {} and {}.", data.get("EP_Type_1"), log_type, expectedResult1, expectedResult2);
-		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		    
-		    //Set Basic configuration with LFM false
-		    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getDefaultConfiguration());
+	        JLog.logger.info("Going to set configuration with LFM disabled, and waits until agent updates");
+		    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getConfiguration("LLM LFM Disabled"));
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
 		    
-		    resetAgentAndPrepareDirs(agentType);
 		    
 		    //Read configuration and update the host tags
 		    String confJsonName = data.get("Configuration Name");
 		    String confJson = ConfigHandling.getConfiguration(confJsonName);	    
             confJson = confJson.replaceAll(ConfigHandling.lennyIpPlaceholder, GlobalTools.getClusterToTest());
             
-            DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
-		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
-		    //TODO: compare json cofniguration on agent
-		
+		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		    
+		    JLog.logger.info("Going to stop the agent service, clean agent logs/files, set the needed configuration for the customer and finally start the agent service.");
+		    
+		    agent.stopEPService(agentInstallTimeout);	
+		    
+		    //Set the conf here, so that the endpoint will get it right upon starting
+		    DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
+		    //TODO: compare json cofniguration on agent
+		    
+		    resetAgentAndPrepareDirs(agentType);   
+            
+            agent.startEPService(agentInstallTimeout);		
+		    
+            JLog.logger.info("Going to sleep 1 minute before generating LFM input");
 		    Thread.sleep(60000);//60 seconds
 		    createLogs();
-		    Thread.sleep(schedule_report_timeout);
+		    JLog.logger.info("Going to sleep 1 minute until events/files are collected");
+		    Thread.sleep(60000);//60 seconds
 	
 	        if (log_type.equalsIgnoreCase( "SIEM")) {
 	            verifyLogsSentToSiem(agent.getVerifySiemCommand(), expectedResult1 + expectedResult2);
@@ -103,18 +112,11 @@ public class SimulateLFMandVerify extends GenericTest {
      * For windows we must stop the agent in order to clear the db.json
      */
     private void resetAgentAndPrepareDirs(String agentType) {
-    	int timeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
     	
-    	//if (agentType.equals("win")){
-    		agent.stopEPService(timeout);
-    //	}
 	    prepareDirectories();
 	    agent.clearFile(agent.getDbJsonPath());
 	    agent.clearFile(agent.getAgentLogPath()); 
 	    
-	  //  if (agentType.equals("win")){
-	    	agent.startEPService(timeout);
-	   // }
     }
 
      private void prepareDirectories() {
@@ -139,10 +141,11 @@ public class SimulateLFMandVerify extends GenericTest {
     public void verifyLogsSentToSiem(String command, int totalExpectedRows) {
     	JLog.logger.info("Going to verify logs sent to SIEM");
         String patt = ".zip was sent successfully";
-        String res = agent.verifyExpectedOnCommandResult(command, patt);        
+        String res = agent.verifyExpectedOnCommandResult(command, patt, verifyLogsTimeout);       
+        org.testng.Assert.assertTrue(null != res, "Failed to find expected files in log.");
         
         destLogFiles = Utils.extractFileNames(res, "dla_", ".zip");
-        org.testng.Assert.assertTrue(destLogFiles.size() > 1, "Failed to find at least 2 log files in log");
+        org.testng.Assert.assertTrue(destLogFiles.size() > 1, "Failed to find at least 2 log files in agent log.");
         int totalSentRows = getTotalRows(destLogFiles);
         org.testng.Assert.assertEquals(totalSentRows, totalExpectedRows, "Total of sent rows doesn't equal." );
         JLog.logger.info("done");
@@ -162,7 +165,8 @@ public class SimulateLFMandVerify extends GenericTest {
     
     private void verifyExpectedInLogAndExtractFileNames(String command, String fileName) {
     	String expectedString = String.format(fileSuffixFormat, fileName) + wasSentSuccessString;
-        String res = agent.verifyExpectedOnCommandResult(command, expectedString);
+        String res = agent.verifyExpectedOnCommandResult(command, expectedString, verifyLogsTimeout);
+        org.testng.Assert.assertTrue(null != res, "Failed to find expected files in log");
         destLogFiles = Utils.extractFileNames(res, String.format(filePrefixFormat, fileName), String.format(fileSuffixFormat, fileName));
         
     }
@@ -178,25 +182,22 @@ public class SimulateLFMandVerify extends GenericTest {
         }
         return sumOfRows;
     }
-
+/*
     @AfterTest
     public void clean(){
     	if (destLogFiles != null) {
     		for (int i = 0; i < destLogFiles.size(); i++) {
-    			//TODO: delete files form destination
+    			//TODO: delete files from destination
     		}
     	}
-    }
+    }*/
 
     @AfterMethod
     public void Close(){
         if (agent!=null) {
             agent.close();
         }
-        
-        //Set Basic configuration with LFM false
-	    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getDefaultConfiguration());
-	    
+       	    
     }
 
 

@@ -10,9 +10,12 @@
             	<group  name= "InitAndCleanup" depends-on="InitCustomer" ></group>
                 <group  name= "InstallEP" depends-on="InitAndCleanup" ></group>
                 <group  name= "Binary" depends-on="InstallEP" ></group>
-                <group  name= "VerifyEndpointConnectedStatus" depends-on="Binary" ></group><!-- This test should run after BinaryUpdate -->
+               
                 <group  name= "SchemaVersionsAndUpgrade" depends-on="InstallEP" ></group>
                 <group  name= "SimulateLFMandVerify" depends-on="InstallEP" ></group>
+                <group  name= "SimulateLLMandVerify" depends-on="InstallEP" ></group>
+                
+                 <group  name= "VerifyEndpointConnectedStatus" depends-on="InstallEP" ></group><!-- This test will run the last out of its priority -->
 
             </dependencies>
         </groups>
@@ -21,8 +24,8 @@
         	<class name = "Tests.LNE.InitCustomer"/>
             <class name = "Tests.LNE.InitAndCleanup"  />
             <class name = "Tests.LNE.InstallEP" />
-           <class name = "Tests.LNE.BinaryUpdate" />
-          <!--  <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />-->
+          <!--   <class name = "Tests.LNE.BinaryUpdate" />
+          <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />-->
             <class name = "Tests.LNE.VerifyEndpointConnectedStatus" />
             <class name = "Tests.LNE.SimulateLFMandVerify" /> 
         </classes>

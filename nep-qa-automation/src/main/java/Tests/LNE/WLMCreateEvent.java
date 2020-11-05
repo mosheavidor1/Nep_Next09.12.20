@@ -26,7 +26,7 @@ public class WLMCreateEvent extends GenericTest {
     public static final String scp_path = "/work/services/siem/var/siem/data/nep/";
     public static final String syslog_path = "/work/services/siem/var/log/";
     String expectedLines;
-    private static final int schedule_report_timeout = 120000; //120 seconds
+    private static int verifyLogsTimeout = 120;//120 seconds
     
     private static int checkUPdatesInterval;
     private static String agentIp;
@@ -36,15 +36,12 @@ public class WLMCreateEvent extends GenericTest {
     @Factory(dataProvider = "getData")
     public WLMCreateEvent(Object dataToSet) {
         super(dataToSet);
-        
-       
     }
     
     @BeforeTest
     public void init() {
     	customerId = getGeneralData().get("Customer Id");
         checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
-        
     }
 
     @Test(groups = { "WLMCreateEvent" } )
@@ -81,8 +78,10 @@ public class WLMCreateEvent extends GenericTest {
             }
            
             createEvents();
-            Thread.sleep(schedule_report_timeout);
 
+            JLog.logger.info("Going to sleep 1 minute until events/files are collected");
+            Thread.sleep(60000);//60 seconds
+            
             if (log_type.equalsIgnoreCase( "SIEM")) {
                 verifyLogsSentToSiem();
             } else if (log_type.equalsIgnoreCase("LCA")) {
@@ -119,7 +118,8 @@ public class WLMCreateEvent extends GenericTest {
         String command = agent.getVerifySiemCommand();
         String expectedStr = ".zip was sent successfully";
         
-        String res = agent.verifyExpectedOnCommandResult(command, expectedStr);
+        String res = agent.verifyExpectedOnCommandResult(command, expectedStr, verifyLogsTimeout);
+        org.testng.Assert.assertTrue(null != res, "Failed to find expected files in log");
         
         int start = res.lastIndexOf("dla_");
         int stop = res.lastIndexOf(".zip");
@@ -138,7 +138,8 @@ public class WLMCreateEvent extends GenericTest {
         String command = agent.getVerifyLcaCommand();       
         String patt = ".txt was sent successfully";
         
-        String res = agent.verifyExpectedOnCommandResult(command, patt);
+        String res = agent.verifyExpectedOnCommandResult(command, patt, verifyLogsTimeout);
+        org.testng.Assert.assertTrue(null != res, "Failed to find expected files in log");
         
         int start = res.lastIndexOf("dla_");
         int stop = res.lastIndexOf(".txt");
@@ -157,7 +158,7 @@ public class WLMCreateEvent extends GenericTest {
         String command = "type " + agent.getAgentLogPath() + " | find /n \"SecureSyslogCollector: sent " + expectedLines + " events\"";
         String expectedStr = "SecureSyslogCollector: sent " + expectedLines + " events";
         
-        String res = agent.verifyExpectedOnCommandResult(command, expectedStr);
+        String res = agent.verifyExpectedOnCommandResult(command, expectedStr, verifyLogsTimeout);
                 
         String txtFileMane = syslog_path + agentIp + "/user.log";
         if (!lennyActions.fileExists(txtFileMane)) {

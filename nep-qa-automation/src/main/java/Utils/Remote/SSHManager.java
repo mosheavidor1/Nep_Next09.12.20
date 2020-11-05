@@ -79,7 +79,7 @@ public class SSHManager  {
     }
     public String Execute(String command) {
         try {
-            JLog.logger.info("Executing command: " + command);
+            JLog.logger.info("Going to executing command: " + command);
             channelExecute = (ChannelExec)jschSession.openChannel("exec");
             InputStream in = channelExecute.getInputStream();
             InputStream err = channelExecute.getErrStream();
@@ -106,7 +106,7 @@ public class SSHManager  {
                 return response;
             }
 
-            JLog.logger.debug("Execute " + command + " done.");
+            JLog.logger.debug("Done.");
             return response;
         } catch (Exception e) {
         	JLog.logger.error("Could not execute command: ", e);

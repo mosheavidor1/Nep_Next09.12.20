@@ -346,15 +346,40 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     /**
      * Verifies that output of command contains the expectedStr
      */
-    public String verifyExpectedOnCommandResult(String command, String expectedStr) {
+    public String verifyExpectedOnCommandResult(String command, String expectedStr, int timeout) {
+    	
+    	LocalDateTime start = LocalDateTime.now();
+        LocalDateTime current = start;
+        Duration durationTimeout = Duration.ofSeconds(timeout);
+        String result = null;        
+
+        try {
+	        while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+	            Thread.sleep(25000);//25 seconds
+	            current = LocalDateTime.now();
+	            result = verifyExpectedOnCommandResult(command, expectedStr);
+	            if (result != null) {                
+	                return result;
+	            }
+	        }
+        } catch (InterruptedException e) {
+        	JLog.logger.info("Got interrupted exception");
+        }
+        return result;
+    }
+    
+    private String  verifyExpectedOnCommandResult(String command, String expectedStr) {
     	
     	JLog.logger.info("Going to run command '{}' and expect '{}' in result", command, expectedStr);
         String result = connection.Execute(command);
         
-        org.testng.Assert.assertFalse(result == null || result.isEmpty(), "Result of command should not be empty.");        
-        org.testng.Assert.assertTrue(result.contains(expectedStr), "Output of command doesn't contain expected string");       
+        if(result == null || result.isEmpty() || !result.contains(expectedStr)) {
+        	JLog.logger.info("Result of command is still not satisfied: '{}'", result);
+        	return null;
+        }
         JLog.logger.info("Found expected string!");
         return result;
+    	
     }
 
     public String findInText(String filePath, String pattern) {
