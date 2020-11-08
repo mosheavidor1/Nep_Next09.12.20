@@ -324,7 +324,7 @@ public class BrowserActions extends ManagerActions {
 
     }
 
-    public void CheckEndPointOkInCentCom(String hostname) {
+    public void CheckEndPointOkInCentCom(String hostname,int timeout) {
         try {
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
 
@@ -335,24 +335,36 @@ public class BrowserActions extends ManagerActions {
             detailsPage.valueToSearch_element.clear();
             detailsPage.valueToSearch_element.sendKeys(hostname + "\n");
 
-            detailsPage.refreshButton_element.click();
-
-            detailsPage.WaitUntilPageLoad();
-            detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
-            detailsPage.WaitUntilObjectClickable(detailsPage.rowBy);
             By epLine = detailsPage.GetHostNameRowBy(hostname);
-            detailsPage.WaitUntilObjectClickable(epLine);
 
-            Thread.sleep(3000); //after all 4 wait above needs some more - to be investigated
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime current = start;
+            Duration durationTimeout = Duration.ofSeconds(timeout);
 
-            if (!detailsPage.IsElementExist(epLine)) {
-                org.testng.Assert.fail("Could not find hostname: " + hostname);
+            boolean found = false;
+            while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+                detailsPage.refreshButton_element.click();
+                detailsPage.WaitUntilPageLoad();
+                detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
+
+                Thread.sleep(checkInterval);
+                current = LocalDateTime.now();
+                if (detailsPage.IsElementExist(epLine)) {
+                    found = true;
+                    break;
+                }
+                JLog.logger.debug("Waiting for endpoint to appear OK at portal. EP name: "+ hostname);
+            }
+
+            if (!found) {
+                org.testng.Assert.fail("Could not find endpoint name: " + hostname +" at CentCom after timeout(sec): " + timeout + " . See screenshot attached");
             }
 
             if (!detailsPage.IsElementExist(detailsPage.OkBy)) {
-                org.testng.Assert.fail("Host: " + hostname + " Status is not Okay. See screenshot.");
+                org.testng.Assert.fail("Host: " + hostname + " Status is not Okay at CentCom. See screenshot.");
             }
-            JLog.logger.info("Status OK for endpoint: " + hostname);
+
+            JLog.logger.info("Status OK found at CentCom for endpoint: " + hostname);
 
         }
         catch (Exception e) {
@@ -572,8 +584,11 @@ public class BrowserActions extends ManagerActions {
 
     }
 
-
-    public void DeleteEpFromCentCom(String hostname) {
+    /**
+     * Delete the endpoint with name 'hostname' from Centcom UI
+     * Returns - true if an endpoint with this name was found, else otherwise 
+     */
+    public boolean DeleteEpFromCentCom(String hostname) {
         try {
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
 
@@ -588,14 +603,16 @@ public class BrowserActions extends ManagerActions {
 
             detailsPage.WaitUntilPageLoad();
             detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
-            detailsPage.WaitUntilObjectClickable(detailsPage.rowBy);
+            detailsPage.WaitUntilPageLoad();
+            detailsPage.WaitUntilObjectDisappear(detailsPage.spinnerBy);
+
             By epLineBy = detailsPage.GetHostNameRowBy(hostname);
 
-            Thread.sleep(2000); //after all 3 wait above needs some more - to be investigated
+            Thread.sleep(3000); //after all 3 wait above needs some more - to be investigated
 
             if (!detailsPage.IsElementExist(epLineBy)) {
                 JLog.logger.warn("Could not find the following EP at CentCom: "+ hostname);
-                return;
+                return false;
             }
 
             WebElement epLineElement = detailsPage.GetHostNameRowWebElement(hostname);
@@ -626,6 +643,7 @@ public class BrowserActions extends ManagerActions {
         catch (Exception e) {
             org.testng.Assert.fail("Could not delete from CentCom endpoint: " + hostname +  "\n" + e.toString());
         }
+        return true;
 
     }
 

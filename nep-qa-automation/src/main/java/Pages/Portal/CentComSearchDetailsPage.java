@@ -75,6 +75,15 @@ public class CentComSearchDetailsPage extends GenericPage {
     @FindBy(how= How.XPATH,using=continueButtonConfirmDeleteXpath)
     public WebElement continueButtonConfirmDelete_element;
 
+    private static final String totalItemsXpath ="//twa-portal-stage[@id='stg-operations']//span[contains(text(),'Total Items')]";
+    public static final By TotalItemsBy = By.xpath(totalItemsXpath);
+    @FindBy(how= How.XPATH,using=totalItemsXpath)
+    public WebElement totalItems_element;
+
+
+
+
+
 
 
     /*for future implantation

@@ -64,6 +64,18 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	    try {
 
             uninstallEndpoint(installationTimeout);
+            copyInstallerAndInstall(installationTimeout, epServiceTimeout);
+        }
+	    catch (Exception e) {
+            org.testng.Assert.fail("Reinstall endpoint failed " + "\n" + e.toString());
+	    }
+
+	}
+	
+	public void copyInstallerAndInstall(int installationTimeout, int epServiceTimeout){
+
+	    try {
+
             copyInstaller();
             if (GlobalTools.isLennyEnv()) {
             	appendToHostsFile();
@@ -71,7 +83,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
             installEndpoint(installationTimeout, epServiceTimeout);
         }
 	    catch (Exception e) {
-            org.testng.Assert.fail("Reinstall endpoint failed " + "\n" + e.toString());
+            org.testng.Assert.fail("copyInstallerAndInstall endpoint failed " + "\n" + e.toString());
 	    }
 
 	}
@@ -98,7 +110,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	}
 		
 	//Waits until check updates will run, and uninstall will be done as a result
-    public void checkDeleted(int timeout) {
+    public boolean checkDeleted(int timeout) {
 
         boolean deleted = false;
 
@@ -120,9 +132,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
         	JLog.logger.info("Got interrupted exception");
         }
 
-        if(!deleted){
-            org.testng.Assert.fail("Endpoint deleted verification failed, the endpoint service still running.");
-        }
+        return deleted;
     }
 
     public void copyInstaller(){
@@ -336,15 +346,40 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     /**
      * Verifies that output of command contains the expectedStr
      */
-    public String verifyExpectedOnCommandResult(String command, String expectedStr) {
+    public String verifyExpectedOnCommandResult(String command, String expectedStr, int timeout) {
+    	
+    	LocalDateTime start = LocalDateTime.now();
+        LocalDateTime current = start;
+        Duration durationTimeout = Duration.ofSeconds(timeout);
+        String result = null;        
+
+        try {
+	        while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+	            Thread.sleep(25000);//25 seconds
+	            current = LocalDateTime.now();
+	            result = verifyExpectedOnCommandResult(command, expectedStr);
+	            if (result != null) {                
+	                return result;
+	            }
+	        }
+        } catch (InterruptedException e) {
+        	JLog.logger.info("Got interrupted exception");
+        }
+        return result;
+    }
+    
+    private String  verifyExpectedOnCommandResult(String command, String expectedStr) {
     	
     	JLog.logger.info("Going to run command '{}' and expect '{}' in result", command, expectedStr);
         String result = connection.Execute(command);
         
-        org.testng.Assert.assertFalse(result == null || result.isEmpty(), "Result of command should not be empty.");        
-        org.testng.Assert.assertTrue(result.contains(expectedStr), "Output of command doesn't contain expected string");       
+        if(result == null || result.isEmpty() || !result.contains(expectedStr)) {
+        	JLog.logger.info("Result of command is still not satisfied: '{}'", result);
+        	return null;
+        }
         JLog.logger.info("Found expected string!");
         return result;
+    	
     }
 
     public String findInText(String filePath, String pattern) {

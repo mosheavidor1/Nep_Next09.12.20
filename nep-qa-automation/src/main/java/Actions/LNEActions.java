@@ -96,7 +96,7 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
         REQUEST_UPGRADE("requestUpgrade"),
         UPDATE_ENDPOINT("updateEndpoint"),
         REVOKE_ENDPOINT("revokeEndpoint"),
-        RENAME_ENDPOINT("renameEndpoint"),
+        RENAME_ENDPOINT("RENAME_ENDPOINT"),
         UPDATE_ENDPOINT_STATE("UPDATE_STATE");
 
         private String methodName;

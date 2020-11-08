@@ -29,6 +29,7 @@ public class VerifyFileCabinetOldInstallers extends GenericTest {
 
         String confJson = ConfigHandling.getDefaultConfiguration();
 
+
         //retrieve doc ids of installers
         Map<String, String> docIds = lennyActions.getInstallersDocIds(Long.valueOf(customerId), Integer.parseInt(data.get("Download timeout")));
         

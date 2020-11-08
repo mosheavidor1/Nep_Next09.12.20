@@ -18,7 +18,6 @@ public class GlobalTools {
 	public static final String previousBinaryVersion = "1.3.0";
 	public static final String currentBinaryBuild = "1.4.0.9999";
 	
-	
 	public static final String [] environmentsNamesArray = {"qa","inc","stg","ams","apj","emea"};
     
 	

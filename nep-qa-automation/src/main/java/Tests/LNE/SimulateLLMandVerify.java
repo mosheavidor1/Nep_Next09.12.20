@@ -27,12 +27,12 @@ public class SimulateLLMandVerify extends GenericTest {
     static final String EP_LCA_SYSLOG_log_pattern = "Sent %s events.";
     static final String command_linuxLCA = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \".txt was sent successfully\"";
     static final String command_linuxLCA_SYSLOG = "cat /opt/tw-endpoint/data/logs/tw-endpoint-agent_0.log | grep -e \"Sent %s events.\"";
-    private static final int schedule_report_timeout = 120000; //120 seconds
-    private static int checkUPdatesInterval;
     String expectedNumberOfMessages;
     String lcaSyslogOnLenny;
     private static String customerId;
-    
+    private static int agentInstallTimeout;
+    private static int verifyLogsTimeout = 120;//120 seconds
+    private static int checkUPdatesInterval;
     
     @Factory(dataProvider = "getData")
     public SimulateLLMandVerify(Object dataToSet) {
@@ -42,10 +42,13 @@ public class SimulateLLMandVerify extends GenericTest {
     @BeforeTest
     public void init() {
     	customerId = getGeneralData().get("Customer Id");
+        agentInstallTimeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
         checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
+        
+	   
     }
 
-    @Test(groups = { "SimulateLLMandVerify" } )
+    @Test(groups = { "SimulateLLMandVerify" }, priority=61  )
     public void SimulateLLMandVerifyDelivery()  {
     	
     	try {
@@ -57,36 +60,43 @@ public class SimulateLLMandVerify extends GenericTest {
   	        expectedNumberOfMessages = data.get("ExpectedResult");
   	        
   	        JLog.logger.info("Starting SimulateLLMandVerifyDelivery. Log type: {}.  Expected number of messages in log: {}.", log_type, expectedNumberOfMessages);
+  	        
+  	        JLog.logger.info("Going to set configuration with LLM disabled, and waits until agent updates");
+  		    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getConfiguration("LLM LFM Disabled"));
+  		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
+  	        
+  	        //Read configuration and update the host tags
+            String confJsonName = data.get("Configuration Name");
+		    String confJson = ConfigHandling.getConfiguration(confJsonName);	  	    
+            confJson = confJson.replaceAll(ConfigHandling.lennyIpPlaceholder, GlobalTools.getClusterToTest()); 	        
 
   	        lcaSyslogOnLenny = syslog_path + data.get("EP_HostName_1") + "/local0.log";
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		    
-		    int timeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
-		    agent.stopEPService(timeout);
+		    JLog.logger.info("Going to stop the agent service, clean agent logs/files, set the needed configuration for the customer and finally start the agent service.");		    
+		    agent.stopEPService(agentInstallTimeout);
+		    
+		    //Set the conf here, so that the endpoint will get it right upon starting
+            DsMgmtActions.SetCustomerConfiguration(customerId, confJson);		    
+		    //TODO: compare json cofniguration on agent
 		
 		    agent.clearFile(agent.getAgentLogPath()); 
             agent.clearFile(LLM_Syslog_path);  
             agent.clearFile(agent.getDbJsonPath());
             
-            agent.startEPService(timeout);
-            
-		    //Read configuration and update the host tags
-            String confJsonName = data.get("Configuration Name");
-		    String confJson = ConfigHandling.getConfiguration(confJsonName);	  	    
-            confJson = confJson.replaceAll(ConfigHandling.lennyIpPlaceholder, GlobalTools.getClusterToTest());
-            		
-            DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
-		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
-		    //TODO: compare json cofniguration on agent
-	         
             if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
             	lennyActions.clearFile(lcaSyslogOnLenny);
             }
+                       
+            agent.startEPService(agentInstallTimeout);
+            
+            JLog.logger.info("Going to sleep 1 minute before generating LLM input");
+            Thread.sleep(60000);//60 seconds
 		    createLLM_input();
+		    JLog.logger.info("Going to sleep 1 minute until events/files are collected");
+		    Thread.sleep(60000);//60 seconds
 		    verifySyslogInAgent(LLM_Syslog_path, EP_Syslog_pattern);
 		    
-		    Thread.sleep(schedule_report_timeout);
-	
 	        if (log_type.equalsIgnoreCase( "SIEM")) {
 	            verifyLogsSentToSiem(command_linuxSIEM);
 	        } else if (log_type.equalsIgnoreCase("LCA")) {
@@ -117,8 +127,8 @@ public class SimulateLLMandVerify extends GenericTest {
     private void verifyLogsSentToSiem(String command) {
     	JLog.logger.info("Going to verify logs sent to SIEM");
 
-    	String res = agent.verifyExpectedOnCommandResult(command, ".zip was sent successfully");        
-        org.testng.Assert.assertTrue(res != null);
+    	String res = agent.verifyExpectedOnCommandResult(command, ".zip was sent successfully", verifyLogsTimeout);        
+    	 org.testng.Assert.assertTrue(null != res, "Failed to find expected messages in log");
                 
         int start = res.lastIndexOf("dla_");
         int stop = res.lastIndexOf(".zip");
@@ -136,8 +146,8 @@ public class SimulateLLMandVerify extends GenericTest {
     private void verifyLogsSentToLca(String command) {
     	JLog.logger.info("Going to verify logs sent to LCA");
 
-        String res = agent.verifyExpectedOnCommandResult(command, ".txt was sent successfully");
-        org.testng.Assert.assertTrue(res != null);
+        String res = agent.verifyExpectedOnCommandResult(command, ".txt was sent successfully", verifyLogsTimeout);
+        org.testng.Assert.assertTrue(null != res, "Failed to find expected messages in log");
         
         int start = res.lastIndexOf("dla_");
         int stop = res.lastIndexOf(".txt");
@@ -155,7 +165,8 @@ public class SimulateLLMandVerify extends GenericTest {
     private void verifyLogsSentToLcaSyslog(String command) {
     	JLog.logger.info("Going to verify logs sent to LCA SYSLOG according to logs on agent");
         String patt = String.format(EP_LCA_SYSLOG_log_pattern, expectedNumberOfMessages);
-        String res = agent.verifyExpectedOnCommandResult(command, patt);
+        String res = agent.verifyExpectedOnCommandResult(command, patt, verifyLogsTimeout);
+        org.testng.Assert.assertTrue(null != res, "Failed to find expected messages in log");
         
         // now check on LNE       
         JLog.logger.info("Going to verify logs received in Lenny according to logs on Lenny");
@@ -181,8 +192,17 @@ public class SimulateLLMandVerify extends GenericTest {
         if (agent!=null) {
             agent.close();
         }
-	    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getDefaultConfiguration());	    
     }
+    
+    /*
+    @AfterTest
+    public void clean(){
+    	if (destLogFiles != null) {
+    		for (int i = 0; i < destLogFiles.size(); i++) {
+    			//TODO: delete files from destination
+    		}
+    	}
+    }*/
 
 
 }

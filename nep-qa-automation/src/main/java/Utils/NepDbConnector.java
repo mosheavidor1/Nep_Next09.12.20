@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Actions.LNEActions;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
@@ -135,16 +136,35 @@ public class NepDbConnector {
 		}
 	}
 
-	public ResultSet getCentComCallByType(String centComCall, String epName, String endpointIP, String customerID, String timestamp) {
+	public ResultSet getCentComCallByType(String centComCall, String epName, String oldEpName,String endpointIP, String customerID, String timestamp) {
 		try {
 			verifyCentComCalls.setString(1, centComCall);
-			epName = "%name=" + epName + ",%";
-			verifyCentComCalls.setString(2, epName);
+
 			customerID = "%customerId=" + customerID + "%";
-			verifyCentComCalls.setString(3, customerID);
-			endpointIP = "%Ip=" + endpointIP + ",%";
-			verifyCentComCalls.setString(4, endpointIP);
+			verifyCentComCalls.setString(2, customerID);
+
+			if(centComCall.equalsIgnoreCase(LNEActions.CentcomMethods.RENAME_ENDPOINT.toString())){
+				epName = "%newName=" + epName + "]%";
+			}
+			else {
+				epName = "%name=" + epName + ",%";
+
+			}
+
+			verifyCentComCalls.setString(3, epName);
+
+			if(centComCall.equalsIgnoreCase(LNEActions.CentcomMethods.RENAME_ENDPOINT.toString())){
+				oldEpName = "%oldName=" + oldEpName + ",%";
+				verifyCentComCalls.setString(4, oldEpName);
+
+			}
+			else {
+				endpointIP = "%Ip=" + endpointIP + ",%";
+				verifyCentComCalls.setString(4, endpointIP);
+			}
+
 			verifyCentComCalls.setString(5, timestamp);
+
 			ResultSet rs = verifyCentComCalls.executeQuery();
 			return rs;
 		} catch (Exception ex) {

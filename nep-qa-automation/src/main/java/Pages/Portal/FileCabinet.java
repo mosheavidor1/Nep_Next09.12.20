@@ -22,7 +22,7 @@ public class FileCabinet extends GenericPage {
     @FindBy(how= How.XPATH,using=endPointExeXpath)
     public WebElement TrustwaveEndpointExe_element;
 
-    private static final String endPointLnxXpath = "//span[contains(text(),'TrustwaveEndpoint.lnx') and not(contains(text(),'sha256'))]";
+    private static final String endPointLnxXpath = "//span[contains(text(),'TrustwaveEndpoint.centos') and not(contains(text(),'sha256'))]";
     public static final By endPointLnxBy = By.xpath(endPointLnxXpath);
     @FindBy(how= How.XPATH,using=endPointLnxXpath)
     public WebElement TrustwaveEndpointLnx_element;
