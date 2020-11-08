@@ -24,8 +24,8 @@
         	<class name = "Tests.LNE.InitCustomer"/>
             <class name = "Tests.LNE.InitAndCleanup"  />
             <class name = "Tests.LNE.InstallEP" />
-          <!--   <class name = "Tests.LNE.BinaryUpdate" />
-          <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />-->
+            <class name = "Tests.LNE.BinaryUpdate" />
+          <!-- <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />-->
             <class name = "Tests.LNE.VerifyEndpointConnectedStatus" />
             <class name = "Tests.LNE.SimulateLFMandVerify" /> 
         </classes>
