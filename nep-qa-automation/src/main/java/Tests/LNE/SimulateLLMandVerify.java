@@ -102,7 +102,7 @@ public class SimulateLLMandVerify extends GenericTest {
 	        } else if (log_type.equalsIgnoreCase("LCA")) {
 	            verifyLogsSentToLca(command_linuxLCA);
 	        } else if (log_type.equalsIgnoreCase("LCA_SYSLOG")) {
-	            String command = String.format(command_linuxLCA_SYSLOG, expectedNumberOfMessages);
+	            String command = String.format(command_linuxLCA_SYSLOG, data.get("ExpectedResultRE"));//Expected result in Regular expression, tolerant to 30/31
 	            verifyLogsSentToLcaSyslog(command);
 	        }else {
 	            org.testng.Assert.fail("Unknown server log_type: " +  log_type);
@@ -164,15 +164,14 @@ public class SimulateLLMandVerify extends GenericTest {
 
     private void verifyLogsSentToLcaSyslog(String command) {
     	JLog.logger.info("Going to verify logs sent to LCA SYSLOG according to logs on agent");
-        String patt = String.format(EP_LCA_SYSLOG_log_pattern, expectedNumberOfMessages);
-        String res = agent.verifyExpectedOnCommandResult(command, patt, verifyLogsTimeout);
+        String res = agent.verifyExpectedOnCommandResult(command, null, verifyLogsTimeout);
         org.testng.Assert.assertTrue(null != res, "Failed to find expected messages in log");
         
         // now check on LNE       
-        JLog.logger.info("Going to verify logs received in Lenny according to logs on Lenny");
+        JLog.logger.info("Result: {}. Going to verify logs received in Lenny according to logs there", res);
         res = lennyActions.numLinesinFile(lcaSyslogOnLenny, EP_Syslog_pattern);        
         org.testng.Assert.assertTrue(null != res , "Failed, response is null.");
-        org.testng.Assert.assertTrue(res.contains(expectedNumberOfMessages), "Failed: number of messages is: " + res + ". Expected is: " + expectedNumberOfMessages);          
+        org.testng.Assert.assertTrue((res.contains(expectedNumberOfMessages) || res.contains(expectedNumberOfMessages + 1)), "Failed: number of messages is: " + res + ". Expected is: " + expectedNumberOfMessages + " or + 1");          
         JLog.logger.info("done");
     }
     
@@ -181,7 +180,8 @@ public class SimulateLLMandVerify extends GenericTest {
         JLog.logger.info("Going to check that expected string '{}' exist in '{}' ", pattern, filename);
     	
         String res = agent.findInText(filename, pattern);
-        org.testng.Assert.assertTrue(res!= null);
+        org.testng.Assert.assertTrue(res!= null, "Response is null!");
+        JLog.logger.info("Response is: '{}'. \nChecking occurences of '{}' and expect '{}'", res, pattern, expectedNumberOfMessages);
         int num_of_patterns = res.split(pattern,-1).length - 1;
         org.testng.Assert.assertEquals(Integer.parseInt(expectedNumberOfMessages),num_of_patterns);
         JLog.logger.info("done");

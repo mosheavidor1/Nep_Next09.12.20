@@ -28,6 +28,7 @@
           <!-- <class name = "Tests.LNE.SchemaVersionsAndUpgrade" />-->
             <class name = "Tests.LNE.VerifyEndpointConnectedStatus" />
             <class name = "Tests.LNE.SimulateLFMandVerify" /> 
+            <class name = "Tests.LNE.SimulateLLMandVerify" /> 
         </classes>
     </test>
 
