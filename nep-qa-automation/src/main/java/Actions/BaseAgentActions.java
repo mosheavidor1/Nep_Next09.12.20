@@ -344,7 +344,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     }*/
 
     /**
-     * Verifies that output of command contains the expectedStr
+     * Verifies that output of command is not empty + contains the expectedStr (if not null)
      */
     public String verifyExpectedOnCommandResult(String command, String expectedStr, int timeout) {
     	
@@ -370,15 +370,23 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     
     private String  verifyExpectedOnCommandResult(String command, String expectedStr) {
     	
-    	JLog.logger.info("Going to run command '{}' and expect '{}' in result", command, expectedStr);
+    	if (expectedStr == null) {
+    		JLog.logger.info("Going to run command '{}' and expect non empty result", command);
+    	}else {
+    		JLog.logger.info("Going to run command '{}' and expect '{}' in result ", command, expectedStr);
+    	}
         String result = connection.Execute(command);
         
-        if(result == null || result.isEmpty() || !result.contains(expectedStr)) {
-        	JLog.logger.info("Result of command is still not satisfied: '{}'", result);
+        if(result == null || result.isEmpty()) {
+        	JLog.logger.info("Result of command is still null/empty");
         	return null;
         }
-        JLog.logger.info("Found expected string!");
-        return result;
+        if (expectedStr == null || result.contains(expectedStr)) {
+        	JLog.logger.info("Result as expected!");
+        	return result;
+        }
+        JLog.logger.info("Result of command is still not satisfied: '{}'", result);
+    	return null;
     	
     }
 

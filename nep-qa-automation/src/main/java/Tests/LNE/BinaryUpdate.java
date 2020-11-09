@@ -200,7 +200,7 @@ public class BinaryUpdate extends GenericTest {
 
             // Restarting services so it will know new binary package is uploaded
             // (instead of waiting for 15 minutes)
-            lneActions.restartStubServiceWaitForFinish(120);
+            lneActions.restartStubService();
             lneActions.restartDsMgmtService();
             lneActions.restartDsService();
 //            lneActions.restartServiceWaitForFinish(LNEActions.NepService.DS,120);
@@ -248,7 +248,7 @@ public class BinaryUpdate extends GenericTest {
 
             // Restarting services so it will know new binary package is uploaded
             // (instead of waiting for 15 minutes)
-            lneActions.restartStubServiceWaitForFinish(120);
+            lneActions.restartStubService();
             lneActions.restartDsMgmtService();
             lneActions.restartDsService();
 //            lneActions.restartStubServiceWaitForFinish(120);
