@@ -3,13 +3,37 @@ import java.time.LocalDateTime
 SOURCES_REPOSITORY = 'https://bitbucket.trustwave.com/scm/nep/nep-qa.git'
 DISPLAY_VERSION =  "${BUILD_NUMBER}-${env.NEP_BRANCH}"
 
+
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
 
-NODE_TO_RUN = "nep-qa-nightly-27-223"
+
+NEXUS_PROXY = "10.85.26.45"
+
+ENV_NODE_MAP = [ "inc"       : "nep-qa-nightly-27-223",
+                 "Portal QA" : "nep-qa-nightly-25-229" ]
+
+
+ENV_XML_MAP  = [ "inc"        : "SmokeIntC.xml",
+                  "Portal QA" : "SmokePortalQA.xml" ]
+
+ENV_PARAM_MAP =  [ "inc"       : "inc",
+                   "Portal QA" : "qa" ]
+
+NODE_TO_RUN    = ENV_NODE_MAP.get(ENV_NAME)
+XML_PARAM      = ENV_XML_MAP.get(ENV_NAME) 
+JAR_ENV_PARAM  = ENV_PARAM_MAP.get(ENV_NAME)
+
+echo """
+     ENV_NAME                  : ${ENV_NAME}
+     NODE_TO_RUN               : ${NODE_TO_RUN}
+     XML_PARAM                 : ${XML_PARAM}
+     JAR_ENV_PARAM             : ${JAR_ENV_PARAM}
+"""
+
+currentBuild.displayName = "${BUILD_NUMBER}-${ENV_NAME}"
 
 node(NODE_TO_RUN) {
 
-    NEXUS_PROXY = "10.85.26.45"
     MODULE_ARTIFACT_SRC = ""
     MODULE_ARTIFACT_DST = "${WORKSPACE}/nep-qa-automation/nep-qa-automation.jar"
 
@@ -20,8 +44,10 @@ node(NODE_TO_RUN) {
                 def params = readProperties file: "${PROPERTIES_FILE_PATH}"
                 NEP_QA_AUTOMATION_VERSION = params['qaautomation_version']
 
-                echo "PROPERTIES_FILE_PATH = ${PROPERTIES_FILE_PATH}"
-                echo "NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}"
+                echo """
+                    PROPERTIES_FILE_PATH      : ${PROPERTIES_FILE_PATH}
+                    NEP_QA_AUTOMATION_VERSION : ${NEP_QA_AUTOMATION_VERSION}
+                """
                 env.currentTime = LocalDateTime.now()
 
                 MODULE_ARTIFACT_SRC = "http://${NEXUS_PROXY}/content/repositories/releases/com/trustwave/nep/nep-qa/nep-qa-automation/${NEP_QA_AUTOMATION_VERSION}/nep-qa-automation-${NEP_QA_AUTOMATION_VERSION}-jar-with-dependencies.jar"
@@ -33,12 +59,10 @@ node(NODE_TO_RUN) {
 
             // print params:
             echo """
-            PROPERTIES_FILE_PATH      = ${PROPERTIES_FILE_PATH}
-            NEP_QA_AUTOMATION_VERSION = ${NEP_QA_AUTOMATION_VERSION}
-
-            ENV_NAME:             :  ${ENV_NAME}
-            NEP_BRANCH            :  ${NEP_BRANCH}
-            EMAIL_LIST            :  ${EMAIL_LIST}
+            PROPERTIES_FILE_PATH      : ${PROPERTIES_FILE_PATH}
+            NEP_QA_AUTOMATION_VERSION : ${NEP_QA_AUTOMATION_VERSION}
+            NEP_BRANCH                : ${NEP_BRANCH}
+            EMAIL_LIST                : ${EMAIL_LIST}
             """
 
             // clean Workspace
@@ -59,12 +83,12 @@ node(NODE_TO_RUN) {
                 WAIT_PARAM = WAIT_FOR_EVENTS.isEmpty() ? "" : "WaitForEvents120"
 
                 JAVA_JAR_CMD = """
-                   java -jar ${MODULE_ARTIFACT_DST} SmokeIntC.xml ${ENV_NAME} ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
+                java -jar ${MODULE_ARTIFACT_DST} ${XML_PARAM} ${JAR_ENV_PARAM} ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
                 """.trim()
 
                echo "$JAVA_JAR_CMD"
                sh """
-                   ${JAVA_JAR_CMD}
+                    ${JAVA_JAR_CMD}
                """
             }
         }
