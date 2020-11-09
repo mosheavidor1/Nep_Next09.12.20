@@ -30,7 +30,7 @@ echo """
      JAR_ENV_PARAM             : ${JAR_ENV_PARAM}
 """
 
-currentBuild.displayName = "${BUILD_NUMBER}-${ENV_NAME}"
+currentBuild.displayName = "#${BUILD_NUMBER}-${ENV_NAME}"
 
 node(NODE_TO_RUN) {
 
