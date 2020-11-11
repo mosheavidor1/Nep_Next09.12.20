@@ -58,6 +58,7 @@ public class NepDbConnector {
 			getDbTimestamp = conn.prepareStatement(GET_DB_TIMESTAMP);
 		}
 		catch(Exception ex) {
+			JLog.logger.error("Failed to connect to Nep DB", ex);
 			throw new RuntimeException("Failed to connect to Nep DB", ex);
 		}
 	}

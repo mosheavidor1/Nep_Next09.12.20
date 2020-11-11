@@ -7,6 +7,7 @@ import Actions.DsMgmtActions;
 import Actions.SimulatedAgentActions;
 import Tests.RecordedTest;
 import Utils.ConfigHandling;
+import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 
 import java.time.Instant;
@@ -23,7 +24,8 @@ public class InitAndCleanupPortal extends RecordedTest {
     private String customerId;
     public static String epNameForConnectivityTest = "ChiefEp";
     public static Instant whenInit = Instant.now();
-    public static SimulatedAgentActions simulatedAgentForConnectivityTest;
+    //public static SimulatedAgentActions simulatedAgentForConnectivityTest;
+    public static SimulatedAgentActions simulatedAgentForDelete;
     
     
 
@@ -47,12 +49,17 @@ public class InitAndCleanupPortal extends RecordedTest {
 
         JLog.logger.info("Starting Cleanup agents");
         
+        
+        
         agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         String epName = agent.getEpName();
+        String uuid = getDbConnector().getUuidByName(epName, customerId);
         if (epName == null || epName.isEmpty()) {
         	JLog.logger.warn("EP name is null, skipping cleanup!");
         	return;
         }
+        
+        simulatedAgentForDelete = new SimulatedAgentActions(getGeneralData().get("DS Name"), customerId);
         
         JLog.logger.info("Going to send delete action to Centcom for agent on hostanem {}", epName);
         boolean deletedInUI = deleteEndpointFromCentCom(epName);
@@ -60,25 +67,23 @@ public class InitAndCleanupPortal extends RecordedTest {
         if (deletedInUI) {
         	JLog.logger.info("Agent was found and delete action was done in Centcom, going to wait until service is uninstalled from agent");
         	verifyServiceUninstalledOrForceUninstall(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
+        	sendCheckUpdatesBySimulatedAgent(uuid, epName);
         	return;
         }
        
        	JLog.logger.info("Agent wasn't found in UI, going to delete from DS Mgmt (by simulated agent) if exists in DB");
-        
-        String uuid = getDbConnector().getUuidByName(epName, customerId);
-        
         if (uuid == null) {
         	JLog.logger.info("Endpoint {} was not found in DB, going to uninsatll if service is running on agent.", epName);
         	verifyServiceUninstalledOrForceUninstall(0);  
         	return;
         }
         
-        JLog.logger.info("Agent exists, going to delete it from DS Mgmt.");
+        JLog.logger.info("Agent exists in DB, going to delete it from DS Mgmt.");
         DsMgmtActions.deleteAndVerifyResponse(customerId, epName);        
         JLog.logger.info("Done. Going to wait until service is uninstalled from agent");
-        verifyServiceUninstalledOrForceUninstall(Integer.parseInt(getGeneralData().get("EP Installation timeout")));    	
-        JLog.logger.info("Going to set default configuration for this customer.");
-        
+        verifyServiceUninstalledOrForceUninstall(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
+        sendCheckUpdatesBySimulatedAgent(uuid, epName);
+        JLog.logger.info("Going to set default configuration for this customer.");        
         DsMgmtActions.setCustomerConfig(getGeneralData().get("Customer Id"), ConfigHandling.getDefaultConfiguration());
         JLog.logger.info("Done");       
     }
@@ -121,6 +126,15 @@ public class InitAndCleanupPortal extends RecordedTest {
         }
         
 
+    }
+    
+    private void sendCheckUpdatesBySimulatedAgent(String uuid, String epName) {
+    	if (uuid == null || epName == null) {
+    		return;
+    	}
+    	JLog.logger.info("Goind to send check updates by a simulated agent, to catch the 'uninstall' action, if applicable.");
+    	simulatedAgentForDelete.sendCheckUpdatesWithoutVerify(uuid, epName, GlobalTools.currentBinaryBuild, 1, 0, GlobalTools.currentSchemaVersion, customerId);
+    	
     }
    
     

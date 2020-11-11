@@ -126,6 +126,7 @@ public class SimulatedAgentActions {
 	
 	/**
 	 *  Sends check updates post request to Lenny with the given params, without verifying response 200
+	 *  This call must be after register, otherwise the uuid will be null
 	 * 
 	 * @param epName
 	 * @param binVersion
@@ -205,16 +206,30 @@ public class SimulatedAgentActions {
 		JLog.logger.info("Starting checkUpdates. Params: uuid {} epName {} binVersion {} confVersion {} reporting status {} schema version {} "
 				, uuid, epName, binVersion, confVersion, reportingStatus, schemaVersion);
 		
-		JLog.logger.info("Will send request {}", String.format(CHECK_UPDATES, uuid, binVersion, confVersion, reportingStatus,epName ,schemaVersion));
+		JLog.logger.debug("Will send request {}", String.format(CHECK_UPDATES, uuid, binVersion, confVersion, reportingStatus,epName ,schemaVersion));
 
 		try {
-			return
-					given().spec(requestSpecification)
-							.contentType("application/json")
-							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, customerId))
-							.when()
-							.get(String.format(CHECK_UPDATES, uuid, binVersion, confVersion, reportingStatus,epName ,schemaVersion));
-			
+				Response response = given().spec(requestSpecification)
+						.contentType("application/json")
+						.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, customerId))
+						.when()
+						.get(String.format(CHECK_UPDATES, uuid, binVersion, confVersion, reportingStatus,epName ,schemaVersion));
+				
+				if (response == null) {
+					return response;
+				}
+				if (response.statusCode() != HttpStatus.SC_OK) {
+					JLog.logger.info("Status code: {}", response.statusCode());
+					return response;
+				}
+				JLog.logger.info("Got 200 OK");
+				try {
+					JSONObject json = new JSONObject(response.body().asString());
+		            String action = json.getString("action");
+		            JLog.logger.info("Action: {}", action);
+				}catch(Exception ex) {//Ignore exceptions
+				}
+				 return response;
 			
 
 		}  catch (Exception e) {
