@@ -20,7 +20,7 @@
   <WindowWidth>28800</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>9</ActiveSheet>
+  <ActiveSheet>13</ActiveSheet>
   <FirstVisibleSheet>9</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
@@ -657,7 +657,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
@@ -841,7 +840,7 @@
    <Column ss:Width="131.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="185.25"/>
    <Column ss:Index="7" ss:AutoFitWidth="0" ss:Width="228"/>
-   <Column ss:AutoFitWidth="0" ss:Width="235.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="304.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="185.25" ss:Span="3"/>
    <Column ss:Index="13" ss:Width="75"/>
    <Column ss:Width="67.5"/>
@@ -918,7 +917,7 @@
     <Cell><Data ss:Type="String">https://portal.qa.tw-test.net</Data></Cell>
     <Cell><Data ss:Type="String">siem-ingress.qa.tw-test.net</Data></Cell>
     <Cell><Data ss:Type="String">endpoint-protection-services.qa.tw-test.net</Data></Cell>
-    <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.qa.tw-test.net:3306/nep_data</Data></Cell>
+    <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.qa.tw-test.net:3306/nep_data?useSSL=false</Data></Cell>
     <Cell><Data ss:Type="String">nep_data</Data></Cell>
     <Cell><Data ss:Type="String">P@ssw0rd123</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">2004822</Data></Cell>
@@ -939,9 +938,9 @@
     <Cell><Data ss:Type="String">https://portal.inc.tw-test.net</Data></Cell>
     <Cell><Data ss:Type="String">hdi2rvml01-inc.tw-test.net</Data></Cell>
     <Cell><Data ss:Type="String">endpoint-protection-services.inc.tw-test.net</Data></Cell>
-    <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.inc.tw-test.net:3306/nep_data</Data></Cell>
+    <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.inc.tw-test.net:3306/nep_data?useSSL=false</Data></Cell>
     <Cell><Data ss:Type="String">nep_data</Data></Cell>
-    <Cell><Data ss:Type="String">P@ssw0rd123</Data></Cell>
+    <Cell ss:StyleID="s62" ss:HRef="mailto:P@ssw0rd123"><Data ss:Type="String">P@ssw0rd123</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">1398155</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">1398344</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -982,10 +981,13 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
+   <LeftColumnVisible>3</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveCol>5</ActiveCol>
+     <ActiveRow>3</ActiveRow>
+     <ActiveCol>7</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
