@@ -12,7 +12,7 @@
                 <group  name= "DownloadInstallers" depends-on="CreateNewInstallers" ></group>
                 <group  name= "InstallEP" depends-on="DownloadInstallers" ></group>
                 <group  name= "verify" depends-on="InstallEP" ></group>
-                <group name= "logs" depends-on= "InstallEP" ></group>
+                <group name= "logs" depends-on= "verify" ></group>
                 <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
                 <group  name= "ClusterConfiguration" depends-on="InstallEP" ></group>
                 <group  name= "StandaloneEPconfiguration" depends-on="InitAndCleanup" ></group>
@@ -35,8 +35,8 @@
     		<class name = "Tests.LNE.ClusterConfiguration" />
       		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
             <class name = "Tests.LNE.RenameEndpoint" />
-            <class name = "Tests.LNE.RevokeEndpoint" />
-           <class name = "Tests.LNE.DeleteEndpoint" />
+            <!--class name = "Tests.LNE.RevokeEndpoint" />
+           <class name = "Tests.LNE.DeleteEndpoint" /-->
 
 
         </classes>
