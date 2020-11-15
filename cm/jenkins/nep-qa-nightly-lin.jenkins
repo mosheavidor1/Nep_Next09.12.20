@@ -105,7 +105,7 @@ node(NODE_TO_RUN) {
         echo "currentBuild.result = " + currentBuild.result
         
         if (currentBuild.result == 'SUCCESS') {
-            sendEMail("Success")
+            sendEmail("Success")
         }
         else {
             sendEmail("Failure")
