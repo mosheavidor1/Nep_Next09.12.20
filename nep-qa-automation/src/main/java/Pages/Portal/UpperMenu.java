@@ -21,7 +21,7 @@ public class UpperMenu extends GenericPage{
 
 
 	//private static final String customerSelectorXpath = "//twa-portal-stage[not(@hidden)]//twa-org-selector/div/div[3]/div[1]";
-	private static final String customerSelectorXpath = "//twa-portal-stage[not(@hidden)]//twa-org-selector/div/div[3]";
+	private static final String customerSelectorXpath = "//twa-org-selector";
 	public static final By customerSelectorBy = By.xpath(customerSelectorXpath);
 	@FindBy(how= How.XPATH,using=customerSelectorXpath)
 	public WebElement customerSelector_element;
