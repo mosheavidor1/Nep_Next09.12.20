@@ -20,7 +20,7 @@
                 <group  name= "SimulateLLMandVerify" depends-on="InstallEP" ></group>
                 <group  name= "SimulateLFMandVerify" depends-on="InstallEP" ></group>
                 <group  name= "StandaloneEPconfiguration" depends-on="InitAndCleanup" ></group>
-                <group  name= "RenameEndpoint" depends-on="InitAndCleanup" ></group>
+<!--                <group  name= "RenameEndpoint" depends-on="InitAndCleanup" ></group>-->
                 
             </dependencies>
         </groups>
@@ -36,7 +36,7 @@
               <!-- 	<class name = "Tests.LNE.SimulateLLMandVerify"/>
              	<class name = "Tests.LNE.SimulateLFMandVerify"/>-->
           		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>   
-          		<class name = "Tests.LNE.RenameEndpoint"/>
+<!--          		<class name = "Tests.LNE.RenameEndpoint"/>-->
           		            
                 <!--class name = "Tests.LNE.RevokeEndpoint" /-->
 	          <!--  <class name = "Tests.LNE.DeleteEndpoint" />-->
