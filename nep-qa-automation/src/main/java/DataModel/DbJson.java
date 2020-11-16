@@ -14,8 +14,6 @@ public class DbJson {
     private String dsLastCommunicationTime;
     @JsonProperty("DsInitialHost")
     private String dsInitialHost;
-    @JsonProperty("EndpointCompName")
-    private String endpointCompName;
 
 
     public String getEndpointId() {
@@ -42,11 +40,5 @@ public class DbJson {
         this.dsInitialHost = dsInitialHost;
     }
 
-    public String getEndpointCompName() {
-        return endpointCompName;
-    }
-
-    public void setEndpointCompName(String endpointCompName) {
-        this.endpointCompName = endpointCompName;
-    }
+   
 }
