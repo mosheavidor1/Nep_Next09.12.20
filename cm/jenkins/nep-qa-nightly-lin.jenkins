@@ -10,14 +10,14 @@ PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}
 NEXUS_PROXY = "10.85.26.45"
 
 ENV_NODE_MAP = [ "inc"       : "nep-qa-nightly-27-223",
-                 "Portal QA" : "nep-qa-nightly-25-229" ]
+                 "Portal_QA" : "nep-qa-nightly-25-229" ]
 
 
 ENV_XML_MAP  = [ "inc"        : "SmokeIntC.xml",
-                  "Portal QA" : "SmokePortalQA.xml" ]
+                  "Portal_QA" : "SmokePortalQA.xml" ]
 
 ENV_PARAM_MAP =  [ "inc"       : "inc",
-                   "Portal QA" : "qa" ]
+                   "Portal_QA" : "qa" ]
 
 NODE_TO_RUN    = ENV_NODE_MAP.get(ENV_NAME)
 XML_PARAM      = ENV_XML_MAP.get(ENV_NAME) 
