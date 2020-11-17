@@ -62,8 +62,8 @@ node('nep-build-centos7') {
                     DS_DATE = ${DS_DATE}
                     DS_MGMT_VERSION = ${DS_MGMT_VERSION}
                     DS_MGMT_VERSION = ${DS_MGMT_DATE}
-                    IS_VERSION = = ${IS_VERSION}
-                    IS_VERSION = = ${IS_DATE}
+                    IS_VERSION = ${IS_VERSION}
+                    IS_VERSION = ${IS_DATE}
 
                     """
                 }
@@ -94,7 +94,7 @@ node('nep-build-centos7') {
                 ESX_IP   = (NEP_BRANCH == 'master') ? '10.85.26.75' : '10.85.26.75' // yes, the same now
                 VM_NAME  = (NEP_BRANCH == 'master') ? 'NEP-DEV-19' : 'NEP-DEV-20'
                 LIN_AGENT_IP = (NEP_BRANCH == 'master') ? '10.85.24.204' : '10.85.24.202'
-                LIN_CENTOS8_AGENT_IP = '10.85.24.39'
+                LIN_CENTOS8_AGENT_IP = (NEP_BRANCH == 'master') ? '10.85.24.39' : ' - '
                 S3_BUCKET_ID = VM_NAME.toLowerCase()
 
                 //nepa-is-1.3.0.988.war
@@ -334,9 +334,16 @@ node('nep-build-centos7') {
                             // SETTINGS_XML = "SmokeTest.xml"
                             // SmokeTest.xml 10.85.25.76
                             // java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!"
-                            bat """
-                            java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave" "lnx]${LIN_CENTOS8_AGENT_IP}]root]trustwave"
-                            """
+                            if (NEP_BRANCH == 'master') {
+                                bat """
+                                java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave" "lnx]${LIN_CENTOS8_AGENT_IP}]root]trustwave"
+                                """
+                            }
+                            else {
+                                bat """
+                                java -jar "${MODULE_ARTIFACT_DST}" "${SETTINGS_XML}" "${HOST_IP}" "win]${WIN_IP}]QA-NEP]finjan!" "lnx]${LIN_AGENT_IP}]root]trustwave"
+                                """
+                            }
 
 
                             // bat """
@@ -415,7 +422,7 @@ node('nep-build-centos7') {
                 currentBuild.result  = 'SUCCESS'
             }
 
-        
+
             if (currentBuild.result == 'SUCCESS') {
                 node('master') {
                     F="/var/jenkins_home/workspace/smoke-params-${env.NEP_BRANCH}"
@@ -453,7 +460,7 @@ node('nep-build-centos7') {
             else {
                 sendEmailExt()
             }
-    
+
             if (currentBuild.result == 'FAILURE') {
                 error "Pipeline failed, please read logs..."
             }
