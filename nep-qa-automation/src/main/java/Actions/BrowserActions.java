@@ -87,7 +87,11 @@ public class BrowserActions extends ManagerActions {
             login.UserName.SetText(userName);
             login.Continue.click();
             login.Password.SetText(password);
+            JLog.logger.debug("Waiting for login button to be clickable...");
+            login.WaitUntilPageLoad();
+            login.WaitUntilObjectClickable(login.loginButtonBy,60);
             login.LoginButton.click();
+            JLog.logger.debug("Login button clicked successfully...");
 
             //wait until page load
             dash.WaitUntilObjectClickable(DashboardPage.dashboradByID,120);
