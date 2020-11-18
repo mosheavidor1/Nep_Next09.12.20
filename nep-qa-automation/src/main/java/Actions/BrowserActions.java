@@ -213,6 +213,16 @@ public class BrowserActions extends ManagerActions {
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
             detailsPage.resetInstaller_element.click();
             detailsPage.continueButton_element.click();
+
+            //close alert button popup
+            //Temporarily waiting for alert box to disappear until fixing this issue better
+            Thread.sleep(10*1000);
+            UpperMenu upper = new UpperMenu();
+            if(upper.IsElementExist(upper.alretBoxCloseBy)){
+                upper.alretBoxCloseButton.click();
+            }
+
+
             detailsPage.openConfiguration_element.click();
 
             PublishConfiguration(waitForPublishInSec);
