@@ -33,7 +33,8 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 	protected String epIp, epUserName, epPassword, epName;
     protected SSHManager connection;
     public static final int connection_port =22;
-
+    private static final String command_enable_proxy = " -proxy ";
+    private static final String command_disable_proxy = " -reset_proxy";
     public static final String localFilePath = PropertiesFile.getManagerDownloadFolder() + "/" + "ConfigJsonCopy.txt"; 
 	
 	public BaseAgentActions(String epIp, String epUserName, String epPassword) {
@@ -455,5 +456,15 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
 		return epPassword;
 	}
 
+    public String enableProxy(String host, String port) {
+        String cmd = getServiceExecutablePath() + command_enable_proxy + host + " " + port;
+        String ret = connection.Execute(cmd);
+        return ret;
+    }
 
+    public String disableProxy() {
+        String cmd = getServiceExecutablePath() + command_disable_proxy;
+        String ret = connection.Execute(cmd);
+        return ret;
+    }
 }
