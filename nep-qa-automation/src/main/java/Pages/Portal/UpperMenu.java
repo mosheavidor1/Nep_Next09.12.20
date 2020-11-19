@@ -38,6 +38,12 @@ public class UpperMenu extends GenericPage{
 	@FindBy(how = How.XPATH, using = customerNameXpath)
 	public WebElement customerName;
 
+	private static final String alretBoxCloseXpath="//div[@class='alert-close tw tw-close _ngcontent-udp-2']";
+	public static final By alretBoxCloseBy = By.xpath(alretBoxCloseXpath);
+	@FindBy(how = How.XPATH, using = alretBoxCloseXpath)
+	public WebElement alretBoxCloseButton;
+
+
 	public static final By spinnerBy =By.xpath("//span/twa-spinner");
 
 

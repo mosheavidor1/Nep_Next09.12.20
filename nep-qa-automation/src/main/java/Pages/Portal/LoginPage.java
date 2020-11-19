@@ -1,5 +1,6 @@
 package Pages.Portal;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
@@ -21,10 +22,12 @@ public class LoginPage extends GenericPage{
 	@FindBy(how=How.ID,using="login-password--material-input")
 	 	private WebElement Password_element;
 	 	public TextBox Password;
-	 	
-	 @FindBy(how=How.ID,using="login-submit-button--material-button")
-	 	private WebElement LoginButton_element;
-		 public Button LoginButton;
+
+	private static final String loginButtonID = "login-submit-button--material-button";
+	public static final By loginButtonBy = By.id(loginButtonID);
+	@FindBy(how=How.ID,using=loginButtonID)
+	private WebElement LoginButton_element;
+	public Button LoginButton;
 
 
 		 public LoginPage () {

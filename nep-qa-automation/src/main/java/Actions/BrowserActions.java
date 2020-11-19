@@ -87,7 +87,11 @@ public class BrowserActions extends ManagerActions {
             login.UserName.SetText(userName);
             login.Continue.click();
             login.Password.SetText(password);
+            JLog.logger.debug("Waiting for login button to be clickable...");
+            login.WaitUntilPageLoad();
+            login.WaitUntilObjectClickable(login.loginButtonBy,60);
             login.LoginButton.click();
+            JLog.logger.debug("Login button clicked successfully...");
 
             //wait until page load
             dash.WaitUntilObjectClickable(DashboardPage.dashboradByID,120);
@@ -209,6 +213,16 @@ public class BrowserActions extends ManagerActions {
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
             detailsPage.resetInstaller_element.click();
             detailsPage.continueButton_element.click();
+
+            //close alert button popup
+            //Temporarily waiting for alert box to disappear until fixing this issue better
+            Thread.sleep(10*1000);
+            UpperMenu upper = new UpperMenu();
+            if(upper.IsElementExist(upper.alretBoxCloseBy)){
+                upper.alretBoxCloseButton.click();
+            }
+
+
             detailsPage.openConfiguration_element.click();
 
             PublishConfiguration(waitForPublishInSec);
