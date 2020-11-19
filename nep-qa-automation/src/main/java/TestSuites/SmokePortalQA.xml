@@ -13,11 +13,11 @@
                 <group  name= "InstallEP" depends-on="DownloadInstallers" ></group>
                 <group  name= "verify" depends-on="InstallEP" ></group>
                 <group name= "logs" depends-on= "verify" ></group>
-                <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
-                <group  name= "ClusterConfiguration" depends-on="InstallEP" ></group>
-                <group  name= "StandaloneEPconfiguration" depends-on="InitAndCleanup" ></group>
-                <group  name= "RevokeEndpoint" depends-on="InstallEP" ></group>
-                <group  name= "DeleteEndpoint" depends-on="InstallEP" ></group>
+                <group  name= "ChangeCustomerConfAndVerify" depends-on="logs" ></group>
+                <group  name= "ClusterConfiguration" depends-on="logs" ></group>
+                <group  name= "StandaloneEPconfiguration" depends-on="logs" ></group>
+                <group  name= "RevokeEndpoint" depends-on="logs" ></group>
+                <group  name= "DeleteEndpoint" depends-on="logs" ></group>
 <!--                <group  name= "RenameEndpoint" depends-on="InstallEP" ></group>-->
 
 
