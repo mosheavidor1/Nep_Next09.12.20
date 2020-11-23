@@ -33,7 +33,7 @@ public class ClusterConfiguration extends GenericTest {
         customerId = getGeneralData().get("Customer Id");
     }
 
-    @Test(groups = { "ClusterConfiguration" } priority = 20 )//so that it will run after the send logs test, im portal env
+    @Test(groups = { "ClusterConfiguration" }, priority = 20 )//so that it will run after the send logs test, im portal env
     public void setClusterConfiguration() {
         JLog.logger.info("Starting setClusterConfiguration test ...");
 
