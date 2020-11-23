@@ -47,7 +47,7 @@ public class StandaloneEPconfigurationVerify extends GenericTest {
         customerId = getGeneralData().get("Customer Id");
     }
 
-    @Test(groups = { "StandaloneEPconfiguration" })
+    @Test(groups = { "StandaloneEPconfiguration" }priority = 20 )//so that it will run after the send logs test, im portal env
     public void verifyStandaloneEPconfiguration()  {
     	try {
             JLog.logger.info("Starting StandaloneEPconfigurationVerify::verifyStandaloneEPconfiguration ...");
