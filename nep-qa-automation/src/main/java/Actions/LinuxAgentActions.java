@@ -27,7 +27,7 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     
     private static final String startCommand = "systemctl start tw-endpoint";
     private static final String stopCommand = "systemctl stop tw-endpoint";
-    
+    private static final String linux_service = LinuxinstallationFolder + "bin/tw-endpoint-service";
     private static final String scriptExtension = ".sh";
 
     public static final String hostnamePlusDomainCommandLinux = "hostname --fqdn";
@@ -62,6 +62,10 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     public String getVersionJsonPath() {
     	return versionJsonLinuxPath;
     }
+
+    public String getServiceExecutablePath() {return linux_service;}
+
+
        
     public String getVerifySiemCommand() {
     	return command_linuxSIEM;

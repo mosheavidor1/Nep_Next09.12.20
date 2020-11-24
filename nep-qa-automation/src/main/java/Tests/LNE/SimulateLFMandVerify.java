@@ -30,7 +30,12 @@ public class SimulateLFMandVerify extends GenericTest {
     private static int agentInstallTimeout;
     private static int verifyLogsTimeout = 120;//120 seconds
     private static int checkUPdatesInterval;
-    
+    private static int testResultTimeout;
+    private static boolean is_using_proxy = false;
+    private static boolean is_proxy_valid = false;
+    private static String  proxy_IP;
+    private static String proxy_Port;
+
     private Vector<String> destLogFiles;
     
     
@@ -46,9 +51,17 @@ public class SimulateLFMandVerify extends GenericTest {
         destLogFiles = null;
         agentInstallTimeout = Integer.parseInt(getGeneralData().get("EP Installation timeout"));
         checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
-        
     }
-    
+    private void initProxy(String proxy_ip) {
+        if (proxy_ip.equalsIgnoreCase("LNE"))
+            proxy_IP = GlobalTools.getClusterToTest();
+        else
+            proxy_IP = proxy_ip;
+
+        proxy_Port = data.get("Proxy_Port");
+        String v = data.get("Proxy_Valid");
+        is_proxy_valid = v.equalsIgnoreCase("yes");
+    }
     
     @Test(groups = { "SimulateLFMandVerify" }, priority=60 )
     public void SimulateLFMandVerifyDelivery()  {
@@ -56,12 +69,20 @@ public class SimulateLFMandVerify extends GenericTest {
 		    String log_type = data.get("Log_Type");
 		    int expectedResult1 = Integer.parseInt(data.get("ExpectedResult1"));
 		    int expectedResult2 = Integer.parseInt(data.get("ExpectedResult2"));
-		    
+            testResultTimeout = Integer.parseInt(data.get("Result_timeout")) * 1000; // seconds
+            String proxy_ip = data.get("Proxy_IP");
+            is_using_proxy = !proxy_ip.isEmpty();
+            if (is_using_proxy) {
+                initProxy(proxy_ip);
+            }
 		    String agentType = data.get("EP_Type_1");
 		   		   		   		
 		    JLog.logger.info("Starting SimulateLFMandVerifyDelivery. Agent type: {}. Log type: {}. Expected results: {} and {}.", data.get("EP_Type_1"), log_type, expectedResult1, expectedResult2);
-		    
-	        JLog.logger.info("Going to set configuration with LFM disabled, and waits until agent updates");
+            JLog.logger.info("Using proxy: {}",is_using_proxy);
+            if (is_using_proxy)
+                JLog.logger.info("Proxy IP: {}; Proxy Port: {}, Proxy is Valid: {}", proxy_IP, proxy_Port, is_proxy_valid);
+
+            JLog.logger.info("Going to set configuration with LFM disabled, and waits until agent updates");
 		    DsMgmtActions.SetCustomerConfiguration(customerId, ConfigHandling.getConfiguration("LLM LFM Disabled"));
 		    Thread.sleep(checkUPdatesInterval); //Waits until EP will get the new configuration
 		    
@@ -74,8 +95,11 @@ public class SimulateLFMandVerify extends GenericTest {
 		    agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
 		    
 		    JLog.logger.info("Going to stop the agent service, clean agent logs/files, set the needed configuration for the customer and finally start the agent service.");
-		    
-		    agent.stopEPService(agentInstallTimeout);	
+            if (is_using_proxy) {
+                agent.enableProxy(proxy_IP, proxy_Port);
+                Thread.sleep(5000);
+            }
+		    agent.stopEPService(agentInstallTimeout);
 		    
 		    //Set the conf here, so that the endpoint will get it right upon starting
 		    DsMgmtActions.SetCustomerConfiguration(customerId, confJson);
@@ -85,8 +109,8 @@ public class SimulateLFMandVerify extends GenericTest {
             
             agent.startEPService(agentInstallTimeout);		
 		    
-            JLog.logger.info("Going to sleep 1 minute before generating LFM input");
-		    Thread.sleep(60000);//60 seconds
+            JLog.logger.info("Going to sleep {} seconds before generating LFM input", testResultTimeout/1000);
+		    Thread.sleep(testResultTimeout);// seconds
 		    createLogs();
 		    JLog.logger.info("Going to sleep 1 minute until events/files are collected");
 		    Thread.sleep(60000);//60 seconds
@@ -195,6 +219,9 @@ public class SimulateLFMandVerify extends GenericTest {
     @AfterMethod
     public void Close(){
         if (agent!=null) {
+            if (is_using_proxy) {
+                agent.disableProxy();
+            }
             agent.close();
         }
        	    
