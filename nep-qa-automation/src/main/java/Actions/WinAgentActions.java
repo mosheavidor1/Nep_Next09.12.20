@@ -30,7 +30,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
 
     private static final String startCommand = "Net start NepaService";
     private static final String stopCommand = "Net stop NepaService";
-    
+    private static final String windows_service = "\"" + exexInstPath +"\\NepaService.exe\"";
     private static final String scriptExtension = ".bat";
     
     Map<String, String> scriptNamesMap;
@@ -65,7 +65,11 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     public String getVersionJsonPath() {
     	return versionJsonWindowsPath;
     }
-       
+
+    public String getServiceExecutablePath() {
+        return windows_service;
+    }
+
     public String getVerifySiemCommand() {
     	return command_winSIEM;
     }

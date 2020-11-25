@@ -47,5 +47,6 @@ public interface AgentActionsInterface  {
     public String getConfigPath(boolean afterUpdate);
 
     public String getEpNameAndDomain();
+    public String getServiceExecutablePath();
     }
 
