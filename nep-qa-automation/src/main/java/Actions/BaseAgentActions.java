@@ -159,8 +159,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
                     JLog.logger.debug("Agent process was not found after uninstall");
                 }
             }
-
-
+            
         } catch (InterruptedException e) {
         	JLog.logger.info("Got interrupted exception: \n" + e.toString());
         }
