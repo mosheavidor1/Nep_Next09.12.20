@@ -35,8 +35,8 @@
     		<class name = "Tests.LNE.ClusterConfiguration" />
       		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
 <!--            <class name = "Tests.LNE.RenameEndpoint" />-->
-            <!--class name = "Tests.LNE.RevokeEndpoint" />
-           <class name = "Tests.LNE.DeleteEndpoint" /-->
+            <class name = "Tests.LNE.RevokeEndpoint" />
+           <class name = "Tests.LNE.DeleteEndpoint" />
 
 
         </classes>
