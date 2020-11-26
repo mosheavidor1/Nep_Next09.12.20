@@ -1192,7 +1192,7 @@
     <Cell><Data ss:Type="String">endpoint-protection-services.qa.tw-test.net</Data></Cell>
     <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.qa.tw-test.net:3306/nep_data?useSSL=false</Data></Cell>
     <Cell><Data ss:Type="String">nep_data</Data></Cell>
-    <Cell><Data ss:Type="String">P@ssw0rd123</Data></Cell>
+    <Cell ss:StyleID="s62" ss:HRef="mailto:P@ssw0rd123"><Data ss:Type="String">P@ssw0rd123</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">2004822</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">2008368</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -1212,8 +1212,8 @@
     <Cell><Data ss:Type="String">hdi2rvml01-inc.tw-test.net</Data></Cell>
     <Cell><Data ss:Type="String">endpoint-protection-services.inc.tw-test.net</Data></Cell>
     <Cell><Data ss:Type="String">jdbc:mysql://nep-data-db.inc.tw-test.net:3306/nep_data?useSSL=false</Data></Cell>
-    <Cell><Data ss:Type="String">nep_data</Data></Cell>
-    <Cell ss:StyleID="s62" ss:HRef="mailto:P@ssw0rd123"><Data ss:Type="String">P@ssw0rd123</Data></Cell>
+    <Cell><Data ss:Type="String">readit</Data></Cell>
+    <Cell ss:StyleID="s62" ss:HRef="mailto:P@ssw0rd"><Data ss:Type="String">P@ssw0rd</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">1398155</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">1398344</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -1254,11 +1254,13 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
+   <LeftColumnVisible>5</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>24</ActiveRow>
-     <ActiveCol>4</ActiveCol>
+     <ActiveRow>2</ActiveRow>
+     <ActiveCol>9</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
