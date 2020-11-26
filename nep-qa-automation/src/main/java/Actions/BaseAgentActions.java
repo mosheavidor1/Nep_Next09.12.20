@@ -128,9 +128,40 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
                     JLog.logger.info("Endpoint service was stopped!");
                     break;
                 }
+
+           }
+
+            if (deleted) {
+                JLog.logger.debug("Agent Service was not found after uninstall");
             }
+            else {
+                org.testng.Assert.fail("Uninstall failed. Trustwave service is still active after timeout (sec): " + Integer.toString(timeout) + "   Installation process: " + WinAgentActions.windowsInstallationFile);
+            }
+
+            if (this instanceof  WinAgentActions) {
+
+                boolean found = true;
+                while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
+
+                    String result = connection.Execute("tasklist");
+                    if (!result.contains(WinAgentActions.windowsInstallationFile)) {
+                        found = false;
+                        break;
+                    }
+                    Thread.sleep(checkInterval);
+                    current = LocalDateTime.now();
+
+                }
+
+                if (found) {
+                    org.testng.Assert.fail("Uninstall failed. Trustwave installation process is still active after timeout (sec): " + Integer.toString(timeout) + "   Installation process: " + WinAgentActions.windowsInstallationFile);
+                } else {
+                    JLog.logger.debug("Agent process was not found after uninstall");
+                }
+            }
+            
         } catch (InterruptedException e) {
-        	JLog.logger.info("Got interrupted exception");
+        	JLog.logger.info("Got interrupted exception: \n" + e.toString());
         }
 
         return deleted;

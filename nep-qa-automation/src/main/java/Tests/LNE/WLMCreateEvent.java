@@ -30,7 +30,10 @@ public class WLMCreateEvent extends GenericTest {
     
     private static int checkUPdatesInterval;
     private static String agentIp;
-    
+    private static int testResultTimeout;
+    private static boolean is_using_proxy = false;
+    private static String  proxy_IP;
+    private static String proxy_Port;
     private static final LNEActions lennyActions = GlobalTools.getLneActions();
     
     @Factory(dataProvider = "getData")
@@ -42,6 +45,14 @@ public class WLMCreateEvent extends GenericTest {
     public void init() {
     	customerId = getGeneralData().get("Customer Id");
         checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
+    }
+
+    private void initProxy(String proxy_ip) {
+        if (proxy_ip.equalsIgnoreCase("LNE"))
+            proxy_IP = GlobalTools.getClusterToTest();
+        else
+            proxy_IP = proxy_ip;
+        proxy_Port = data.get("Proxy_Port");
     }
 
     @Test(groups = { "WLMCreateEvent" } )
@@ -57,9 +68,18 @@ public class WLMCreateEvent extends GenericTest {
             expectedLines = data.get("expectedResult");
             
             JLog.logger.info("Starting WLMCreateEventAndVerify. log_type: {}. Expected result value: {}", log_type, expectedLines);
-           
+            testResultTimeout = Integer.parseInt(data.get("Result_timeout")) * 1000; // seconds
+            String proxy_ip = data.get("Proxy_IP");
+            is_using_proxy = !proxy_ip.isEmpty();
+            if (is_using_proxy) {
+                initProxy(proxy_ip);
+            }
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
-            
+            JLog.logger.info("Using proxy: {}",is_using_proxy);
+            if (is_using_proxy) {
+                agent.enableProxy(proxy_IP, proxy_Port);
+                Thread.sleep(5000);
+            }
             //Read configuration and update the host tags
             String confJsonName = data.get("Configuration Name");   
             String confJson = ConfigHandling.getConfiguration(confJsonName);
@@ -79,8 +99,8 @@ public class WLMCreateEvent extends GenericTest {
            
             createEvents();
 
-            JLog.logger.info("Going to sleep 1 minute until events/files are collected");
-            Thread.sleep(60000);//60 seconds
+            JLog.logger.info("Going to sleep {} seconds until events/files are collected", testResultTimeout/1000);
+            Thread.sleep(testResultTimeout);//seconds
             
             if (log_type.equalsIgnoreCase( "SIEM")) {
                 verifyLogsSentToSiem();
@@ -205,6 +225,9 @@ public class WLMCreateEvent extends GenericTest {
     @AfterMethod
     public void Close(){
         if (agent!=null) {
+            if (is_using_proxy) {
+                agent.disableProxy();
+            }
             agent.close();
         }
     }

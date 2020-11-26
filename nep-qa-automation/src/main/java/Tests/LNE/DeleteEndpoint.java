@@ -27,7 +27,7 @@ public class DeleteEndpoint extends GenericTest {
         customerId = getGeneralData().get("Customer Id");
     }
 
-    @Test(groups = { "DeleteEndpoint" }, priority = 100 )
+    @Test(groups = { "DeleteEndpoint" }, priority = 10 )
     public void deleteEndpoint()  {
 
         try {

@@ -13,11 +13,11 @@
                 <group  name= "InstallEP" depends-on="DownloadInstallers" ></group>
                 <group  name= "verify" depends-on="InstallEP" ></group>
                 <group name= "logs" depends-on= "verify" ></group>
-                <group  name= "ChangeCustomerConfAndVerify" depends-on="logs" ></group>
-                <group  name= "ClusterConfiguration" depends-on="logs" ></group>
-                <group  name= "StandaloneEPconfiguration" depends-on="logs" ></group>
-                <group  name= "RevokeEndpoint" depends-on="logs" ></group>
-                <group  name= "DeleteEndpoint" depends-on="logs" ></group>
+                <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
+                <group  name= "ClusterConfiguration" depends-on="InstallEP" ></group>
+                <group  name= "StandaloneEPconfiguration" depends-on="InstallEP" ></group>
+                <group  name= "RevokeEndpoint" depends-on="InstallEP" ></group>
+                <group  name= "DeleteEndpoint" depends-on="InstallEP" ></group>
 <!--                <group  name= "RenameEndpoint" depends-on="InstallEP" ></group>-->
 
 
@@ -30,13 +30,13 @@
             <class name = "Tests.Environments.DownloadInstallers" />
             <class name = "Tests.Environments.InstallEndPointEnvironmentsTest" />
             <class name = "Tests.Environments.VerifyEndPointOkAtPortalTest" />
-            <class name = "Tests.Environments.ClientLogToPortalTest" />
+            <class name = "Tests.Environments.ClientLogToPortalTest"/>
             <class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
     		<class name = "Tests.LNE.ClusterConfiguration" />
       		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
 <!--            <class name = "Tests.LNE.RenameEndpoint" />-->
-            <!--class name = "Tests.LNE.RevokeEndpoint" />
-           <class name = "Tests.LNE.DeleteEndpoint" /-->
+            <class name = "Tests.LNE.RevokeEndpoint" />
+           <class name = "Tests.LNE.DeleteEndpoint" />
 
 
         </classes>

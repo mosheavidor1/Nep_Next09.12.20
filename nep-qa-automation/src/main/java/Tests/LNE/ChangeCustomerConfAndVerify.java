@@ -31,7 +31,7 @@ public class ChangeCustomerConfAndVerify extends GenericTest {
         customerId = getGeneralData().get("Customer Id");
     }
 
-    @Test(groups = { "ChangeCustomerConfAndVerify" } )
+    @Test(groups = { "ChangeCustomerConfAndVerify" }, priority = 20 )//so that it will run after the send logs test, im portal env
     public void changeCustomerConfAndVerify()  {
 
         JLog.logger.info("Starting ChangeCustomerConfAndVerify...");
