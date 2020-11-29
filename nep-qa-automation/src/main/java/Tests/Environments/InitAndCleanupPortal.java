@@ -74,7 +74,7 @@ public class InitAndCleanupPortal extends RecordedTest {
        	JLog.logger.info("Agent wasn't found in UI, going to delete from DS Mgmt (by simulated agent) if exists in DB");
         if (uuid == null) {
         	JLog.logger.info("Endpoint {} was not found in DB, going to uninsatll if service is running on agent.", epName);
-        	verifyServiceUninstalledOrForceUninstall(0);  
+        	verifyServiceUninstalledOrForceUninstall(Integer.parseInt(getGeneralData().get("EP Installation timeout")));
         	return;
         }
         
