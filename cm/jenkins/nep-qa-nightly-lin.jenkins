@@ -119,7 +119,7 @@ def sendEmail(status) {
         attachLog: true,
         attachmentsPattern: "test-output/emailable-report.html, test-output/capture/*",
         body: '${SCRIPT, template="groovy-html.template"}, ${FILE,path="test-output/emailable-report.html"}',
-        subject: "QA Nightly job: " + status + "  Environment: ${ENV_NAME}  Branch: ${env.NEP_BRANCH}" ,
+        subject: "Nightly Test of branch ${env.NEP_BRANCH} completed on ${ENV_NAME}: ${currentBuild.currentResult}",
         mimeType: 'text/html',
         from: 'svc_wafbuild@trustwave.com',
         to: "${EMAIL_LIST}"

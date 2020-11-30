@@ -500,10 +500,10 @@ def sendEmailExt()
     prepareMailBody()
 
     if (SETTINGS_XML.contains('SmokeTest.xml')) {
-        EMAIL_SUBJ = "Smoke test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
+        EMAIL_SUBJ = "Smoke test of branch ${NEP_BRANCH} completed on LNE: ${currentBuild.currentResult}"
     }
     else if ((SETTINGS_XML.contains('NepNightly.xml'))) {
-        EMAIL_SUBJ = "NEP regression test results for ${NEP_BRANCH} :${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} "
+        EMAIL_SUBJ = "Regression test of branch ${NEP_BRANCH} completed on LNE: ${currentBuild.currentResult}"
     }
     else {
         EMAIL_SUBJ = "wrong settings.xml param"
