@@ -9,19 +9,19 @@
   <Author>Uri Hacohen</Author>
   <LastAuthor>Uri Hacohen</LastAuthor>
   <Created>2019-07-11T07:52:52Z</Created>
-  <LastSaved>2020-11-22T11:04:09Z</LastSaved>
+  <LastSaved>2020-12-01T07:09:25Z</LastSaved>
   <Version>16.00</Version>
  </DocumentProperties>
  <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
   <AllowPNG/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
-  <WindowHeight>12165</WindowHeight>
-  <WindowWidth>28800</WindowWidth>
+  <WindowHeight>10416</WindowHeight>
+  <WindowWidth>23040</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>14</ActiveSheet>
-  <FirstVisibleSheet>10</FirstVisibleSheet>
+  <ActiveSheet>16</ActiveSheet>
+  <FirstVisibleSheet>14</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -87,13 +87,13 @@
   </Names>
   <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Width="81.75" ss:Span="1"/>
-   <Column ss:Index="3" ss:Width="77.25"/>
-   <Column ss:Width="54.75"/>
-   <Column ss:Width="81.75" ss:Span="1"/>
-   <Column ss:Index="7" ss:Width="77.25"/>
-   <Column ss:Width="54.75"/>
-   <Column ss:Width="146.25"/>
+   <Column ss:Width="81.599999999999994" ss:Span="1"/>
+   <Column ss:Index="3" ss:Width="77.399999999999991"/>
+   <Column ss:Width="54.599999999999994"/>
+   <Column ss:Width="81.599999999999994" ss:Span="1"/>
+   <Column ss:Index="7" ss:Width="77.399999999999991"/>
+   <Column ss:Width="54.599999999999994"/>
+   <Column ss:Width="146.39999999999998"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
@@ -137,9 +137,9 @@
  </Worksheet>
  <Worksheet ss:Name="CreateNewInstallers">
   <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="3" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="134.25"/>
-   <Column ss:Width="131.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="134.4"/>
+   <Column ss:Width="131.4"/>
    <Column ss:Width="171"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Parameters Per Environment</Data></Cell>
@@ -180,12 +180,12 @@
  </Worksheet>
  <Worksheet ss:Name="DownloadInstallers">
   <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="3" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="134.25"/>
-   <Column ss:Width="131.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="134.4"/>
+   <Column ss:Width="131.4"/>
    <Column ss:Width="171"/>
-   <Column ss:Width="305.25"/>
-   <Column ss:Width="218.25"/>
+   <Column ss:Width="305.39999999999998"/>
+   <Column ss:Width="218.39999999999998"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Parameters Per Environment</Data></Cell>
     <Cell><Data ss:Type="String">Customer</Data></Cell>
@@ -229,10 +229,10 @@
  </Worksheet>
  <Worksheet ss:Name="InstallEndPointEnvironmentsTest">
   <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="185.25"/>
-   <Column ss:Width="230.25"/>
-   <Column ss:Width="149.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="185.4"/>
+   <Column ss:Width="230.4"/>
+   <Column ss:Width="149.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Installation timeout</Data></Cell>
     <Cell><Data ss:Type="String">From service start until logs show active timeout</Data></Cell>
@@ -269,10 +269,10 @@
  </Worksheet>
  <Worksheet ss:Name="VerifyEndPointOkAtPortalTest">
   <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="3" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="134.25"/>
-   <Column ss:Width="131.25"/>
-   <Column ss:Width="137.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="134.4"/>
+   <Column ss:Width="131.4"/>
+   <Column ss:Width="137.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Parameters Per Environment</Data></Cell>
     <Cell><Data ss:Type="String">Customer</Data></Cell>
@@ -315,9 +315,9 @@
  <Worksheet ss:Name="InitAndCleanupPortal">
   <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="3" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Width="134.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="140.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="203.25"/>
+   <Column ss:Width="134.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="140.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="203.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Parameters Per Environment</Data></Cell>
     <Cell><Data ss:Type="String">Customer</Data></Cell>
@@ -352,16 +352,16 @@
  </Worksheet>
  <Worksheet ss:Name="ClientLogToPortalTest">
   <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="10" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="152.25"/>
-   <Column ss:Width="185.25"/>
-   <Column ss:Width="131.25"/>
-   <Column ss:Width="221.25"/>
-   <Column ss:Width="131.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="185.25" ss:Span="5"/>
-   <Column ss:Index="12" ss:Width="230.25" ss:Span="1"/>
-   <Column ss:Index="14" ss:Width="137.25"/>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625" ss:StyleID="s66">
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="152.4"/>
+   <Column ss:Width="185.4"/>
+   <Column ss:Width="131.4"/>
+   <Column ss:Width="221.4"/>
+   <Column ss:Width="131.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="185.4" ss:Span="5"/>
+   <Column ss:Index="12" ss:Width="230.4" ss:Span="1"/>
+   <Column ss:Index="14" ss:Width="137.4"/>
+   <Row ss:AutoFitHeight="0" ss:Height="15.45" ss:StyleID="s66">
     <Cell ss:StyleID="s67"><Data ss:Type="String">Parameters Per Environment</Data></Cell>
     <Cell ss:StyleID="s67"><Data ss:Type="String">Report Interval</Data></Cell>
     <Cell ss:StyleID="s67"><Data ss:Type="String">Customer</Data></Cell>
@@ -377,7 +377,7 @@
     <Cell ss:StyleID="s67"><Data ss:Type="String">Add time stamp to description</Data></Cell>
     <Cell ss:StyleID="Default"><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">30</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -393,7 +393,7 @@
     <Cell ss:StyleID="s63"><Data ss:Type="String">Yes</Data></Cell>
     <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
@@ -409,7 +409,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">INC</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
@@ -425,7 +425,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">STG</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
@@ -441,7 +441,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">EMEA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TWTestEMEA Standalone</Data></Cell>
@@ -457,7 +457,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">APJ</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TWTEST EPAPJ</Data></Cell>
@@ -475,7 +475,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">AMS</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">Acme San Francisco</Data></Cell>
@@ -523,13 +523,13 @@
  </Worksheet>
  <Worksheet ss:Name="InitCustomer">
   <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="89.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="89.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
     <Cell><Data ss:Type="String">From LNE up until response OK timeout</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="409.6875">
+   <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
     <Cell ss:StyleID="s66"><Data ss:Type="String">600</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">300</Data></Cell>
    </Row>
@@ -558,14 +558,14 @@
  </Worksheet>
  <Worksheet ss:Name="InstallEP">
   <Table ss:ExpandedColumnCount="8" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="89.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="89.4"/>
    <Column ss:Width="180"/>
-   <Column ss:Width="80.25" ss:Span="1"/>
+   <Column ss:Width="80.400000000000006" ss:Span="1"/>
    <Column ss:Index="5" ss:Width="75"/>
-   <Column ss:Width="53.25"/>
-   <Column ss:Width="137.25"/>
-   <Column ss:Width="149.25"/>
+   <Column ss:Width="53.400000000000006"/>
+   <Column ss:Width="137.4"/>
+   <Column ss:Width="149.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
     <Cell><Data ss:Type="String">From LNE up until response OK timeout</Data></Cell>
@@ -576,7 +576,7 @@
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
     <Cell ss:StyleID="s65"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="169.3125">
+   <Row ss:AutoFitHeight="0" ss:Height="169.20000000000002">
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">300</Data></Cell>
     <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
@@ -612,13 +612,13 @@
  </Worksheet>
  <Worksheet ss:Name="StandaloneEPconfigurationVerify">
   <Table ss:ExpandedColumnCount="7" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:AutoFitWidth="0" ss:Width="381.75"/>
-   <Column ss:Index="3" ss:Width="74.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="83.25"/>
-   <Column ss:Width="74.25"/>
-   <Column ss:Width="53.25"/>
-   <Column ss:Width="137.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:AutoFitWidth="0" ss:Width="381.59999999999997"/>
+   <Column ss:Index="3" ss:Width="74.400000000000006"/>
+   <Column ss:AutoFitWidth="0" ss:Width="83.4"/>
+   <Column ss:Width="74.400000000000006"/>
+   <Column ss:Width="53.400000000000006"/>
+   <Column ss:Width="137.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">StandAloneConfig</Data></Cell>
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
@@ -628,7 +628,7 @@
     <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="108.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="108.45">
     <Cell ss:StyleID="s71" ss:Formula="=Configurations!#REF!"><Data ss:Type="Error">#REF!</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
@@ -664,18 +664,18 @@
  </Worksheet>
  <Worksheet ss:Name="SimulateLLMandVerify">
   <Table ss:ExpandedColumnCount="11" ss:ExpandedRowCount="10" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:AutoFitWidth="0" ss:Width="144"/>
-   <Column ss:AutoFitWidth="0" ss:Width="113.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="162.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="81.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="212.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="113.39999999999999"/>
+   <Column ss:AutoFitWidth="0" ss:Width="162.6"/>
+   <Column ss:AutoFitWidth="0" ss:Width="81.599999999999994"/>
+   <Column ss:AutoFitWidth="0" ss:Width="212.4"/>
    <Column ss:AutoFitWidth="0" ss:Width="96"/>
-   <Column ss:AutoFitWidth="0" ss:Width="147.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="91.5"/>
-   <Column ss:AutoFitWidth="0" ss:Width="90.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="147.6"/>
+   <Column ss:AutoFitWidth="0" ss:Width="91.8"/>
+   <Column ss:AutoFitWidth="0" ss:Width="90.6"/>
    <Column ss:AutoFitWidth="0" ss:Width="99"/>
-   <Column ss:AutoFitWidth="0" ss:Width="99.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="99.6"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Configuration Name</Data></Cell>
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
@@ -826,15 +826,15 @@
  </Worksheet>
  <Worksheet ss:Name="SimulateLFMandVerify">
   <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="7" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:AutoFitWidth="0" ss:Width="164.25"/>
-   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="162.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="81.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="107.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:AutoFitWidth="0" ss:Width="164.39999999999998"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="162.6"/>
+   <Column ss:AutoFitWidth="0" ss:Width="81.599999999999994"/>
+   <Column ss:AutoFitWidth="0" ss:Width="107.4"/>
    <Column ss:AutoFitWidth="0" ss:Width="117"/>
-   <Column ss:AutoFitWidth="0" ss:Width="128.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="128.4"/>
    <Column ss:AutoFitWidth="0" ss:Width="99"/>
-   <Column ss:AutoFitWidth="0" ss:Width="107.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="107.4"/>
    <Column ss:AutoFitWidth="0" ss:Width="117"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Configuration Name</Data></Cell>
@@ -968,12 +968,12 @@
  </Worksheet>
  <Worksheet ss:Name="WLMCreateEvent">
   <Table ss:ExpandedColumnCount="8" ss:ExpandedRowCount="7" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:AutoFitWidth="0" ss:Width="383.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="113.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="164.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="74.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="125.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:AutoFitWidth="0" ss:Width="383.40000000000003"/>
+   <Column ss:AutoFitWidth="0" ss:Width="113.39999999999999"/>
+   <Column ss:AutoFitWidth="0" ss:Width="164.39999999999998"/>
+   <Column ss:AutoFitWidth="0" ss:Width="74.400000000000006"/>
+   <Column ss:AutoFitWidth="0" ss:Width="125.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Configuration Name</Data></Cell>
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
@@ -1067,12 +1067,12 @@
  </Worksheet>
  <Worksheet ss:Name="ChangeCustomerConfAndVerify">
   <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="74.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="83.25"/>
-   <Column ss:Width="74.25"/>
-   <Column ss:Width="53.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="165.75"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="74.400000000000006"/>
+   <Column ss:AutoFitWidth="0" ss:Width="83.4"/>
+   <Column ss:Width="74.400000000000006"/>
+   <Column ss:Width="53.400000000000006"/>
+   <Column ss:AutoFitWidth="0" ss:Width="165.6"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
@@ -1113,24 +1113,24 @@
  </Worksheet>
  <Worksheet ss:Name="General Settings">
   <Table ss:ExpandedColumnCount="26" ss:ExpandedRowCount="5" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:Width="134.25"/>
-   <Column ss:Index="3" ss:Width="185.25"/>
-   <Column ss:Width="131.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="185.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="134.4"/>
+   <Column ss:Index="3" ss:Width="185.4"/>
+   <Column ss:Width="131.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="185.4"/>
    <Column ss:Index="7" ss:AutoFitWidth="0" ss:Width="228"/>
-   <Column ss:AutoFitWidth="0" ss:Width="305.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="185.25" ss:Span="3"/>
+   <Column ss:AutoFitWidth="0" ss:Width="305.39999999999998"/>
+   <Column ss:AutoFitWidth="0" ss:Width="185.4" ss:Span="3"/>
    <Column ss:Index="13" ss:Width="75"/>
-   <Column ss:Width="68.25"/>
-   <Column ss:Width="62.25"/>
-   <Column ss:Width="107.25" ss:Span="1"/>
-   <Column ss:Index="18" ss:Width="255.75"/>
-   <Column ss:Index="20" ss:AutoFitWidth="0" ss:Width="201.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="98.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="77.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="90.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="131.25"/>
+   <Column ss:Width="68.399999999999991"/>
+   <Column ss:Width="62.400000000000006"/>
+   <Column ss:Width="107.4" ss:Span="1"/>
+   <Column ss:Index="18" ss:Width="255.6"/>
+   <Column ss:Index="20" ss:AutoFitWidth="0" ss:Width="201.6"/>
+   <Column ss:AutoFitWidth="0" ss:Width="98.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="77.399999999999991"/>
+   <Column ss:AutoFitWidth="0" ss:Width="90.6"/>
+   <Column ss:AutoFitWidth="0" ss:Width="131.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Parameters Per Environment</Data></Cell>
     <Cell><Data ss:Type="String">Browser</Data></Cell>
@@ -1159,7 +1159,7 @@
     <Cell><Data ss:Type="String">LLM</Data></Cell>
     <Cell><Data ss:Type="String">Verify CentCom Call Timeout</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">Chrome</Data></Cell>
     <Cell><Data ss:Type="String">twSuperAdmin</Data></Cell>
@@ -1187,7 +1187,7 @@
     <Cell ss:StyleID="s71"><Data ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -1208,7 +1208,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">INC</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -1229,7 +1229,7 @@
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="15.5625">
+   <Row ss:AutoFitHeight="0" ss:Height="15.45">
     <Cell ss:StyleID="s64"><Data ss:Type="String">STG</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -1259,7 +1259,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <LeftColumnVisible>5</LeftColumnVisible>
    <Panes>
     <Pane>
@@ -1274,12 +1273,12 @@
  </Worksheet>
  <Worksheet ss:Name="SchemaVersionsAndUpgrade">
   <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:AutoFitWidth="0" ss:Width="173.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:AutoFitWidth="0" ss:Width="173.39999999999998"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="409.6875">
+   <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
     <Cell ss:StyleID="s65"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
@@ -1300,10 +1299,144 @@
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
  </Worksheet>
+ <Worksheet ss:Name="UpdateEndpointInfo">
+  <Table ss:ExpandedColumnCount="8" ss:ExpandedRowCount="23" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:Width="78.599999999999994"/>
+   <Column ss:AutoFitWidth="0" ss:Width="106.80000000000001"/>
+   <Column ss:Width="75.600000000000009" ss:Span="1"/>
+   <Column ss:Index="5" ss:Width="57"/>
+   <Column ss:Width="81"/>
+   <Column ss:Width="61.199999999999996"/>
+   <Column ss:Width="91.199999999999989"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Host Name</Data></Cell>
+    <Cell><Data ss:Type="String">OS</Data></Cell>
+    <Cell><Data ss:Type="String">Mac Address</Data></Cell>
+    <Cell><Data ss:Type="String">IP</Data></Cell>
+    <Cell><Data ss:Type="String">Bin Version</Data></Cell>
+    <Cell><Data ss:Type="String">Reporting Status</Data></Cell>
+    <Cell><Data ss:Type="String">Last Error ID</Data></Cell>
+    <Cell><Data ss:Type="String">Last Error Message</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">HostName2</Data></Cell>
+    <Cell><Data ss:Type="String">Centos 9.1</Data></Cell>
+    <Cell ss:Index="4"><Data ss:Type="String">172.168.88.99</Data></Cell>
+    <Cell><Data ss:Type="String">10.0.1</Data></Cell>
+    <Cell><Data ss:Type="Number">0</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">This is ANOTHER update info test error message!</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2"><Data ss:Type="String">Centos 8.1</Data></Cell>
+   </Row>
+   <Row ss:Index="5" ss:AutoFitHeight="0">
+    <Cell ss:Index="4"><Data ss:Type="String">192.168.90.128</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="5"><Data ss:Type="String">9.9.3.9</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="6"><Data ss:Type="Number">0</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="6"><Data ss:Type="Number">1</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="6"><Data ss:Type="Number">2</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="7"><Data ss:Type="Number">-1</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="7"><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">This is update info test error message!</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">NewHostName</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">NewHostName2</Data></Cell>
+    <Cell ss:Index="4"><Data ss:Type="String">192.168.99.113</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="5"><Data ss:Type="String">11.0.0.1</Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">This is update EXTRA info test error message!</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2"><Data ss:Type="String">Windows 10</Data></Cell>
+    <Cell ss:Index="6"><Data ss:Type="Number">1</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="4"><Data ss:Type="String">192.168.1.1</Data></Cell>
+    <Cell ss:Index="6"><Data ss:Type="Number">2</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">NewHostName3</Data></Cell>
+    <Cell><Data ss:Type="String">Windows 7</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="String">12.0.0.0</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="4"><Data ss:Type="String">11.15.156.100</Data></Cell>
+    <Cell><Data ss:Type="String">8.8.8.1</Data></Cell>
+    <Cell><Data ss:Type="Number">0</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">Another message from update info test!!!</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="6"><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">Extra Extra message from update info test!!!</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="5"><Data ss:Type="String">7.8.8</Data></Cell>
+    <Cell><Data ss:Type="Number">0</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="3"><Data ss:Type="String">8A-7C-EB-48-7A</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="3"><Data ss:Type="String">99-7C-EB-48-88</Data></Cell>
+    <Cell><Data ss:Type="String">10.0.1.9</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="3"><Data ss:Type="String">AA-7C-5B-48-88</Data></Cell>
+    <Cell><Data ss:Type="String">10.100.128.128</Data></Cell>
+    <Cell ss:Index="6"><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">Mac address changed!</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>23</ActiveRow>
+     <ActiveCol>3</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
  <Worksheet ss:Name="RenameEndpoint">
   <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:AutoFitWidth="0" ss:Width="198.75"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:AutoFitWidth="0" ss:Width="198.6"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
@@ -1330,17 +1463,17 @@
  </Worksheet>
  <Worksheet ss:Name="Configurations">
   <Table ss:ExpandedColumnCount="11" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:AutoFitWidth="0" ss:Width="254.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="239.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="395.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="332.25"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:AutoFitWidth="0" ss:Width="254.39999999999998"/>
+   <Column ss:AutoFitWidth="0" ss:Width="239.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="395.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="332.4"/>
    <Column ss:AutoFitWidth="0" ss:Width="258"/>
    <Column ss:AutoFitWidth="0" ss:Width="162"/>
-   <Column ss:AutoFitWidth="0" ss:Width="194.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="101.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="158.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="101.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="194.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="101.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="158.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="101.4"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Basic Configuration</Data></Cell>
     <Cell><Data ss:Type="String">Changed Configuration</Data></Cell>
@@ -1354,7 +1487,7 @@
     <Cell><Data ss:Type="String">SimulateLLM LCA_Syslog</Data></Cell>
     <Cell><Data ss:Type="String">LLM LFM Disabled</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="409.6875">
+   <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
     <Cell ss:StyleID="s71"><Data ss:Type="String"> {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;{schema-version}&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;{ds-host}&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 30,&#10;   &quot;report_period&quot;: 50,&#10;   &quot;ds_max_off_period&quot;: 48,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: true&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;{scp-host}&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;        &quot;max_monitor_queue_size&quot;: 10000,&#10;        &quot;queues_collector_idle_time&quot;: 5,&#10;        &quot;transport_type&quot;: 2,&#10;        &quot;monitor_items&quot;: [&#10;            {&#10;            &quot;facility&quot;: 14,&#10;            &quot;level&quot;: 6,&#10;            &quot;enabled&quot;: true,&#10;            &quot;advanced_filter&quot;: false&#10;            },&#10;            {&#10;            &quot;facility&quot;: 5,&#10;            &quot;level&quot;: 6,&#10;            &quot;enabled&quot;: true,&#10;            &quot;advanced_filter&quot;: false&#10;            },&#10;            {&#10;            &quot;facility&quot;: 11,&#10;            &quot;level&quot;: 6,&#10;            &quot;enabled&quot;: true,&#10;            &quot;advanced_filter&quot;: false&#10;            }&#10;        ]&#10;    }&#10; }</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String"> {&#10;  &quot;centcom_meta&quot;: {&#10;   &quot;schema_version&quot;: &quot;{schema-version}&quot;&#10;  },&#10;  &quot;global_conf&quot;: {&#10;   &quot;log_level&quot;: &quot;debug&quot;&#10;  },&#10;  &quot;agent&quot;: {&#10;   &quot;ds_host&quot;: &quot;{ds-host}&quot;,&#10;   &quot;ds_port&quot;: 443,&#10;   &quot;ds_protocol&quot;: &quot;https&quot;,&#10;   &quot;check_update_period&quot;: 30,&#10;   &quot;report_period&quot;: 34,&#10;   &quot;ds_max_off_period&quot;: 24,&#10;   &quot;modules&quot;: [&#10;    {&#10;     &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;WLM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;     &quot;binary_name&quot;: &quot;LFM.dll&quot;,&#10;     &quot;enabled&quot;: true&#10;    },&#10;    {&#10;     &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;     &quot;enabled&quot;: true&#10;    }&#10;   ],&#10;   &quot;transport&quot;: {&#10;    &quot;server_type&quot;: 2,&#10;    &quot;syslog&quot;: {&#10;     &quot;port&quot;: 0&#10;    },&#10;    &quot;scp&quot;: {&#10;     &quot;host&quot;: &quot;{scp-host}&quot;,&#10;     &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;     &quot;port&quot;: 9022,&#10;     &quot;user&quot;: &quot;twsiem&quot;,&#10;     &quot;ack&quot;: false,&#10;     &quot;max_send_folder_size&quot;: 2&#10;    }&#10;   }&#10;  },&#10;  &quot;wlm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;transport_type&quot;: 2,&#10;   &quot;monitor_items&quot;: [&#10;    {&#10;     &quot;log_name&quot;: &quot;security&quot;,&#10;     &quot;enabled&quot;: true,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    },&#10;    {&#10;     &quot;log_name&quot;: &quot;application&quot;,&#10;     &quot;enabled&quot;: false,&#10;     &quot;advanced_filter&quot;: false,&#10;     &quot;filters&quot;: []&#10;    }&#10;   ]&#10;  },&#10;  &quot;lfm&quot;: {&#10;   &quot;max_monitor_queue_size&quot;: 10000,&#10;   &quot;queues_collector_idle_time&quot;: 5,&#10;   &quot;monitor_items&quot;: []&#10;  },&#10;  &quot;llm&quot;: {&#10;        &quot;max_monitor_queue_size&quot;: 10000,&#10;        &quot;queues_collector_idle_time&quot;: 5,&#10;        &quot;transport_type&quot;: 2,&#10;        &quot;monitor_items&quot;: [&#10;            {&#10;            &quot;facility&quot;: 14,&#10;            &quot;level&quot;: 6,&#10;            &quot;enabled&quot;: true,&#10;            &quot;advanced_filter&quot;: false&#10;            },&#10;            {&#10;            &quot;facility&quot;: 5,&#10;            &quot;level&quot;: 6,&#10;            &quot;enabled&quot;: true,&#10;            &quot;advanced_filter&quot;: false&#10;            },&#10;            {&#10;            &quot;facility&quot;: 11,&#10;            &quot;level&quot;: 6,&#10;            &quot;enabled&quot;: true,&#10;            &quot;advanced_filter&quot;: false&#10;            }&#10;        ]&#10;    }&#10; }</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String"> {&#10;        &quot;centcom_meta&quot;: {&#10;            &quot;schema_version&quot;: &quot;{schema-version}&quot;&#10;        },&#10;        &quot;global_conf&quot;: {&#10;            &quot;log_level&quot;: &quot;debug&quot;&#10;        },&#10;        &quot;agent&quot;: {&#10;            &quot;ds_host&quot;: &quot;{ds-host}&quot;,&#10;            &quot;ds_port&quot;: 443,&#10;            &quot;ds_protocol&quot;: &quot;https&quot;,&#10;            &quot;check_update_period&quot;: 30,&#10;            &quot;report_period&quot;: 60,&#10;            &quot;ds_max_off_period&quot;: 24,&#10;            &quot;modules&quot;: [{&#10;                    &quot;name&quot;: &quot;Windows Log Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }, {&#10;                    &quot;name&quot;: &quot;Log File Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }, {&#10;                    &quot;name&quot;: &quot;Linux Log Monitor&quot;,&#10;                    &quot;enabled&quot;: true&#10;                }&#10;            ],&#10;            &quot;transport&quot;: {&#10;                &quot;server_type&quot;: 2,&#10;                &quot;syslog&quot;: {&#10;                    &quot;host&quot;: &quot;{lenny-ip}&quot;,&#10;                    &quot;port&quot;: 6514,&#10;                    &quot;protocol&quot;: &quot;Secured&quot;&#10;                },&#10;                &quot;scp&quot;: {&#10;                    &quot;host&quot;: &quot;{scp-host}&quot;,&#10;                    &quot;port&quot;: 2200,&#10;                    &quot;dest_folder&quot;: &quot;/var/siem/data/nep&quot;,&#10;                    &quot;user&quot;: &quot;twsiem&quot;,&#10;                    &quot;max_send_folder_size&quot;: 100&#10;                }&#10;            }&#10;        },&#10;        &quot;wlm&quot;: {&#10;            &quot;transport_type&quot;: 2,&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5,&#10;            &quot;monitor_items&quot;: [{&#10;                    &quot;log_name&quot;: &quot;Application&quot;,&#10;                    &quot;advanced_filter&quot;: false,&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;filters&quot;: [{&#10;                            &quot;name&quot;: &quot;EventID&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;111&quot;,&#10;                                &quot;222&quot;,&#10;                                &quot;333&quot;,&#10;                                &quot;444&quot;,&#10;                                &quot;555&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Provider&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;wlm_test_source&quot;&#10;                            ]&#10;                        }&#10;                    ]&#10;                }, {&#10;                    &quot;log_name&quot;: &quot;System&quot;,&#10;                    &quot;advanced_filter&quot;: false,&#10;                    &quot;enabled&quot;: true,&#10;                    &quot;filters&quot;: [{&#10;                            &quot;name&quot;: &quot;EventID&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;111&quot;&#10;                            ]&#10;                        }, {&#10;                            &quot;name&quot;: &quot;Level&quot;,&#10;                            &quot;values&quot;: [&#10;                                &quot;information&quot;&#10;                            ]&#10;                        }&#10;                    ]&#10;                }&#10;            ]&#10;        },&#10;        &quot;lfm&quot;: {&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 30,&#10;            &quot;monitor_items&quot;: []&#10;        },&#10;        &quot;llm&quot;: {&#10;            &quot;max_monitor_queue_size&quot;: 10000,&#10;            &quot;queues_collector_idle_time&quot;: 5,&#10;            &quot;transport_type&quot;: 2,&#10;            &quot;monitor_items&quot;: []&#10;        }&#10;    }</Data></Cell>
@@ -1394,8 +1527,8 @@
  </Worksheet>
  <Worksheet ss:Name="InitAndCleanup">
   <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
-   <Column ss:AutoFitWidth="0" ss:Width="258.75"/>
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
+   <Column ss:AutoFitWidth="0" ss:Width="258.60000000000002"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
@@ -1423,18 +1556,18 @@
  <Worksheet ss:Name="BinaryUpdate">
   <Table ss:ExpandedColumnCount="15" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Width="95.25"/>
+   <Column ss:Width="95.399999999999991"/>
    <Column ss:Width="192"/>
-   <Column ss:Width="83.25" ss:Span="1"/>
-   <Column ss:Index="5" ss:Width="77.25"/>
-   <Column ss:Width="56.25"/>
-   <Column ss:Width="83.25" ss:Span="1"/>
-   <Column ss:Index="9" ss:Width="77.25"/>
-   <Column ss:Width="56.25"/>
-   <Column ss:Width="83.25"/>
-   <Column ss:Width="89.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="188.25"/>
-   <Column ss:Width="113.25"/>
+   <Column ss:Width="83.4" ss:Span="1"/>
+   <Column ss:Index="5" ss:Width="77.399999999999991"/>
+   <Column ss:Width="56.4"/>
+   <Column ss:Width="83.4" ss:Span="1"/>
+   <Column ss:Index="9" ss:Width="77.399999999999991"/>
+   <Column ss:Width="56.4"/>
+   <Column ss:Width="83.4"/>
+   <Column ss:Width="89.4"/>
+   <Column ss:AutoFitWidth="0" ss:Width="188.4"/>
+   <Column ss:Width="113.39999999999999"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Download timeout</Data></Cell>
     <Cell><Data ss:Type="String">From LNE up until response OK timeout</Data></Cell>
@@ -1497,13 +1630,13 @@
  <Worksheet ss:Name="RevokeEndpoint">
   <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Width="83.25" ss:Span="1"/>
-   <Column ss:Index="3" ss:Width="77.25"/>
-   <Column ss:Width="56.25"/>
-   <Column ss:Width="83.25" ss:Span="1"/>
-   <Column ss:Index="7" ss:Width="77.25"/>
-   <Column ss:Width="56.25"/>
-   <Column ss:Width="146.25"/>
+   <Column ss:Width="83.4" ss:Span="1"/>
+   <Column ss:Index="3" ss:Width="77.399999999999991"/>
+   <Column ss:Width="56.4"/>
+   <Column ss:Width="83.4" ss:Span="1"/>
+   <Column ss:Index="7" ss:Width="77.399999999999991"/>
+   <Column ss:Width="56.4"/>
+   <Column ss:Width="146.39999999999998"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
@@ -1546,7 +1679,7 @@
  </Worksheet>
  <Worksheet ss:Name="VerifyFileCabinetOldInstallers">
   <Table ss:ExpandedColumnCount="12" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:Index="10" ss:Width="141"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Settings Json</Data></Cell>
@@ -1598,7 +1731,7 @@
  </Worksheet>
  <Worksheet ss:Name="ClusterConfiguration">
   <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:Index="9" ss:Width="141"/>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s65"><Data ss:Type="String">EP_HostName_1</Data></Cell>
@@ -1642,7 +1775,7 @@
  </Worksheet>
  <Worksheet ss:Name="VerifyEndpointConnectedStatus">
   <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="14.4375">
+   x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s65"><Data ss:Type="String">EP_HostName_1</Data></Cell>
     <Cell ss:StyleID="s65"><Data ss:Type="String">EP_UserName_1</Data></Cell>

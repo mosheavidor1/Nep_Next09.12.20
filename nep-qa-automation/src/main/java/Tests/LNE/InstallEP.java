@@ -5,6 +5,7 @@ import Actions.BaseAgentActions;
 import Actions.DbActions;
 import Actions.LNEActions;
 import Actions.LNEActions.CentcomMethods;
+import DataModel.UpdateEpDetails;
 import Tests.GenericTest;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
@@ -49,8 +50,8 @@ public class InstallEP extends GenericTest {
 
 
         String timeout = getGeneralData().get("Verify CentCom Call Timeout");
-        DbActions.verifyCallToCentcom(LNEActions.CentcomMethods.REGISTER, epName, null, epIP ,customerId,  timestamp ,Integer.parseInt(timeout));
-
+        UpdateEpDetails json = new UpdateEpDetails(customerId, epName, epIP);
+        DbActions.verifyCallToCentcom(CentcomMethods.REGISTER,json,timestamp,Integer.parseInt(timeout));
 
     }
 

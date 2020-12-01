@@ -7,9 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Actions.LNEActions;
+import Actions.SimulatedAgentActions;
+import DataModel.EndpointErrorDetails;
+import DataModel.UpdateEpDetails;
 import Utils.Data.GlobalTools;
 import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * MySQL connector to connect Nep DB on Lenny
@@ -27,7 +31,9 @@ public class NepDbConnector {
 	public static final String RESET_WINDOWS_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'win_binary_update'";
 	public static final String RESET_CENTOS_UPDATE_VER = "update global_versions set version = '1.0.0' where component = 'centos_binary_update'";
 	public static final String RESET_BIN_VER_EP_REQ = "update endpoint_data set bin_ver_ep_request=bin_version";
-	public static final String VERIFY_CENTCOM_CALLS = "select id from centcom_calls where type = ? and plain_data like ? and plain_data like ? and plain_data like ? and updated_on > ? ";
+	//public static final String VERIFY_CENTCOM_CALLS = "select id from centcom_calls where type = ? and plain_data like ? and plain_data like ? and plain_data like ? and updated_on > ? ";
+	public static final String VERIFY_CENTCOM_CALLS = "select id from centcom_calls where type = ? and updated_on >= ?";
+
 	public static final String GET_DB_TIMESTAMP = "SELECT CURRENT_TIMESTAMP()";
 
 	public static PreparedStatement selectUuidStmt;
@@ -38,6 +44,11 @@ public class NepDbConnector {
 	public static PreparedStatement verifyCentComCalls;
 	public static PreparedStatement getDbTimestamp;
 
+	private Connection sqlConnection;
+
+	public static ObjectMapper objectMapper = new ObjectMapper();
+
+
 	public NepDbConnector(String url, String username, String password) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");  
@@ -45,8 +56,10 @@ public class NepDbConnector {
 				url = url.replace("{lenny-ip}", GlobalTools.getClusterToTest());
 			}
 			Connection conn= DriverManager.getConnection(  
-					url, username, password);  
-			
+					url, username, password);
+
+			sqlConnection =  DriverManager.getConnection(url, username, password);
+
 			//stmt = conn.createStatement();  
 			
 			selectUuidStmt = conn.prepareStatement(SELECT_UUID);
@@ -137,43 +150,97 @@ public class NepDbConnector {
 		}
 	}
 
-	public ResultSet getCentComCallByType(String centComCall, String epName, String oldEpName,String endpointIP, String customerID, String timestamp) {
+	public ResultSet getCentComCallByType(String centComCall, UpdateEpDetails json, String timestamp) {
+		String message = null;
 		try {
-			verifyCentComCalls.setString(1, centComCall);
 
-			customerID = "%customerId=" + customerID + "%";
-			verifyCentComCalls.setString(2, customerID);
+			message =objectMapper.writeValueAsString(json);
+			String toAddToQuery = VERIFY_CENTCOM_CALLS;
+			String plainDataLike =  " and plain_data like '%";
 
-			if(centComCall.equalsIgnoreCase(LNEActions.CentcomMethods.RENAME_ENDPOINT.toString())){
-				epName = "%newName=" + epName + "]%";
-			}
-			else {
-				epName = "%name=" + epName + ",%";
-
+			if (json.getCustomerId()!=null && !json.getCustomerId().isEmpty()) {
+				toAddToQuery+=  plainDataLike + "customerId=" + json.getCustomerId() + "%'";
 			}
 
-			verifyCentComCalls.setString(3, epName);
-
-			if(centComCall.equalsIgnoreCase(LNEActions.CentcomMethods.RENAME_ENDPOINT.toString())){
-				oldEpName = "%oldName=" + oldEpName + ",%";
-				verifyCentComCalls.setString(4, oldEpName);
-
-			}
-			else {
-				endpointIP = "%Ip=" + endpointIP + ",%";
-				verifyCentComCalls.setString(4, endpointIP);
+			if (json.getIp()!=null && !json.getIp().isEmpty()) {
+				toAddToQuery+=  plainDataLike + "internalIp=" + json.getIp() + ",%'";
 			}
 
-			verifyCentComCalls.setString(5, timestamp);
+			if(json.getName()!=null && !json.getName().isEmpty()) {
+				if (centComCall.equalsIgnoreCase(LNEActions.CentcomMethods.RENAME_ENDPOINT.toString())) {
+					toAddToQuery += plainDataLike + "newName=" + json.getName() + "]%'";
+				} else {
+					toAddToQuery += plainDataLike + "name=" + json.getName() + ",%'";
+				}
+			}
 
-			ResultSet rs = verifyCentComCalls.executeQuery();
+			if (json.getOldName()!=null && !json.getOldName().isEmpty()) {
+				toAddToQuery+=  plainDataLike + "oldName=" + json.getOldName() + ",%'";
+			}
+
+			String osAndVersion = json.getOsTypeAndVersion();
+			if (osAndVersion!=null && !osAndVersion.isEmpty()) {
+				String [] arr = osAndVersion.split(" ");
+				toAddToQuery+=  plainDataLike + "osName=" + arr[0] + ",%'";
+				toAddToQuery+=  plainDataLike + "osVersion=" + arr[1] + ",%'";
+			}
+
+			if (json.getHostName()!=null && !json.getHostName().isEmpty()) {
+				toAddToQuery+=  plainDataLike + "hostName=" + json.getHostName() + ",%'";
+			}
+
+			if (json.getBinVer()!=null && !json.getBinVer().isEmpty()) {
+				toAddToQuery+=  plainDataLike + "binaryVersion=" + json.getBinVer() + ",%'";
+			}
+
+			String state = json.getReportingStatus();
+			if (state!=null && !state.isEmpty()) {
+				int code = Integer.parseInt(state);
+				switch (code){
+					case 0:
+						state = "OK";
+						break;
+					case 1:
+						state = "NOT_CONNECTED";
+						break;
+					case 2:
+						state = "NOT_REPORTING";
+						break;
+					default:
+						org.testng.Assert.fail("Could not verify endpoint reporting status: " + code +". Reporting status verified can be 0-OK 1-NOT_CONNECTED 2-NOT_REPORTING");
+				}
+				toAddToQuery+=  plainDataLike + "state=" + state + ",%'";
+			}
+
+			if (json.getMacAddress()!=null && ! json.getMacAddress().isEmpty()) {
+				toAddToQuery+=  plainDataLike + "mac=" + json.getMacAddress() + ",%'";
+			}
+			EndpointErrorDetails error = json.getLastError();
+			if (error!=null) {
+				//if the message is empty search for null
+				String msg = (error.getErrorMsg() != null && error.getErrorMsg().isEmpty()) ? null : error.getErrorMsg();
+				toAddToQuery+=  plainDataLike + "message=" + msg + "%'";
+			}
+
+			PreparedStatement statement = sqlConnection.prepareStatement(toAddToQuery);
+
+			statement.setString(1, centComCall);
+			statement.setString(2, timestamp);
+
+			JLog.logger.debug("Executing a query: " + statement.toString());
+
+			ResultSet rs = statement.executeQuery();
+
 			return rs;
+
 		} catch (Exception ex) {
-			String message = "Could not verify CentCom call: " + centComCall + " Endpoint name: " + epName + " Customer id: " + customerID + " after timestamp: " + timestamp + "\n" + ex.toString();
-			org.testng.Assert.fail(message);
+			String messageError = "Could not verify CentCom call: " + centComCall + " Parameters: " + message+  " after timestamp: " + timestamp + "\n" + ex.toString();
+			org.testng.Assert.fail(messageError);
 			return null;
 		}
+
 	}
+
 
 
 	public String GetDbCurrentTimestamp() {

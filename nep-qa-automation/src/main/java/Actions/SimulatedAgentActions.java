@@ -1,5 +1,6 @@
 package Actions;
 
+import DataModel.UpdateEpDetails;
 import io.restassured.authentication.CertificateAuthSettings;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -26,6 +27,7 @@ public class SimulatedAgentActions {
 
 	public static final String DS_URL = "https://%s:443/";
 	public static final String REGISTER = "register";
+	public static final String UPDATE_EP_INFO = "update-endpoint-details";
 	public static final String ENDPOINT_ID = "endpoint_id";
 	public static final String ENDPOINT_NAME = "endpoint_name";
 	public static final String CHECK_UPDATES = "check-updates/%s/bin-ver/%s/conf-ver/%s/reporting-status/%s/local-name/%s/schema-ver/%s/";
@@ -283,6 +285,47 @@ public class SimulatedAgentActions {
 			org.testng.Assert.fail("Failed to process the register request", e);
 		}
 	}
+
+	public void UpdateEpInfo (String epID, UpdateEpDetails json){
+		JsonPath jsonPathEvaluator = null;
+
+		try {
+
+			JLog.logger.info("Starting SimulatedAgentActions:UpdateEpInfo. Params: customer {} name {}",
+					json.getCustomerId(), json.getName());
+
+			JLog.logger.debug("updateInfo body: " + objectMapper.writeValueAsString(json));
+
+
+
+			JLog.logger.debug("Request Specification: " + requestSpecification);
+
+			jsonPathEvaluator =
+					given().spec(requestSpecification)
+							.contentType("application/json")
+							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, "1001"))
+							.body(objectMapper.writeValueAsString(json))
+							.when()
+							//.post(String.format(UPDATE_EP_INFO, epID))
+							.post(UPDATE_EP_INFO + "/" + epID)
+							.then()
+							.assertThat()
+							.statusCode(HttpStatus.SC_OK)
+							.extract().response().body().jsonPath();
+			JLog.logger.debug("Json path evaluator: " + jsonPathEvaluator);
+
+		} catch (JsonProcessingException e) {
+			JLog.logger.error("Could not map UpdateInfoBody object into a string", e);
+			org.testng.Assert.fail("Could not map UpdateInfoBody object into a string", e);
+		} catch (JsonPathException e) {
+			JLog.logger.error("Failed to parse the UpdateInfo response {}", (jsonPathEvaluator != null ? jsonPathEvaluator.prettify() : ""), e);
+			org.testng.Assert.fail("Failed to parse the UpdateInfoBody response", e);
+		} catch (Exception e) {
+			JLog.logger.error("Failed to process the UpdateInfo request", e);
+			org.testng.Assert.fail("Failed to process the UpdateInfoBody request", e);
+		}
+	}
+
 
 	public String getConf(String customerId){
 
