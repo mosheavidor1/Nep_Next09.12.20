@@ -135,7 +135,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
                 JLog.logger.debug("Agent Service was not found after uninstall");
             }
             else {
-                org.testng.Assert.fail("Uninstall failed. Trustwave service is still active after timeout (sec): " + Integer.toString(timeout) + "   Installation process: " + WinAgentActions.windowsInstallationFile);
+                return false;
             }
 
             if (this instanceof  WinAgentActions) {
@@ -154,17 +154,20 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
                 }
 
                 if (found) {
-                    org.testng.Assert.fail("Uninstall failed. Trustwave installation process is still active after timeout (sec): " + Integer.toString(timeout) + "   Installation process: " + WinAgentActions.windowsInstallationFile);
-                } else {
+                    return false;
+                }
+                else {
                     JLog.logger.debug("Agent process was not found after uninstall");
                 }
             }
-            
+
+            return true;
+
         } catch (InterruptedException e) {
         	JLog.logger.info("Got interrupted exception: \n" + e.toString());
+        	return false;
         }
 
-        return deleted;
     }
 
     public void copyInstaller(){
