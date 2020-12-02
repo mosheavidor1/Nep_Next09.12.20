@@ -48,7 +48,11 @@ public class UpdateEndpointInfo extends GenericTest {
     public void UpdateEndpointInfoTest()  {
     	try {
 
-    	    JLog.logger.info("Starting RenameEndpoint test");
+    	    //The test is building 2 jsons:
+            //jsonToUpdateDS - This json is sent to update DS by UpdateEpInfo. The json resets every call to the method so it contain only the changed values for this method run
+            //jsonToVerify - this json used to verify the centcom call created after UpdateEpInfo called. This json do not reset every call to the method is accumulates ols calls values and verifies centcom calls contain them
+
+    	    JLog.logger.info("Starting UpdateEndpointInfo test");
     	    UpdateEpDetails jsonToUpdateDS = new UpdateEpDetails();
 
             String timestamp = DbActions.getCurrentDbTimeStamp();
@@ -60,13 +64,13 @@ public class UpdateEndpointInfo extends GenericTest {
                 jsonToVerify.setHostName(data.get("Host Name"));
                 jsonToUpdateDS.setHostName(data.get("Host Name"));
             }
-            else {
+            else { // if hostname is not sent by UpdateEpInfo centcom calls will reset it to null
                 jsonToVerify.setHostName(null);
                 jsonToUpdateDS.setHostName(null);
-
             }
             if(!data.get("Mac Address").isEmpty()) {
-                jsonToVerify.setMacAddress(null); // mac address is not reported to CentCom therefore cannot be verified by CentCom call
+                // mac address is not reported to CentCom therefore cannot be verified by CentCom call
+                jsonToVerify.setMacAddress(null);
                 jsonToUpdateDS.setMacAddress(data.get("Mac Address"));
             }
             if(!data.get("IP").isEmpty()) {

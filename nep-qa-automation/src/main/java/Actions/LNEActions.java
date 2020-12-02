@@ -95,7 +95,6 @@ public class LNEActions extends ManagerActions implements PropertiesConfigure  {
         REGISTER("REGISTER"),
         REQUEST_UPGRADE("requestUpgrade"),
         UPDATE_ENDPOINT("UPDATE_ENDPOINT"),
-        REVOKE_ENDPOINT("revokeEndpoint"),
         RENAME_ENDPOINT("RENAME_ENDPOINT"),
         UPDATE_ENDPOINT_STATE("UPDATE_STATE");
 

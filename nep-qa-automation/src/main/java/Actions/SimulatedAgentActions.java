@@ -303,7 +303,7 @@ public class SimulatedAgentActions {
 			jsonPathEvaluator =
 					given().spec(requestSpecification)
 							.contentType("application/json")
-							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, "1001"))
+							.header(XSSL_Client_HEADER, String.format(XSSL_Client_HEADER_VALUE, json.getCustomerId()))
 							.body(objectMapper.writeValueAsString(json))
 							.when()
 							//.post(String.format(UPDATE_EP_INFO, epID))

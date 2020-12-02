@@ -46,9 +46,6 @@ public class RenameEndpoint extends GenericTest {
             simulatedAgent.register(customerId, simulatedAgentIp1, simulatedAgentName,
             		simulatedAgentMac1, simulatedAgentOs);
 
-            //Check updates do not cause rename anymore therefore commented
-            //simulatedAgent.sendCheckUpdatesAndGetResponse(simulatedAgentNewName, GlobalTools.currentBinaryBuild, 0, 0, GlobalTools.currentSchemaVersion, customerId);
-
             UpdateEpDetails json = new UpdateEpDetails();
             json.setName(simulatedAgentNewName);
             simulatedAgent.UpdateEpInfo(simulatedAgent.getAgentUuid(),json);
