@@ -10,10 +10,10 @@
             <dependencies>
             	<group  name= "CreateNewInstallers" depends-on="InitAndCleanup" ></group>
                 <group  name= "DownloadInstallers" depends-on="CreateNewInstallers" ></group>
-                <group  name= "InstallEP" depends-on="DownloadInstallers" ></group>
+                <group  name= "ChangeCustomerConfAndVerify" depends-on="DownloadInstallers" ></group>
+                <group  name= "InstallEP" depends-on="ChangeCustomerConfAndVerify" ></group>
                 <group  name= "verify" depends-on="InstallEP" ></group>
                 <group name= "logs" depends-on= "verify" ></group>
-                <group  name= "ChangeCustomerConfAndVerify" depends-on="InstallEP" ></group>
                 <group  name= "ClusterConfiguration" depends-on="InstallEP" ></group>
                 <group  name= "StandaloneEPconfiguration" depends-on="InstallEP" ></group>
                 <group  name= "RevokeEndpoint" depends-on="InstallEP" ></group>
@@ -28,15 +28,15 @@
  			<class name = "Tests.Environments.InitAndCleanupPortal" />
             <class name = "Tests.Environments.CreateNewInstallers" />
             <class name = "Tests.Environments.DownloadInstallers" />
+            <class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
             <class name = "Tests.Environments.InstallEndPointEnvironmentsTest" />
             <class name = "Tests.Environments.VerifyEndPointOkAtPortalTest" />
             <class name = "Tests.Environments.ClientLogToPortalTest"/>
-            <class name = "Tests.LNE.ChangeCustomerConfAndVerify" />
     		<class name = "Tests.LNE.ClusterConfiguration" />
       		<class name = "Tests.LNE.StandaloneEPconfigurationVerify"/>
 <!--            <class name = "Tests.LNE.RenameEndpoint" />-->
             <class name = "Tests.LNE.RevokeEndpoint" />
-           <class name = "Tests.LNE.DeleteEndpoint" />
+            <class name = "Tests.LNE.DeleteEndpoint" />
 
 
         </classes>
