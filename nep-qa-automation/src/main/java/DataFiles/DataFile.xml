@@ -16,12 +16,12 @@
   <AllowPNG/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
-  <WindowHeight>10416</WindowHeight>
+  <WindowHeight>9828</WindowHeight>
   <WindowWidth>23040</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>16</ActiveSheet>
-  <FirstVisibleSheet>14</FirstVisibleSheet>
+  <ActiveSheet>2</ActiveSheet>
+  <FirstVisibleSheet>2</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -197,7 +197,7 @@
     <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">600</Data></Cell>
-    <Cell ss:StyleID="s63"><Data ss:Type="String">300</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">900</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">600</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -216,11 +216,12 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>2</ActiveRow>
-     <ActiveCol>1</ActiveCol>
+     <ActiveRow>1</ActiveRow>
+     <ActiveCol>3</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -1421,7 +1422,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
