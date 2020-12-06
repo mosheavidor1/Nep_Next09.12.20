@@ -23,7 +23,9 @@ import Actions.DsMgmtActions;
 public class RunTest {
 	public static final String suitesFolder = "src/main/java/TestSuites/";
 	public static final String windowsIdentifier = "win";
+	public static final String msiIdentifier = "msi";
 	public static final String linuxIdentifier = "lnx";
+	public static final String ubuntuIdentifier = "ubu";
 	private static final String localhost = "127.0.0.1";
 	public static String runAtDirectory ="";
 
@@ -78,11 +80,12 @@ public class RunTest {
 			String[] arr = epDetails.split("]");
 			Endpoint currentEP = new Endpoint();
 			if (arr.length > 1) {
-				if (arr[0].compareToIgnoreCase(windowsIdentifier) ==0 || arr[0].compareToIgnoreCase(linuxIdentifier) ==0){
+				if (arr[0].compareToIgnoreCase(windowsIdentifier) ==0 || arr[0].compareToIgnoreCase(linuxIdentifier) ==0
+						|| arr[0].compareToIgnoreCase(msiIdentifier) ==0 || arr[0].compareToIgnoreCase(ubuntuIdentifier) ==0){
 					currentEP.type=arr[0];
 				}
 				else{
-					String error = "could not find machine type identifier at the following parameter: " + epDetails + " Valid identifiers expected: " + windowsIdentifier + " " +linuxIdentifier;
+					String error = "could not find machine type identifier at the following parameter: " + epDetails + " Valid identifiers expected: " + windowsIdentifier + " " +linuxIdentifier + " " + msiIdentifier + " " + ubuntuIdentifier;
 					JLog.logger.error(error);
 					throw new IllegalStateException(error);
 				}

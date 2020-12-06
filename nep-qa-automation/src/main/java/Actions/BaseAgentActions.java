@@ -35,8 +35,10 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
     public static final int connection_port =22;
     private static final String command_enable_proxy = " -proxy ";
     private static final String command_disable_proxy = " -reset_proxy";
-    public static final String localFilePath = PropertiesFile.getManagerDownloadFolder() + "/" + "ConfigJsonCopy.txt"; 
-	
+    public static final String localFilePath = PropertiesFile.getManagerDownloadFolder() + "/" + "ConfigJsonCopy.txt";
+
+    public String osName ="";
+
 	public BaseAgentActions(String epIp, String epUserName, String epPassword) {
         this.epIp = epIp;
         this.epUserName = epUserName;
@@ -183,7 +185,7 @@ public abstract class BaseAgentActions implements AgentActionsInterface{
             JLog.logger.debug("masterDownloadDirectory: " + masterDownloadDirectory);
             JLog.logger.debug("epDownloadDirectory: " + epDownloadDirectory);
 
-            if(! connection.IsFileExists(epDownloadDirectory)) {               
+            if(! connection.IsFileExists(epDownloadDirectory)) {
                 connection.CreateDirectory(epDownloadDirectory);
             }
 

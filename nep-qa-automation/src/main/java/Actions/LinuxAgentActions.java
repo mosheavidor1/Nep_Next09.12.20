@@ -9,8 +9,9 @@ import Utils.Logs.JLog;
 import Utils.PropertiesFile.PropertiesFile;
 
 public class LinuxAgentActions extends BaseAgentActions implements AgentActionsInterface{
-	
-	public static final String linuxInstallationFile = ManagerActions.linuxInstallationFile;
+
+    public static final String linuxInstallationFile = ManagerActions.linuxInstallationFile;
+    public static final String ubuntuInstallationFile = "TrustwaveEndpoint.ubuntu";
     public static final String LinuxinstallationFolder = "/opt/tw-endpoint/";
     public static final String nepa_caLinuxDotPemPath = "/opt/tw-endpoint/bin/certs/nepa_ca.pem";
     public static final String linuxHostsFile = "/etc/hosts";
@@ -45,7 +46,12 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
     }
     
     public String getInstallationFile() {
-    	return linuxInstallationFile;
+        if (osName.equalsIgnoreCase("UBU")){
+            return ubuntuInstallationFile;
+        }
+        else {
+            return linuxInstallationFile;
+        }
     }
     
     public String getRemoteCaFile() {
@@ -144,7 +150,16 @@ public class LinuxAgentActions extends BaseAgentActions implements AgentActionsI
 	public void installEndpoint(int timeout) {
         try {
             JLog.logger.info("Installing EP...");
-            String installerLocation = getDownloadFolder() + "/" + linuxInstallationFile;
+            String installerName = null;
+            if (osName.equalsIgnoreCase("UBU"))
+            {
+                installerName = ubuntuInstallationFile;
+            }
+            else {
+                installerName=linuxInstallationFile;
+            }
+
+            String installerLocation = getDownloadFolder() + "/" + installerName;
 
             if (! connection.IsFileExists(installerLocation)){
                 org.testng.Assert.fail("Could not find installation file at the following path: " + installerLocation + " At machine: "+ getEpIp());

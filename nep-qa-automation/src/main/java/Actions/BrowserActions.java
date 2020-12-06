@@ -489,14 +489,28 @@ public class BrowserActions extends ManagerActions {
 
             fc.trustwaveEndpointFolder_element.click();
 
-
             LocalDateTime start = LocalDateTime.now();
 
             WaitForInstallerToAppearAtFileCabinet(fc.endPointLnxBy,start, fileToAppearTimeoutString);
             WaitForInstallerToAppearAtFileCabinet(fc.endPointExeBy,start, fileToAppearTimeoutString);
 
+            start = LocalDateTime.now();
+            LocalDateTime current;
+            Duration durationTimeout = Duration.ofSeconds(Long.parseLong(fileStoredAndVirusScanTimeoutString));
             DownloadInstaller(fc.TrustwaveEndpointLnx_element, fc.endPointLnxBy,fileStoredAndVirusScanTimeoutString);
-            DownloadInstaller(fc.TrustwaveEndpointExe_element, fc.endPointExeBy,fileStoredAndVirusScanTimeoutString);
+
+            current = LocalDateTime.now();
+            durationTimeout = durationTimeout.minus(Duration.between(start,current));
+            DownloadInstaller(fc.TrustwaveEndpointExe_element, fc.endPointExeBy,String.valueOf(durationTimeout.toMillis()/1000));
+
+            current = LocalDateTime.now();
+            durationTimeout = durationTimeout.minus(Duration.between(start,current));
+            DownloadInstaller(fc.TrustwaveEndpointUbuntu_element, fc.endPointUbuntuBy,String.valueOf(durationTimeout.toMillis()/1000));
+
+            current = LocalDateTime.now();
+            durationTimeout = durationTimeout.minus(Duration.between(start,current));
+            DownloadInstaller(fc.TrustwaveEndpointMsi_element, fc.endPointMsiBy,String.valueOf(durationTimeout.toMillis()/1000));
+
 
         }
         catch (Exception e) {

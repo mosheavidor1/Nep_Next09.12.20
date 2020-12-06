@@ -14,6 +14,8 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
 	
 	//public static final String installationFolder = "C:/Program Files/Trustwave/NEPAgent";
     public static final String windowsInstallationFile = ManagerActions.windowsInstallationFile;
+    public static final String msiInstallationFile = "TrustwaveEndpoint.msi";
+
     public static final String windowsHostsFile = "/C:/Windows/System32/drivers/etc/hosts";
     public static final String exexInstPath = "C:\\Program Files\\Trustwave\\NEPAgent";
     public static final String dbJsonPath = "/C:/ProgramData/Trustwave/NEPAgent/db.json";
@@ -48,7 +50,12 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
     }
     
     public String getInstallationFile() {
-    	return windowsInstallationFile;
+    	if (osName.equalsIgnoreCase("MSI")) {
+            return msiInstallationFile;
+        }
+    	else {
+            return windowsInstallationFile;
+        }
     }
     
     public String getRemoteCaFile() {
@@ -115,13 +122,25 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
             JLog.logger.info("Uninstalling EP if exists...");
 
             String DownloadFolder = getDownloadFolder();
-            String installerLocation = DownloadFolder + "/" + windowsInstallationFile;
-
-            if (! connection.IsFileExists(installerLocation)) {
-                installerLocation = DownloadFolder + "/" + windowsInstallationFile;
+            String installFile = null;
+            if(osName.equalsIgnoreCase("MSI")){
+                installFile = msiInstallationFile;
             }
+            else {
+                installFile = windowsInstallationFile;
+            }
+            String installerLocation = DownloadFolder + "/" + installFile;
+
             installerLocation=installerLocation.substring(1);
-            String command = installerLocation + " /q /uninstall";
+
+            String command=null;
+            if (osName.equalsIgnoreCase("MSI")){
+                installerLocation =installerLocation.replaceAll("/","\\\\");
+                command = "msiexec.exe /x " + installerLocation + " /q";
+            }
+            else {
+                command = installerLocation + " /q /uninstall";
+            }
 
             
             LocalDateTime start = LocalDateTime.now();
@@ -170,7 +189,14 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
 	public void installEndpoint(int timeout) {
         try {
             JLog.logger.info("Installing EP...");
-            String installerLocation = getDownloadFolder() + "/" + windowsInstallationFile;
+            String installerName=null;
+            if(osName.equalsIgnoreCase("MSI")){
+                installerName = msiInstallationFile;
+            }
+            else {
+                installerName = windowsInstallationFile;
+            }
+            String installerLocation = getDownloadFolder() + "/" + installerName;
 
             if (! connection.IsFileExists(installerLocation)){
                 org.testng.Assert.fail("Could not find installation file at the following path: " + installerLocation + " At machine: "+ getEpIp());
@@ -315,6 +341,7 @@ public class WinAgentActions extends BaseAgentActions implements AgentActionsInt
         String conf_path;
         String new_or_stable;
         if (!connection.IsFileExists(configJsonWindowsPath_1_2_new))
+
             return configJsonWindowsPath_1_1;
             if (afterUpdate) {
                 new_or_stable = connection.GetTextFromFile(configJsonWindowsPath_1_2_new);

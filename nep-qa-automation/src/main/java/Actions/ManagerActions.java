@@ -20,7 +20,10 @@ public class ManagerActions {
 
     public static final String windowsInstallationFile = "TrustwaveEndpoint.exe";
     public static final String linuxInstallationFile = "TrustwaveEndpoint.centos";
+    public static final String ubuntuInstallationFile = "TrustwaveEndpoint.ubuntu";
+    public static final String msiInstallationFile = "TrustwaveEndpoint.msi";
     public static final String linuxSha256InstallationFile = "TrustwaveEndpoint.centos.sha256";
+    public static final String ubuntuSha256InstallationFile = "TrustwaveEndpoint.ubuntu";
     public static final String archiveFolderName = "archive";
     public static final String utilsFolderName = "utils";
     private static final String uninstallFolderName = "uninstall";
@@ -116,7 +119,7 @@ public class ManagerActions {
         try {
 
             File nepFolder = new File(PropertiesFile.getManagerDownloadFolder());
-            String[] expectedArr = { windowsInstallationFile,linuxInstallationFile};
+            String[] expectedArr = { windowsInstallationFile,linuxInstallationFile,ubuntuInstallationFile, msiInstallationFile};
             List expectedList = Arrays.asList(expectedArr);
 
             boolean foundFiles = false;
