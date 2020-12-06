@@ -26,7 +26,8 @@ do
             && continue
         echo 'FAILED'
         err=1
-        echo "port $i FAILED" >> $temp_file
+        echo "port $i FAILED\n" >> $temp_file
+        nep_service $(basename $(grep -m1 $i $(cat /info.nep.folder)/ymls/* | cut -d: -f1) | cut -d. -f1) status | tee $temp_file
     done
     ((++retries))
 done
