@@ -414,6 +414,7 @@ node('nep-build-centos7') {
         {
             echo "Error getting remote logs"
             exc.printStackTrace()
+            throw exc
         }
         finally {
             echo "finally prepare mail to send"
