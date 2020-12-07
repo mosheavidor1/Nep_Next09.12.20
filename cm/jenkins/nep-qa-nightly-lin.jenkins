@@ -20,7 +20,7 @@ ENV_PARAM_MAP =  [ "inc"       : "inc",
                    "Portal_QA" : "qa" ]
 
 NODE_TO_RUN    = ENV_NODE_MAP.get(ENV_NAME)
-XML_PARAM      = ENV_XML_MAP.get(ENV_NAME) 
+XML_PARAM      = ENV_XML_MAP.get(ENV_NAME)
 JAR_ENV_PARAM  = ENV_PARAM_MAP.get(ENV_NAME)
 
 echo """
@@ -103,7 +103,7 @@ node(NODE_TO_RUN) {
             currentBuild.result  = 'SUCCESS'
         }
         echo "currentBuild.result = " + currentBuild.result
-        
+
         if (currentBuild.result == 'SUCCESS') {
             sendEmail("Success")
         }
@@ -115,11 +115,15 @@ node(NODE_TO_RUN) {
 
 def sendEmail(status) {
     // emailext attachmentsPattern: "test-output/*",
+    TEST_NAME = 'Nightly Test'
+    RESULT_NAME = currentBuild.currentResult.contains('SUCCESS') ? 'PASSED' : 'FAILED'
+    EMAIL_SUBJ = TEST_NAME + ' of branch "' + NEP_BRANCH.toUpperCase() + '" completed on ' + ENV_NAME.toUpperCase() + ' : ' + RESULT_NAME
+
     emailext (
         attachLog: true,
         attachmentsPattern: "test-output/emailable-report.html, test-output/capture/*",
         body: '${SCRIPT, template="groovy-html.template"}, ${FILE,path="test-output/emailable-report.html"}',
-        subject: "Nightly Test of branch ${env.NEP_BRANCH} completed on ${ENV_NAME}: ${currentBuild.currentResult}",
+        subject: EMAIL_SUBJ,
         mimeType: 'text/html',
         from: 'svc_wafbuild@trustwave.com',
         to: "${EMAIL_LIST}"
