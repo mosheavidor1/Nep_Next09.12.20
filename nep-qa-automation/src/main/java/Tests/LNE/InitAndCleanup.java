@@ -73,7 +73,11 @@ public class InitAndCleanup extends GenericTest {
     public void cleanup()  {
 
         JLog.logger.info("Starting Cleanup...");
-        
+
+        JLog.logger.info("Cleaning binary updates test leftovers if they exists");
+        getDbConnector().cleanGlobalVersionsAfterBinaryUpdate();
+        getDbConnector().cleanEndpointBinVerEpRequest();
+
         agentActions = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
         
         JLog.logger.info("Going to check if agent exists.");
