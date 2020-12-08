@@ -597,7 +597,6 @@ public class BrowserActions extends ManagerActions {
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
 
-
                 fc.WaitUntilObjectClickable(fc.refreshButtonBy);
                 fc.WaitUntilObjectDisappear(fc.spinnerBy);
                 fc.WaitUntilObjectClickable(fc.refreshButtonBy);
