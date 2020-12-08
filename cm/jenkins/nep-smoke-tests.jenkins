@@ -396,18 +396,19 @@ node('nep-build-centos7') {
 
             */
 
-            getLastLogs (remote_LNE,
-                         '/work/services/stub-srv/var/log/nep/nep_centcom_client.log',
-                         '1000',
-                         'lne_logs/tail_1K_nep_centcom_client.log'
-                        )
+            retry(3) {
+                getLastLogs (remote_LNE,
+                    '/work/services/stub-srv/var/log/nep/nep_centcom_client.log',
+                    '1000',
+                    'lne_logs/tail_1K_nep_centcom_client.log'
+                )
 
-            getLastLogs (remote_LNE,
-                         '/work/services/nepa-services/ds/var/log/nepa-dserver/nepa-dserver.log',
-                         '1000',
-                         'lne_logs/tail_1K_nepa-dserver.log'
-                        )
-
+                getLastLogs (remote_LNE,
+                    '/work/services/nepa-services/ds/var/log/nepa-dserver/nepa-dserver.log',
+                    '1000',
+                    'lne_logs/tail_1K_nepa-dserver.log'
+                )
+            }
             archiveArtifacts allowEmptyArchive: true, artifacts: 'lne_logs/*'  /* */
         }
         catch (exc)
