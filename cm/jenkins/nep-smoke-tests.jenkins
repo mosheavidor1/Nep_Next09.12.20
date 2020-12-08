@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
 PROPERTIES_FILE_PATH="/var/jenkins_home/workspace/saved-params-${env.NEP_BRANCH}"
+FAILURE_FLAG_FILE="/var/jenkins_home/workspace/smoke-failure-flag-file-${env.NEP_BRANCH}"
 
 node('nep-build-centos7') {
     try {
@@ -18,6 +19,14 @@ node('nep-build-centos7') {
             MODULE_ARTIFACT_SRC = ""
             node('master') {
                 stage("Read modules versions from files on Master") {
+
+                    sh """
+                        set -xv
+                        rm -fv ${FAILURE_FLAG_FILE} || true
+                        ls -latr ${FAILURE_FLAG_FILE} || true
+                    """
+
+
                     def params = readProperties file: "${PROPERTIES_FILE_PATH}"
                     NEP_QA_AUTOMATION_VERSION = params['qaautomation_version']
 
@@ -120,12 +129,14 @@ node('nep-build-centos7') {
                 deleteDir()
                 git branch: "${NEP_BRANCH}", credentialsId: 'svc_wafbuild', url: "${SOURCES_REPOSITORY}"
 
+                echo "remote LNE definition:"
+
                 remote_LNE = [:]
-                    remote_LNE.name = 'test'
-                    remote_LNE.host = "${HOST_IP}"
-                    remote_LNE.user = "root"
-                    remote_LNE.password = "trustwave"
-                    remote_LNE.allowAnyHosts = true
+                remote_LNE.name = 'test'
+                remote_LNE.host = "${HOST_IP}"
+                remote_LNE.user = "root"
+                remote_LNE.password = "trustwave"
+                remote_LNE.allowAnyHosts = true
 
                  echo """
                  ============ Test info ============
@@ -465,6 +476,11 @@ node('nep-build-centos7') {
 
             if (currentBuild.result == 'FAILURE') {
                 error "Pipeline failed, please read logs..."
+                sh """
+                    set -xv
+                    touch ${FAILURE_FLAG_FILE}
+                    ls -latr ${FAILURE_FLAG_FILE}
+                """
             }
         } // internal finally
     } // external finally
