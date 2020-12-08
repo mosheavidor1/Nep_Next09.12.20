@@ -28,10 +28,12 @@ public class ClientLogToPortalTest extends RecordedTest {
     public void SendLogsAndVerify () {
 
         try {
-            if (!data.get("EP_Type_1").equals("win")) {
-                JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
+            if (! data.get("EP_Type_1").equalsIgnoreCase("win") && !data.get("EP_Type_1").equalsIgnoreCase("msi")) {
+                JLog.logger.info("ClientLogToPortalTest - This test should not run for {} OS, skipping test", data.get("EP_Type_1"));
                 return;
             }
+
+            JLog.logger.info("ClientLogToPortalTest - Starting test for OS: " + data.get("EP_Type_1"));
 
             JLog.logger.debug("Test Started. log entry to appear at portal timeout: " + data.get("Log To Appear Timeout"));
             agent = AgentActionsFactory.getAgentActions(data.get("EP_Type_1"), data.get("EP_HostName_1"), data.get("EP_UserName_1"), data.get("EP_Password_1"));
