@@ -330,6 +330,8 @@ public class BrowserActions extends ManagerActions {
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
             detailsPage.clustersTab_element.click();
             detailsPage.clustersPlusSign_element.click();
+            detailsPage.setClusterName_element.sendKeys("TestCluster");
+            detailsPage.ClusterOKButton_element.click();
             detailsPage.endPointTab_element.click();
 
         }
