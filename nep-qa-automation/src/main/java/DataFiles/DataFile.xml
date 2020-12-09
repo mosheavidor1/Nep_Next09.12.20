@@ -20,6 +20,8 @@
   <WindowWidth>23040</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
+  <ActiveSheet>22</ActiveSheet>
+  <FirstVisibleSheet>17</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -105,7 +107,6 @@
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
-   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
@@ -120,35 +121,13 @@
   <Names>
    <NamedRange ss:Name="SUM" ss:RefersTo="=DeleteEndpoint!#REF!"/>
   </Names>
-  <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="2" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Width="81.599999999999994" ss:Span="1"/>
-   <Column ss:Index="3" ss:Width="77.399999999999991"/>
-   <Column ss:Width="54.599999999999994"/>
-   <Column ss:Width="81.599999999999994" ss:Span="1"/>
-   <Column ss:Index="7" ss:Width="77.399999999999991"/>
-   <Column ss:Width="54.599999999999994"/>
    <Column ss:Width="146.39999999999998"/>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_HostName_2</Data></Cell>
-    <Cell><Data ss:Type="String">EP_UserName_2</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Password_2</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Type_2</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">hostname</Data></Cell>
-    <Cell><Data ss:Type="String">user name</Data></Cell>
-    <Cell><Data ss:Type="String">password</Data></Cell>
-    <Cell><Data ss:Type="String">win</Data></Cell>
-    <Cell><Data ss:Type="String">hostname</Data></Cell>
-    <Cell><Data ss:Type="String">user name</Data></Cell>
-    <Cell><Data ss:Type="String">password</Data></Cell>
-    <Cell><Data ss:Type="String">win</Data></Cell>
     <Cell><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
@@ -162,7 +141,7 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
+     <ActiveRow>11</ActiveRow>
      <ActiveCol>8</ActiveCol>
     </Pane>
    </Panes>
@@ -1662,35 +1641,13 @@
   </WorksheetOptions>
  </Worksheet>
  <Worksheet ss:Name="RevokeEndpoint">
-  <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="2" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Width="83.4" ss:Span="1"/>
-   <Column ss:Index="3" ss:Width="77.399999999999991"/>
-   <Column ss:Width="56.4"/>
-   <Column ss:Width="83.4" ss:Span="1"/>
-   <Column ss:Index="7" ss:Width="77.399999999999991"/>
-   <Column ss:Width="56.4"/>
    <Column ss:Width="146.39999999999998"/>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">EP_HostName_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_UserName_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
-    <Cell><Data ss:Type="String">EP_HostName_2</Data></Cell>
-    <Cell><Data ss:Type="String">EP_UserName_2</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Password_2</Data></Cell>
-    <Cell><Data ss:Type="String">EP_Type_2</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">hostname</Data></Cell>
-    <Cell><Data ss:Type="String">user name</Data></Cell>
-    <Cell><Data ss:Type="String">password</Data></Cell>
-    <Cell><Data ss:Type="String">win</Data></Cell>
-    <Cell><Data ss:Type="String">hostname</Data></Cell>
-    <Cell><Data ss:Type="String">user name</Data></Cell>
-    <Cell><Data ss:Type="String">password</Data></Cell>
-    <Cell><Data ss:Type="String">win</Data></Cell>
     <Cell><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
@@ -1701,10 +1658,11 @@
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
    <Unsynced/>
+   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <RangeSelection>C1</RangeSelection>
+     <RangeSelection>C1:C8</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
