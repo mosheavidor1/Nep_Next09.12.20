@@ -86,6 +86,10 @@ node(NODE_TO_RUN) {
                 java -jar ${MODULE_ARTIFACT_DST} ${XML_PARAM} ${JAR_ENV_PARAM} ${WAIT_PARAM} win]10.85.25.187]solo-user]breach12345 lnx]10.85.26.231]root]trustwave
                 """.trim()
 
+                if (ENV_NAME == 'inc') {
+                    JAVA_JAR_CMD += " msi]10.85.25.160]qa-nep]finjan!"
+                }
+
                echo "$JAVA_JAR_CMD"
                sh """
                     ${JAVA_JAR_CMD}
