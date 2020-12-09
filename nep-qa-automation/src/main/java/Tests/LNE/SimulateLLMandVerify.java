@@ -51,6 +51,8 @@ public class SimulateLLMandVerify extends GenericTest {
         checkUPdatesInterval = Integer.parseInt(getGeneralData().get("Check Updates Timeout")) * 1000; //35 seconds
     }
     private void initProxy(String proxy_ip) {
+        JLog.logger.debug("Starting initProxy of SimulateLLMandVerify test...");
+
         if (proxy_ip.equalsIgnoreCase("LNE"))
             proxy_IP = GlobalTools.getClusterToTest();
         else
@@ -66,7 +68,10 @@ public class SimulateLLMandVerify extends GenericTest {
     public void SimulateLLMandVerifyDelivery()  {
     	
     	try {
-    		if (!data.get("EP_Type_1").equals("lnx")) {
+
+            JLog.logger.debug("Starting SimulateLLMandVerify test...");
+
+            if (!data.get("EP_Type_1").equals("lnx")) {
     	    	JLog.logger.info("This test should not run for {} OS, skipping", data.get("EP_Type_1"));
     	    	return;
     	    }

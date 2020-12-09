@@ -42,8 +42,8 @@ public class BinaryUpdate extends GenericTest {
         super(dataToSet);
     }
     
-
-    @Test(groups="Binary",priority=2)
+    //binary update should be last because it installs version that do not support proxy
+    @Test(groups="Binary",priority=1001)
     public void TestBinaryUpdate() throws IOException {
 
         JLog.logger.info("Starting binary update test");
@@ -74,10 +74,13 @@ public class BinaryUpdate extends GenericTest {
         //cleanBinVerEpRequest();
     }
 
-    @Test(groups="Binary",priority=1)
+    //binary update should be last because it installs version that do not support proxy
+    @Test(groups="Binary",priority=1000)
     public void TestBinaryUpdateRollback() throws IOException {
 
         JLog.logger.info("Starting binary update rollback test");
+        if(true)
+            return;
 
         // get bucket id from LNE
         s3Bucket = lneActions.getBucketId();
@@ -107,9 +110,16 @@ public class BinaryUpdate extends GenericTest {
         }
 
         VerifySuccessfulRollback(endpoint);
+    }
+
+
+    @AfterTest
+    public void  AfterBinaryUpdateTestCleanup(){
+        JLog.logger.debug("BinaryUpdate test - @AfterTest Cleanup... ");
         cleanGlobalVersionsDB();
         cleanBinVerEpRequest();
     }
+
 
     private void cleanGlobalVersionsDB(){
         getDbConnector().cleanGlobalVersionsAfterBinaryUpdate();

@@ -66,7 +66,9 @@ public class SimulateLFMandVerify extends GenericTest {
     @Test(groups = { "SimulateLFMandVerify" }, priority=60 )
     public void SimulateLFMandVerifyDelivery()  {
     	try {
-		    String log_type = data.get("Log_Type");
+    	    JLog.logger.info("Starting Simulate LFM and Verify test...");
+
+            String log_type = data.get("Log_Type");
 		    int expectedResult1 = Integer.parseInt(data.get("ExpectedResult1"));
 		    int expectedResult2 = Integer.parseInt(data.get("ExpectedResult2"));
             testResultTimeout = Integer.parseInt(data.get("Result_timeout")) * 1000; // seconds
