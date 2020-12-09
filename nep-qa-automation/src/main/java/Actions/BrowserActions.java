@@ -571,6 +571,7 @@ public class BrowserActions extends ManagerActions {
             int fileStoredAndVirusScanTimeout = Integer.parseInt(fileStoredAndVirusScanTimeoutString);
 
             boolean errorMessageAppear = true;
+            boolean installerAppear = false;
             FileCabinet fc = new FileCabinet();
 
             LocalDateTime start = LocalDateTime.now();
@@ -579,26 +580,32 @@ public class BrowserActions extends ManagerActions {
 
             while (durationTimeout.compareTo(Duration.between(start, current)) > 0) {
 
-                fc.WaitUntilObjectClickable(installerLinkBy);
-                installerLink.click();
-                if (!fc.IsElementExist(fc.fileUnableToBeDownloadedBy)) {
-                    errorMessageAppear = false;
-                    break;
-                }
+                if(fc.IsElementExist(installerLinkBy)) {
+                    installerAppear = true;
+                    fc.WaitUntilObjectClickable(installerLinkBy);
+                    installerLink.click();
+                    if (!fc.IsElementExist(fc.fileUnableToBeDownloadedBy)) {
+                        errorMessageAppear = false;
+                        break;
+                    }
 
-                fc.errorMessageOKButton_element.click();
+                    fc.errorMessageOKButton_element.click();
+                }
 
                 fc.refreshButton_element.click();
 
                 Thread.sleep(checkInterval);
                 current = LocalDateTime.now();
 
-
                 fc.WaitUntilObjectClickable(fc.refreshButtonBy);
                 fc.WaitUntilObjectDisappear(fc.spinnerBy);
                 fc.WaitUntilObjectClickable(fc.refreshButtonBy);
 
 
+            }
+
+            if (installerAppear==false) {
+                org.testng.Assert.fail("Installer link did not appeared at file cabinet:  "+ installerLinkBy + " .After timeout: "+ fileStoredAndVirusScanTimeoutString);
             }
 
             if (errorMessageAppear) {
