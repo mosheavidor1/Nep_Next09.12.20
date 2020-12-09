@@ -328,6 +328,8 @@ public class BrowserActions extends ManagerActions {
             centSearch.detailsButton_element.click();
 
             CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
+            detailsPage.clustersTab_element.click();
+            detailsPage.clustersPlusSign_element.click();
             detailsPage.endPointTab_element.click();
 
         }
@@ -682,8 +684,34 @@ public class BrowserActions extends ManagerActions {
 
     }
 
+    //public void CreateNewCluster(String clusterName,String customerName) {
+    public void CreateNewCluster(String customerName) {
+        try {
+
+            CentComSearchDetailsPage detailsPage = new CentComSearchDetailsPage();
+
+            CentComSearchPage centSearch = new CentComSearchPage();
+            centSearch.customersText_element.sendKeys(customerName);
+            centSearch.searchButton_element.click();
+            centSearch.GetCustomerRow(customerName).click();
+            centSearch.detailsButton_element.click();
+
+            detailsPage.clustersTab_element.click();
+
+            CentComNewClusterPage CentComCluster = new CentComNewClusterPage();
 
 
+            //  CentComCluster.GetClusterName(clusterName);
+        } catch (Exception e) {
+            // JLog.logger.error("Could not select the specific cluster  at CentCom search page. cluster: {}", clusterName, e);
+            // org.testng.Assert.fail("Could not select the specific cluster  at CentCom search page. cluster: " + clusterName + "\n" + e.toString());
+        }
 
+    }
 }
+
+
+
+
+
 

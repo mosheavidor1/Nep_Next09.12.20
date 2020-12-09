@@ -15,6 +15,15 @@ public class CentComSearchDetailsPage extends GenericPage {
     @FindBy(how= How.XPATH,using="//div[@class='pane modal visible']//twa-button[@aria-label='Continue']")
     public WebElement continueButton_element;
 
+    //clusters tab
+    @FindBy(how= How.XPATH,using="//div[contains(text(),'Clusters')]")
+    public WebElement clustersTab_element;
+
+    //click on plus sign
+    @FindBy(how= How.XPATH,using="//twa-button[@icon='tw-plus']/material-button")
+    public WebElement clustersPlusSign_element;
+
+
     @FindBy(how= How.XPATH,using="//div[normalize-space(text())='Endpoints']")
     public WebElement endPointTab_element;
 
