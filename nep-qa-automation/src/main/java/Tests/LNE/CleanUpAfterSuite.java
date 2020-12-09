@@ -17,6 +17,7 @@ public class CleanUpAfterSuite extends GenericTest {
         super(dataToSet);
     }
 
+    //must run at the end of suite
     @Test(groups = {"CleanupAfterSuite"}, priority = 9999)
     public void CleanUpAfterSuiteTest() {
         try {

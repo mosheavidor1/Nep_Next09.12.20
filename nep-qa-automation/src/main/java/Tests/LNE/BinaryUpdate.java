@@ -79,8 +79,6 @@ public class BinaryUpdate extends GenericTest {
     public void TestBinaryUpdateRollback() throws IOException {
 
         JLog.logger.info("Starting binary update rollback test");
-        if(true)
-            return;
 
         // get bucket id from LNE
         s3Bucket = lneActions.getBucketId();

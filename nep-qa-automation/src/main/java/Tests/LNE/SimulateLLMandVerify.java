@@ -53,6 +53,7 @@ public class SimulateLLMandVerify extends GenericTest {
     private void initProxy(String proxy_ip) {
         JLog.logger.debug("Starting initProxy of SimulateLLMandVerify test...");
 
+
         if (proxy_ip.equalsIgnoreCase("LNE"))
             proxy_IP = GlobalTools.getClusterToTest();
         else

@@ -68,6 +68,7 @@ public class SimulateLFMandVerify extends GenericTest {
     	try {
     	    JLog.logger.info("Starting Simulate LFM and Verify test...");
 
+
             String log_type = data.get("Log_Type");
 		    int expectedResult1 = Integer.parseInt(data.get("ExpectedResult1"));
 		    int expectedResult2 = Integer.parseInt(data.get("ExpectedResult2"));

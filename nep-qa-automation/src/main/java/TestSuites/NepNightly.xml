@@ -15,7 +15,7 @@
                 <group  name= "SimulateLFMandVerify" depends-on="InstallEP" ></group>
                 <group  name= "SimulateLLMandVerify" depends-on="InstallEP" ></group>
                 
-                 <group  name= "VerifyEndpointConnectedStatus" depends-on="InstallEP" ></group><!-- This test will run the last out of its priority -->
+                 <group  name= "VerifyEndpointConnectedStatus" depends-on="InstallEP" ></group><!-- This test will run the last out of its priority but before binary test-->
                 <group  name= "CleanupAfterSuite" depends-on="InstallEP" ></group>
 
 
@@ -32,6 +32,7 @@
             <class name = "Tests.LNE.SimulateLLMandVerify" />
             <class name = "Tests.LNE.BinaryUpdate" />
             <class name = "Tests.LNE.CleanUpAfterSuite" />
+
 
         </classes>
     </test>

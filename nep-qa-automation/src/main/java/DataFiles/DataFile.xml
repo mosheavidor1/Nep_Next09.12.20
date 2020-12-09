@@ -40,11 +40,11 @@
    <NumberFormat ss:Format="@"/>
   </Style>
   <Style ss:ID="s64">
-   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="12" ss:Color="#000000"
-    ss:Bold="1"/>
+   <Alignment ss:Vertical="Top"/>
   </Style>
   <Style ss:ID="s65">
-   <Alignment ss:Vertical="Top"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="12" ss:Color="#000000"
+    ss:Bold="1"/>
   </Style>
   <Style ss:ID="s66">
    <Alignment ss:Vertical="Top"/>
@@ -90,7 +90,7 @@
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -182,12 +182,12 @@
     <Cell ss:StyleID="s63"><Data ss:Type="String">Wait for publish to be completed</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">QA</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -229,14 +229,14 @@
     <Cell ss:StyleID="s63"><Data ss:Type="String">Wait files to be downloaded timeout in seconds</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">600</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">900</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">600</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">QA</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -276,7 +276,7 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -315,13 +315,13 @@
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">120</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">QA</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -359,12 +359,12 @@
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">QA</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -413,7 +413,7 @@
     <Cell ss:StyleID="Default"><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Default</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">30</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">twSuperAdmin</Data></Cell>
@@ -426,10 +426,10 @@
     <Cell ss:StyleID="s63"><Data ss:Type="String">AutomationTest</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">Hello!! this is the test info</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">Yes</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">QA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -445,7 +445,7 @@
     <Cell ss:StyleID="s63"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">INC</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">INC</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -461,7 +461,7 @@
     <Cell ss:StyleID="s63"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">STG</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">STG</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TrustwaveEP Automation #3</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -477,7 +477,7 @@
     <Cell ss:StyleID="s63"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">EMEA</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">EMEA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TWTestEMEA Standalone</Data></Cell>
     <Cell><Data ss:Type="String">TWTestEMEA_SupportUser002@trustwave.com</Data></Cell>
@@ -493,7 +493,7 @@
     <Cell ss:StyleID="s63"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">APJ</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">APJ</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">TWTEST EPAPJ</Data></Cell>
     <Cell ss:HRef="mailto:TWTestSupportUser002@trustwave.com"><Data
@@ -511,7 +511,7 @@
     <Cell ss:StyleID="s63"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">AMS</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">AMS</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell><Data ss:Type="String">Acme San Francisco</Data></Cell>
     <Cell ss:StyleID="s63"/>
@@ -609,17 +609,17 @@
     <Cell><Data ss:Type="String">EP_Password_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Type_1</Data></Cell>
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="169.20000000000002">
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">300</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -666,11 +666,11 @@
    <Row ss:AutoFitHeight="0" ss:Height="108.45">
     <Cell ss:StyleID="s71" ss:Formula="=Configurations!#REF!"><Data ss:Type="Error">#REF!</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -727,9 +727,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="30.75">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!RC[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!RC[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">30</Data></Cell>
     <Cell ss:Index="8"><Data ss:Type="Number">60</Data></Cell>
@@ -737,9 +737,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="36">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-1]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-1]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">30</Data></Cell>
     <Cell ss:Index="8"><Data ss:Type="Number">60</Data></Cell>
@@ -747,9 +747,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="34.5">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM LCA_Syslog</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-2]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-2]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">30</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">3[0-9]</Data></Cell>
@@ -758,9 +758,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="30.75">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-3]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-3]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">30</Data></Cell>
     <Cell ss:Index="8"><Data ss:Type="Number">60</Data></Cell>
@@ -771,9 +771,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="36">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-4]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-4]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">30</Data></Cell>
     <Cell ss:Index="8"><Data ss:Type="Number">60</Data></Cell>
@@ -784,9 +784,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="34.5">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM LCA_Syslog</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-5]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-5]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">30</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">3[0-9]</Data></Cell>
@@ -798,9 +798,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="30.75">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-6]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-6]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">30</Data></Cell>
     <Cell ss:Index="8"><Data ss:Type="Number">420</Data></Cell>
@@ -811,9 +811,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="36">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-7]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-7]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="Number">30</Data></Cell>
     <Cell ss:Index="8"><Data ss:Type="Number">420</Data></Cell>
@@ -824,9 +824,9 @@
    <Row ss:AutoFitHeight="0" ss:Height="34.5">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLLM LCA_Syslog</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
-    <Cell ss:StyleID="s65" ss:Formula="='General Settings'!R[-8]C[20]"><Data
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
+    <Cell ss:StyleID="s64" ss:Formula="='General Settings'!R[-8]C[20]"><Data
       ss:Type="String">#!/bin/bash&#10;&#10;logger -p auth.info  &quot;not included LLM Test message #X auth.info&quot;&#10;logger -p auth.err &quot;included LLM Test message #1 auth.err&quot;&#10;logger -p auth.notice  &quot;not included LLM Test message #X auth.notice&quot;&#10;logger -p auth.warning &quot;included LLM Test message #2 auth.warning&quot;&#10;&#10;logger -p local0.debug &quot;included LLM Test message #3 local.debug&quot;&#10;logger -p local0.info &quot;included LLM Test message #4 local.info&quot;&#10;logger -p local0.notice &quot;included LLM Test message #5 local.notice&quot;&#10;logger -p local0.warning &quot;included LLM Test message #6 local.warning&quot;&#10;logger -p local0.err &quot;included LLM Test message #7 local.err&quot;&#10;logger -p local0.crit &quot;included LLM Test message #8 local.crit&quot;&#10;logger -p local0.alert &quot;included LLM Test message #9 local.alert&quot;&#10;logger -p local0.emerg &quot;included LLM Test message #10 local.emerg&quot;&#10;&#10;logger -p authpriv.err &quot;included LLM Test message #11 authpriv.err&quot;&#10;logger -p cron.err &quot;included LLM Test message #12 cron.err&quot;&#10;logger -p daemon.err &quot;included LLM Test message #13 daemon.err&quot;&#10;logger -p ftp.err &quot;included LLM Test message #14 ftp.err&quot;&#10;logger -p lpr.err &quot;included LLM Test message #15 lpr.err&quot;&#10;logger -p mail.err &quot;included LLM Test message #16 mail.err&quot;&#10;logger -p news.err &quot;included LLM Test message #17 news.err&quot;&#10;logger -p syslog.err &quot;included LLM Test message #18 syslog.err&quot;&#10;logger -p user.err &quot;included LLM Test message #19 user.err&quot;&#10;logger -p uucp.err &quot;included LLM Test message #20 uucp.err&quot;&#10;logger -p local1.err &quot;included LLM Test message #21 local1.err&quot;&#10;logger -p local2.err &quot;included LLM Test message #22 local2.err&quot;&#10;logger -p local3.err &quot;included LLM Test message #23 local3.err&quot;&#10;logger -p local4.err &quot;included LLM Test message #24 local4.err&quot;&#10;logger -p local0.err &quot;included LLM Test message #25 local0.err&quot;&#10;logger -p local5.err &quot;included LLM Test message #26 local5.err&quot;&#10;logger -p local6.err &quot;included LLM Test message #27 local6.err&quot;&#10;logger -p local7.err &quot;included LLM Test message #28 local7.err&quot;&#10;&#10;logger -p local1.debug &quot;not included LLM Test message #X local1.debug&quot;&#10;logger -p local2.info &quot;not included LLM Test message #X local2.info&quot;&#10;logger -p local3.notice &quot;not included LLM Test message #X local3.notice&quot;&#10;logger -p local4.warning &quot;not included LLM Test message #X local4.warning&quot;&#10;logger -p local5.crit &quot;included LLM Test message #29 local5.crit&quot;&#10;logger -p local6.alert &quot;included LLM Test message #30 local6.alert&quot;</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">30</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">3[0-9]</Data></Cell>
@@ -890,8 +890,8 @@
    <Row ss:AutoFitHeight="0" ss:Height="27">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLFMandVerify SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
     <Cell ss:Formula="='General Settings'!RC[16]"><Data ss:Type="String">REM delete folders and create them again with files+content to make the test pre-requisites&#10;del /F /Q c:\test_files\ 2&gt;nul&#10;del /F /Q c:\test_files2\ 2&gt;nul&#10;RD /S /Q c:\test_files\ 2&gt;nul&#10;RD /S /Q c:\test_files2\ 2&gt;nul&#10;if not exist &quot;C:\test_files\&quot; mkdir C:\test_files&#10;if not exist &quot;C:\test_files2\&quot; mkdir C:\test_files2&#10;&#10;REM this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo test_file.log not includeded nep file test line 0 &gt; c:\test_files\test_file.log&#10;REM this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo test_file.txt included nep test 0  &gt; c:\test_files2\test_file.txt</Data></Cell>
     <Cell ss:Formula="='General Settings'!RC[16]"><Data ss:Type="String">REM add log recordss to the txt file (all should be collected since no filter is configured on this monitor&#10;echo test_file.txt included nep test 1 &gt;&gt; c:\test_files2\test_file.txt&#10;echo test_file.txt included nep test 2 &gt;&gt; c:\test_files2\test_file.txt&#10;&#10;REM add log records to an exiting log file - only the first two should be collected since they match the monitor filter&#10;echo test_file.log included nep test 1 &gt;&gt; c:\test_files\test_file.log&#10;echo test_file.log included line file 2 &gt;&gt; c:\test_files\test_file.log&#10;echo tet_file.log not included nep file 3 &gt;&gt; c:\test_files\test_file.log&#10;echo test_fil.log not included test line 4 &gt;&gt; c:\test_files\test_file.log&#10;&#10;REM create a new log file and add records to it - only the first two should be collected since they match the monitor filter&#10;copy nul c:\test_files\test_file2.log&#10;timeout /t 7 /nobreak&#10;echo test_file2.log included nep test 0 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_file2.log included line file 1 &gt;&gt; c:\test_files\test_file2.log&#10;echo tet_file2.log not included nep file 2 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_fil2.log not included test line 3 &gt;&gt; c:\test_files\test_file2.log</Data></Cell>
     <Cell ss:Formula="='General Settings'!RC[16]"><Data ss:Type="String">#!/bin/bash&#10;#delete folders and create them again with files+content to make the test pre-requisites&#10;rm -rf /root/test_files&#10;rm -rf /root/test_files2&#10;mkdir -p /root/test_files&#10;mkdir -p /root/test_files2&#10;&#10;#this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo &quot;test_file.log not nep file test line 0&quot; &gt; /root/test_files/test_file.log&#10;#this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo &quot;test_file.txt included nep test 0&quot;  &gt; /root/test_files2/test_file.txt</Data></Cell>
@@ -903,8 +903,8 @@
    <Row ss:AutoFitHeight="0" ss:Height="30.75">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLFMandVerify LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-1]C[16]"><Data ss:Type="String">REM delete folders and create them again with files+content to make the test pre-requisites&#10;del /F /Q c:\test_files\ 2&gt;nul&#10;del /F /Q c:\test_files2\ 2&gt;nul&#10;RD /S /Q c:\test_files\ 2&gt;nul&#10;RD /S /Q c:\test_files2\ 2&gt;nul&#10;if not exist &quot;C:\test_files\&quot; mkdir C:\test_files&#10;if not exist &quot;C:\test_files2\&quot; mkdir C:\test_files2&#10;&#10;REM this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo test_file.log not includeded nep file test line 0 &gt; c:\test_files\test_file.log&#10;REM this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo test_file.txt included nep test 0  &gt; c:\test_files2\test_file.txt</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-1]C[16]"><Data ss:Type="String">REM add log recordss to the txt file (all should be collected since no filter is configured on this monitor&#10;echo test_file.txt included nep test 1 &gt;&gt; c:\test_files2\test_file.txt&#10;echo test_file.txt included nep test 2 &gt;&gt; c:\test_files2\test_file.txt&#10;&#10;REM add log records to an exiting log file - only the first two should be collected since they match the monitor filter&#10;echo test_file.log included nep test 1 &gt;&gt; c:\test_files\test_file.log&#10;echo test_file.log included line file 2 &gt;&gt; c:\test_files\test_file.log&#10;echo tet_file.log not included nep file 3 &gt;&gt; c:\test_files\test_file.log&#10;echo test_fil.log not included test line 4 &gt;&gt; c:\test_files\test_file.log&#10;&#10;REM create a new log file and add records to it - only the first two should be collected since they match the monitor filter&#10;copy nul c:\test_files\test_file2.log&#10;timeout /t 7 /nobreak&#10;echo test_file2.log included nep test 0 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_file2.log included line file 1 &gt;&gt; c:\test_files\test_file2.log&#10;echo tet_file2.log not included nep file 2 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_fil2.log not included test line 3 &gt;&gt; c:\test_files\test_file2.log</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-1]C[16]"><Data ss:Type="String">#!/bin/bash&#10;#delete folders and create them again with files+content to make the test pre-requisites&#10;rm -rf /root/test_files&#10;rm -rf /root/test_files2&#10;mkdir -p /root/test_files&#10;mkdir -p /root/test_files2&#10;&#10;#this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo &quot;test_file.log not nep file test line 0&quot; &gt; /root/test_files/test_file.log&#10;#this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo &quot;test_file.txt included nep test 0&quot;  &gt; /root/test_files2/test_file.txt</Data></Cell>
@@ -916,8 +916,8 @@
    <Row ss:AutoFitHeight="0" ss:Height="27">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLFMandVerify SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-2]C[16]"><Data ss:Type="String">REM delete folders and create them again with files+content to make the test pre-requisites&#10;del /F /Q c:\test_files\ 2&gt;nul&#10;del /F /Q c:\test_files2\ 2&gt;nul&#10;RD /S /Q c:\test_files\ 2&gt;nul&#10;RD /S /Q c:\test_files2\ 2&gt;nul&#10;if not exist &quot;C:\test_files\&quot; mkdir C:\test_files&#10;if not exist &quot;C:\test_files2\&quot; mkdir C:\test_files2&#10;&#10;REM this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo test_file.log not includeded nep file test line 0 &gt; c:\test_files\test_file.log&#10;REM this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo test_file.txt included nep test 0  &gt; c:\test_files2\test_file.txt</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-2]C[16]"><Data ss:Type="String">REM add log recordss to the txt file (all should be collected since no filter is configured on this monitor&#10;echo test_file.txt included nep test 1 &gt;&gt; c:\test_files2\test_file.txt&#10;echo test_file.txt included nep test 2 &gt;&gt; c:\test_files2\test_file.txt&#10;&#10;REM add log records to an exiting log file - only the first two should be collected since they match the monitor filter&#10;echo test_file.log included nep test 1 &gt;&gt; c:\test_files\test_file.log&#10;echo test_file.log included line file 2 &gt;&gt; c:\test_files\test_file.log&#10;echo tet_file.log not included nep file 3 &gt;&gt; c:\test_files\test_file.log&#10;echo test_fil.log not included test line 4 &gt;&gt; c:\test_files\test_file.log&#10;&#10;REM create a new log file and add records to it - only the first two should be collected since they match the monitor filter&#10;copy nul c:\test_files\test_file2.log&#10;timeout /t 7 /nobreak&#10;echo test_file2.log included nep test 0 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_file2.log included line file 1 &gt;&gt; c:\test_files\test_file2.log&#10;echo tet_file2.log not included nep file 2 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_fil2.log not included test line 3 &gt;&gt; c:\test_files\test_file2.log</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-2]C[16]"><Data ss:Type="String">#!/bin/bash&#10;#delete folders and create them again with files+content to make the test pre-requisites&#10;rm -rf /root/test_files&#10;rm -rf /root/test_files2&#10;mkdir -p /root/test_files&#10;mkdir -p /root/test_files2&#10;&#10;#this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo &quot;test_file.log not nep file test line 0&quot; &gt; /root/test_files/test_file.log&#10;#this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo &quot;test_file.txt included nep test 0&quot;  &gt; /root/test_files2/test_file.txt</Data></Cell>
@@ -932,8 +932,8 @@
    <Row ss:AutoFitHeight="0" ss:Height="30.75">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLFMandVerify LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-3]C[16]"><Data ss:Type="String">REM delete folders and create them again with files+content to make the test pre-requisites&#10;del /F /Q c:\test_files\ 2&gt;nul&#10;del /F /Q c:\test_files2\ 2&gt;nul&#10;RD /S /Q c:\test_files\ 2&gt;nul&#10;RD /S /Q c:\test_files2\ 2&gt;nul&#10;if not exist &quot;C:\test_files\&quot; mkdir C:\test_files&#10;if not exist &quot;C:\test_files2\&quot; mkdir C:\test_files2&#10;&#10;REM this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo test_file.log not includeded nep file test line 0 &gt; c:\test_files\test_file.log&#10;REM this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo test_file.txt included nep test 0  &gt; c:\test_files2\test_file.txt</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-3]C[16]"><Data ss:Type="String">REM add log recordss to the txt file (all should be collected since no filter is configured on this monitor&#10;echo test_file.txt included nep test 1 &gt;&gt; c:\test_files2\test_file.txt&#10;echo test_file.txt included nep test 2 &gt;&gt; c:\test_files2\test_file.txt&#10;&#10;REM add log records to an exiting log file - only the first two should be collected since they match the monitor filter&#10;echo test_file.log included nep test 1 &gt;&gt; c:\test_files\test_file.log&#10;echo test_file.log included line file 2 &gt;&gt; c:\test_files\test_file.log&#10;echo tet_file.log not included nep file 3 &gt;&gt; c:\test_files\test_file.log&#10;echo test_fil.log not included test line 4 &gt;&gt; c:\test_files\test_file.log&#10;&#10;REM create a new log file and add records to it - only the first two should be collected since they match the monitor filter&#10;copy nul c:\test_files\test_file2.log&#10;timeout /t 7 /nobreak&#10;echo test_file2.log included nep test 0 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_file2.log included line file 1 &gt;&gt; c:\test_files\test_file2.log&#10;echo tet_file2.log not included nep file 2 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_fil2.log not included test line 3 &gt;&gt; c:\test_files\test_file2.log</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-3]C[16]"><Data ss:Type="String">#!/bin/bash&#10;#delete folders and create them again with files+content to make the test pre-requisites&#10;rm -rf /root/test_files&#10;rm -rf /root/test_files2&#10;mkdir -p /root/test_files&#10;mkdir -p /root/test_files2&#10;&#10;#this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo &quot;test_file.log not nep file test line 0&quot; &gt; /root/test_files/test_file.log&#10;#this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo &quot;test_file.txt included nep test 0&quot;  &gt; /root/test_files2/test_file.txt</Data></Cell>
@@ -948,8 +948,8 @@
    <Row ss:AutoFitHeight="0" ss:Height="27">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLFMandVerify SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-4]C[16]"><Data ss:Type="String">REM delete folders and create them again with files+content to make the test pre-requisites&#10;del /F /Q c:\test_files\ 2&gt;nul&#10;del /F /Q c:\test_files2\ 2&gt;nul&#10;RD /S /Q c:\test_files\ 2&gt;nul&#10;RD /S /Q c:\test_files2\ 2&gt;nul&#10;if not exist &quot;C:\test_files\&quot; mkdir C:\test_files&#10;if not exist &quot;C:\test_files2\&quot; mkdir C:\test_files2&#10;&#10;REM this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo test_file.log not includeded nep file test line 0 &gt; c:\test_files\test_file.log&#10;REM this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo test_file.txt included nep test 0  &gt; c:\test_files2\test_file.txt</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-4]C[16]"><Data ss:Type="String">REM add log recordss to the txt file (all should be collected since no filter is configured on this monitor&#10;echo test_file.txt included nep test 1 &gt;&gt; c:\test_files2\test_file.txt&#10;echo test_file.txt included nep test 2 &gt;&gt; c:\test_files2\test_file.txt&#10;&#10;REM add log records to an exiting log file - only the first two should be collected since they match the monitor filter&#10;echo test_file.log included nep test 1 &gt;&gt; c:\test_files\test_file.log&#10;echo test_file.log included line file 2 &gt;&gt; c:\test_files\test_file.log&#10;echo tet_file.log not included nep file 3 &gt;&gt; c:\test_files\test_file.log&#10;echo test_fil.log not included test line 4 &gt;&gt; c:\test_files\test_file.log&#10;&#10;REM create a new log file and add records to it - only the first two should be collected since they match the monitor filter&#10;copy nul c:\test_files\test_file2.log&#10;timeout /t 7 /nobreak&#10;echo test_file2.log included nep test 0 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_file2.log included line file 1 &gt;&gt; c:\test_files\test_file2.log&#10;echo tet_file2.log not included nep file 2 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_fil2.log not included test line 3 &gt;&gt; c:\test_files\test_file2.log</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-4]C[16]"><Data ss:Type="String">#!/bin/bash&#10;#delete folders and create them again with files+content to make the test pre-requisites&#10;rm -rf /root/test_files&#10;rm -rf /root/test_files2&#10;mkdir -p /root/test_files&#10;mkdir -p /root/test_files2&#10;&#10;#this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo &quot;test_file.log not nep file test line 0&quot; &gt; /root/test_files/test_file.log&#10;#this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo &quot;test_file.txt included nep test 0&quot;  &gt; /root/test_files2/test_file.txt</Data></Cell>
@@ -964,8 +964,8 @@
    <Row ss:AutoFitHeight="0" ss:Height="30.75">
     <Cell ss:StyleID="s72"><Data ss:Type="String">SimulateLFMandVerify LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-5]C[16]"><Data ss:Type="String">REM delete folders and create them again with files+content to make the test pre-requisites&#10;del /F /Q c:\test_files\ 2&gt;nul&#10;del /F /Q c:\test_files2\ 2&gt;nul&#10;RD /S /Q c:\test_files\ 2&gt;nul&#10;RD /S /Q c:\test_files2\ 2&gt;nul&#10;if not exist &quot;C:\test_files\&quot; mkdir C:\test_files&#10;if not exist &quot;C:\test_files2\&quot; mkdir C:\test_files2&#10;&#10;REM this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo test_file.log not includeded nep file test line 0 &gt; c:\test_files\test_file.log&#10;REM this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo test_file.txt included nep test 0  &gt; c:\test_files2\test_file.txt</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-5]C[16]"><Data ss:Type="String">REM add log recordss to the txt file (all should be collected since no filter is configured on this monitor&#10;echo test_file.txt included nep test 1 &gt;&gt; c:\test_files2\test_file.txt&#10;echo test_file.txt included nep test 2 &gt;&gt; c:\test_files2\test_file.txt&#10;&#10;REM add log records to an exiting log file - only the first two should be collected since they match the monitor filter&#10;echo test_file.log included nep test 1 &gt;&gt; c:\test_files\test_file.log&#10;echo test_file.log included line file 2 &gt;&gt; c:\test_files\test_file.log&#10;echo tet_file.log not included nep file 3 &gt;&gt; c:\test_files\test_file.log&#10;echo test_fil.log not included test line 4 &gt;&gt; c:\test_files\test_file.log&#10;&#10;REM create a new log file and add records to it - only the first two should be collected since they match the monitor filter&#10;copy nul c:\test_files\test_file2.log&#10;timeout /t 7 /nobreak&#10;echo test_file2.log included nep test 0 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_file2.log included line file 1 &gt;&gt; c:\test_files\test_file2.log&#10;echo tet_file2.log not included nep file 2 &gt;&gt; c:\test_files\test_file2.log&#10;echo test_fil2.log not included test line 3 &gt;&gt; c:\test_files\test_file2.log</Data></Cell>
     <Cell ss:Formula="='General Settings'!R[-5]C[16]"><Data ss:Type="String">#!/bin/bash&#10;#delete folders and create them again with files+content to make the test pre-requisites&#10;rm -rf /root/test_files&#10;rm -rf /root/test_files2&#10;mkdir -p /root/test_files&#10;mkdir -p /root/test_files2&#10;&#10;#this log record shouldn't be collected (even tho it matches the filter) since monitor on the folder is configured to only collect new reords&#10;echo &quot;test_file.log not nep file test line 0&quot; &gt; /root/test_files/test_file.log&#10;#this log record should be collected since monitor on the folder is NOT configured to collect only new records&#10;echo &quot;test_file.txt included nep test 0&quot;  &gt; /root/test_files2/test_file.txt</Data></Cell>
@@ -1022,55 +1022,55 @@
    <Row ss:AutoFitHeight="0" ss:Height="32.25">
     <Cell ss:StyleID="s72"><Data ss:Type="String">WLMCreateEvent  SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="Number">4</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="Number">4</Data></Cell>
     <Cell><Data ss:Type="Number">60</Data></Cell>
-    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s64"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="27">
     <Cell ss:StyleID="s72"><Data ss:Type="String">WLMCreateEvent LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="Number">4</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="Number">4</Data></Cell>
     <Cell><Data ss:Type="Number">60</Data></Cell>
-    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s64"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="29.25">
     <Cell ss:StyleID="s72"><Data ss:Type="String"> WLMCreateEvent  LCA_SYSLOG</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
     <Cell><Data ss:Type="Number">4</Data></Cell>
     <Cell><Data ss:Type="Number">60</Data></Cell>
-    <Cell ss:StyleID="s65"/>
+    <Cell ss:StyleID="s64"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="32.25">
     <Cell ss:StyleID="s72"><Data ss:Type="String">WLMCreateEvent  SIEM</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">SIEM</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="Number">4</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">SIEM</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="Number">4</Data></Cell>
     <Cell><Data ss:Type="Number">60</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LNE</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LNE</Data></Cell>
     <Cell><Data ss:Type="Number">3128</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="27">
     <Cell ss:StyleID="s72"><Data ss:Type="String">WLMCreateEvent LCA</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="Number">4</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="Number">4</Data></Cell>
     <Cell><Data ss:Type="Number">60</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LNE</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LNE</Data></Cell>
     <Cell><Data ss:Type="Number">3128</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="29.25">
     <Cell ss:StyleID="s72"><Data ss:Type="String"> WLMCreateEvent  LCA_SYSLOG</Data></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">180</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">LCA_SYSLOG</Data></Cell>
     <Cell><Data ss:Type="Number">4</Data></Cell>
     <Cell><Data ss:Type="Number">60</Data></Cell>
     <Cell><Data ss:Type="String">LNE</Data></Cell>
@@ -1116,10 +1116,10 @@
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="18">
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
     <Cell><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
@@ -1195,7 +1195,7 @@
     <Cell><Data ss:Type="String">Verify CentCom Call Timeout</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Default</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Default</Data></Cell>
     <Cell><Data ss:Type="String">Chrome</Data></Cell>
     <Cell><Data ss:Type="String">twSuperAdmin</Data></Cell>
     <Cell><Data ss:Type="String">P@ssw0rd1</Data></Cell>
@@ -1223,7 +1223,7 @@
     <Cell ss:StyleID="s63"><Data ss:Type="String">180</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">QA</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">QA</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -1244,7 +1244,7 @@
     <Cell ss:StyleID="s63"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">INC</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">INC</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -1265,7 +1265,7 @@
     <Cell ss:StyleID="s63"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15.45">
-    <Cell ss:StyleID="s64"><Data ss:Type="String">STG</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">STG</Data></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s63"/>
@@ -1314,7 +1314,7 @@
     <Cell><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="409.79999999999995">
-    <Cell ss:StyleID="s65"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1622,19 +1622,19 @@
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">180</Data></Cell>
     <Cell><Data ss:Type="Number">300</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">linux</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">linux</Data></Cell>
     <Cell><Data ss:Type="String">9.9.0.2000</Data></Cell>
     <Cell><Data ss:Type="String">9.9.0.2000</Data></Cell>
     <Cell><Data ss:Type="String">9.9.0.5000</Data></Cell>
     <Cell><Data ss:Type="String">9.9.0.5000</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Row_For_Every_EP</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1768,26 +1768,26 @@
    x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:Index="9" ss:Width="141"/>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_HostName_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_UserName_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Password_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Type_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_HostName_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_UserName_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Password_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Type_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_HostName_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_UserName_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Password_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Type_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_HostName_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_UserName_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Password_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Type_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1811,26 +1811,26 @@
   <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_HostName_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_UserName_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Password_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Type_1</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_HostName_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_UserName_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Password_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Type_2</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_HostName_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_UserName_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Password_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Type_1</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_HostName_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_UserName_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Password_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Type_2</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">EP_Values_Populate_Method</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">hostname</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">user name</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">password</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">win</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">hostname</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">user name</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">password</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">win</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">All_EP_In_One_Row</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
