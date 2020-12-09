@@ -111,8 +111,8 @@ public class SeleniumBrowser implements Application {
 						options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
 						options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
 
-						options.addArguments("--headless"); // Working without GUI
-						options.addArguments("window-size=1920,1080"); // without GUI resolution
+						//options.addArguments("--headless"); // Working without GUI
+						//options.addArguments("window-size=1920,1080"); // without GUI resolution
 
 
 						JLog.logger.debug("Selenium browser Launch - Before creating new chrome driver" );
