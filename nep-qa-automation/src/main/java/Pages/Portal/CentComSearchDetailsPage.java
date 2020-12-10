@@ -15,16 +15,6 @@ public class CentComSearchDetailsPage extends GenericPage {
     @FindBy(how= How.XPATH,using="//div[@class='pane modal visible']//twa-button[@aria-label='Continue']")
     public WebElement continueButton_element;
 
-    //clusters tab
-    @FindBy(how= How.XPATH,using="//div[contains(text(),'Clusters')]")
-    public WebElement clustersTab_element;
-
-    //click on plus sign
-    @FindBy(how= How.XPATH,using="//twa-button[@icon='tw-plus']/material-button")
-    public WebElement clustersPlusSign_element;
-
-
-
 
     @FindBy(how= How.XPATH,using="//div[normalize-space(text())='Endpoints']")
     public WebElement endPointTab_element;
@@ -44,18 +34,6 @@ public class CentComSearchDetailsPage extends GenericPage {
     @FindBy(how= How.XPATH,using=valueToSearchXpath)
     public WebElement valueToSearch_element;
 
-    //New cluster name
-    private static final String setClusterName ="//twa-form-item[@label='Alias']//input ";
-    public static final By setClusterNameBy = By.xpath(setClusterName);
-    @FindBy(how= How.XPATH,using=setClusterName)
-    public WebElement setClusterName_element;
-
-
-    //ClusterOKButton:
-
-
-    @FindBy(how= How.XPATH,using="twa-button[@aria-lable='OK'/material-button")
-    public WebElement ClusterOKButton_element;
 
     //no need for find as text is searched with \n does the same operation
     @FindBy(how= How.XPATH,using="//twa-button[@aria-label='Find']/material-button")

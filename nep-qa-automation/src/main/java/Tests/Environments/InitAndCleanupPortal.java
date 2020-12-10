@@ -116,7 +116,10 @@ public class InitAndCleanupPortal extends RecordedTest {
 	        browserActions.Login(getGeneralData().get("Fusion User Name"), getGeneralData().get("Fusion Password"));
 	
 	        browserActions.GotoCentComSearch(getGeneralData().get("Fusion Link"));
+
 	        browserActions.GotoCentComEndpointsPage(data.get("Customer"));
+
+
 	
 	        return browserActions.DeleteEpFromCentCom(hostname);
         }

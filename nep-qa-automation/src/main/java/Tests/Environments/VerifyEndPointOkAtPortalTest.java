@@ -36,6 +36,7 @@ public class VerifyEndPointOkAtPortalTest extends RecordedTest {
         action.Login(getGeneralData().get("Fusion User Name"), getGeneralData().get("Fusion Password"));
 
         action.GotoCentComSearch(getGeneralData().get("Fusion Link"));
+
         action.GotoCentComEndpointsPage(data.get("Customer"));
 
         action.CheckEndPointOkInCentCom(hostname1,Integer.parseInt(data.get("EP Appear At CentCom Timeout")));
