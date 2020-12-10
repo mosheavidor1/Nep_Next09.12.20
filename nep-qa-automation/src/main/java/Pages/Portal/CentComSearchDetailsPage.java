@@ -52,7 +52,7 @@ public class CentComSearchDetailsPage extends GenericPage {
 
 
     //ClusterOKButton:
-//twa-button[@icon='tw-refresh']//material-button
+
 
     @FindBy(how= How.XPATH,using="twa-button[@aria-lable='OK'/material-button")
     public WebElement ClusterOKButton_element;
